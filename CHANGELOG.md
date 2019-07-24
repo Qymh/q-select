@@ -1,3 +1,22 @@
+# [](https://github.com/Qymh/q-select/compare/v0.1.4...v) (2019-07-24)
+
+
+
+## [0.1.4](https://github.com/Qymh/q-select/compare/v0.1.3...v0.1.4) (2019-07-24)
+
+
+### Bug Fixes
+
+* **publish:** wrong changelog ([b6b1060](https://github.com/Qymh/q-select/commit/b6b1060))
+
+
+### Features
+
+* add dynamic name ([47f7ea3](https://github.com/Qymh/q-select/commit/47f7ea3))
+* **publish:** optimizing ([1ba3dc8](https://github.com/Qymh/q-select/commit/1ba3dc8))
+
+
+
 ## [0.1.3](https://github.com/Qymh/q-select/compare/v0.1.2...v0.1.3) (2019-07-24)
 
 
