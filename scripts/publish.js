@@ -2,7 +2,7 @@ const execa = require('execa');
 const semver = require('semver');
 const inquirer = require('inquirer');
 
-const curVersion = require('../package.json').version;
+const curVersion = require('../lerna.json').version;
 const bumps = ['patch', 'minor', 'major', 'prerelease', 'premajor'];
 
 const redTips = msg =>

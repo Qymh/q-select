@@ -11,7 +11,7 @@
   "scripts": {
     "check": "yarn upgrade-interactive --latest",
     "lint:ts": "eslint . --ext .js,.ts",
-    "lint:style": "stylelint style/*.css",
+    "lint:style": "stylelint **/*.css",
     "lint": "npm run lint:ts && npm run lint:style",
     "fix:ts": "eslint . --ext .js,.ts --fix",
     "fix:style": "stylelint **/*.css --fix",
