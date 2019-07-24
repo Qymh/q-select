@@ -15673,7 +15673,7 @@
 	/***/ })
 	/******/ ])
 	});
-
+	//# sourceMappingURL=axios.map
 	});
 
 	//
@@ -18628,7 +18628,7 @@
 	var vueFunctionApi_19 = vueFunctionApi.watch;
 
 	/**
-	 * @qymh/vue-q-select v0.1.2
+	 * @qymh/vue-q-select v0.1.3
 	 * (c) 2019 Qymh
 	 * @license MIT
 	 */
@@ -18999,9 +18999,9 @@
 	  );
 
 	var index = {
-	    install: function (Vue) {
+	    install: function (Vue, options) {
 	        Vue.use(vueFunctionApi_15);
-	        Vue.component('QSelect', QSelect$1);
+	        Vue.component(options.name || 'QSelect', QSelect$1);
 	    }
 	};
 

@@ -1,5 +1,5 @@
 /**
- * @qymh/vue-q-select v0.1.2
+ * @qymh/vue-q-select v0.1.3
  * (c) 2019 Qymh
  * @license MIT
  */
@@ -377,9 +377,9 @@ const __vue_script__ = script;
   );
 
 var index = {
-    install: function (Vue) {
+    install: function (Vue, options) {
         Vue.use(vueFunctionApi.plugin);
-        Vue.component('QSelect', QSelect);
+        Vue.component(options.name || 'QSelect', QSelect);
     }
 };
 
