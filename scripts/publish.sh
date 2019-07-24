@@ -15,7 +15,7 @@ log "code review"
 npm run lint
 
 log "write version"
-lerna publish $version --yes --npm-tag tag
+lerna publish $version --yes --npm-tag $tag
 
 log "changelog"
 npm run changelog
