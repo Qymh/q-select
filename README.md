@@ -10,7 +10,7 @@
 
 ### 在线demo演示地址
 
-占位
+[demo演示](https://qymh.github.io/q-select/gitpage/js/index.html)
 
 ### api
 
@@ -28,7 +28,7 @@
 
 ### 在线demo演示地址
 
-占位
+[demo演示](https://qymh.github.io/q-select/gitpage/vue/index.html)
 
 ### api
 
