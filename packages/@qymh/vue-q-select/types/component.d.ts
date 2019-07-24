@@ -23,7 +23,7 @@ export type DataCallBack<K, V> = {
 
 export type Data<V = any, K = any> = GangedData<K, V>[] | NotGangedData<K, V>[];
 
-export class QSelect extends Vue {
+export class VueQSelect extends Vue {
   visible: boolean;
 
   data: Data;

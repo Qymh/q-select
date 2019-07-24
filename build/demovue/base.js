@@ -20,8 +20,8 @@ export default {
       plugins: [
         require('postcss-px-to-viewport')({
           unitToConvert: 'px',
-          viewportWidth: 414,
-          viewportHeight: 736,
+          viewportWidth: 750,
+          viewportHeight: 1334,
           unitPrecision: 3,
           viewportUnit: 'vw',
           fontViewportUnit: 'vw',

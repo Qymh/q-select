@@ -14,8 +14,11 @@ log "cur version: $version, cur tag: $tag"
 log "code review"
 npm run lint
 
+log "build"
+npm run pack
+
 log "write version"
-lerna publish $version --yes --npm-tag $tag
+lerna publish $version --yes --force-publish --npm-tag $tag
 
 log "changelog"
 npm run changelog

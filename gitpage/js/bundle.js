@@ -4,7 +4,7 @@
 }(function () { 'use strict';
 
   /**
-   * q-select vundefined
+   * @qymh/q-select v0.1.2
    * (c) 2019 Qymh
    * @license MIT
    */
@@ -477,9 +477,8 @@
           }
       };
       Touch.prototype.doSlideAnimate = function (time) {
-          var pre;
           var post = this.positions.length - 1;
-          pre = this.positions.filter(function (v) { return v.time >= time - 100; })[0];
+          var pre = this.positions.filter(function (v) { return v.time >= time - 100; })[0];
           var timeOffset = this.positions[post].time - pre.time;
           var movedTop = this.touchDiff - pre.top;
           var decelerationTrans;

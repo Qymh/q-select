@@ -1,7 +1,7 @@
 // eslint-disable-next-line
 import { PluginFunction } from 'vue';
 
-interface QSelect extends PluginFunction<any> {}
+interface VueQSelect extends PluginFunction<any> {}
 
-declare const QSelect: QSelect;
-export default QSelect;
+declare const VueQSelect: VueQSelect;
+export default VueQSelect;
