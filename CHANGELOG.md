@@ -1,4 +1,11 @@
-# [](https://github.com/Qymh/q-select/compare/v0.1.3...v) (2019-07-24)
+## [0.1.3](https://github.com/Qymh/q-select/compare/v0.1.2...v0.1.3) (2019-07-24)
+
+
+### Features
+
+* **optimize:** many optimize ([e373558](https://github.com/Qymh/q-select/commit/e373558))
+* **optimize:** many optimize ([9002c01](https://github.com/Qymh/q-select/commit/9002c01))
+* **publish:** add catch error ([db736a7](https://github.com/Qymh/q-select/commit/db736a7))
 
 
 
