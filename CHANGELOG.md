@@ -1,3 +1,7 @@
+# [](https://github.com/Qymh/q-select/compare/v0.1.3...v) (2019-07-24)
+
+
+
 ## [0.1.2](https://github.com/Qymh/q-select/compare/v0.1.1...v0.1.2) (2019-07-24)
 
 
