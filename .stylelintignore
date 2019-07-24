@@ -1,1 +1,8 @@
-dist/*.css
+packages/@qymh/q-select/dist/*
+packages/@qymh/vue-q-select/dist/*
+demo/js/dist/*
+demo/js/lib/*
+demo/vue/lib/*.
+demo/vue/dist/*
+gitpage/js/*
+gitpage/vue/*
