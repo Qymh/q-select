@@ -23,7 +23,7 @@
     "build:js": "rm -rf packages/@qymh/q-select/dist && node build/package/js.js",
     "build:vue": "rm -rf packages/@qymh/vue-q-select/dist && node build/package/vue.js",
     "pub": "node scripts/publish",
-    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 1"
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 2"
   },
   "devDependencies": {
     "@commitlint/cli": "^8.1.0",
