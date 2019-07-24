@@ -17,6 +17,9 @@ npm run lint
 log "build"
 npm run pack
 
+git add .
+git commit -m "chore: $verson build"
+
 log "write version"
 lerna publish $version --yes --force-publish --npm-tag $tag
 
