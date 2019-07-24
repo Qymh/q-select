@@ -1,12 +1,12 @@
 <script lang="ts">
 import Vue from 'vue';
-import QSelect from 'q-select';
+import QSelect from '@qymh/q-select';
 import { value, onCreated, watch } from 'vue-function-api';
 import { assert } from '../../../q-select/src/uitls';
 export default {
   setup(props, context) {
     let pending = value(true);
-    let uid = value(0);
+    const uid = value(0);
     let ins: QSelect;
 
     onCreated(() => {

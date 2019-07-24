@@ -15,7 +15,7 @@
   bottom: 0;
   left: 0;
   -webkit-box-sizing: border-box;
-  box-sizing: border-box;
+          box-sizing: border-box;
 }
 .q-select-header {
   padding: 10px 20px;
@@ -24,23 +24,23 @@
   display: flex;
   border-bottom: 1px solid #ebebeb;
   -webkit-box-sizing: border-box;
-  box-sizing: border-box;
+          box-sizing: border-box;
 }
 .q-select-header > .q-select-header-title {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
   -webkit-box-flex: 1;
-  -ms-flex-positive: 1;
-  flex-grow: 1;
+      -ms-flex-positive: 1;
+          flex-grow: 1;
   -ms-flex-negative: 1;
-  flex-shrink: 1;
+      flex-shrink: 1;
   -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
   -webkit-box-pack: center;
-  -ms-flex-pack: center;
-  justify-content: center;
+      -ms-flex-pack: center;
+          justify-content: center;
   white-space: nowrap;
   text-overflow: ellipsis;
   text-align: center;
@@ -50,13 +50,13 @@
 .q-select-header > .q-select-header-cancel,
 .q-select-header > .q-select-header-confirm {
   -webkit-box-flex: 0;
-  -ms-flex-positive: 0;
-  flex-grow: 0;
+      -ms-flex-positive: 0;
+          flex-grow: 0;
   -ms-flex-negative: 0;
-  flex-shrink: 0;
+      flex-shrink: 0;
   -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -65,8 +65,8 @@
 }
 .q-select-header > .q-select-header-confirm {
   -webkit-box-pack: end;
-  -ms-flex-pack: end;
-  justify-content: flex-end;
+      -ms-flex-pack: end;
+          justify-content: flex-end;
 }
 .q-select-header-title__value {
   white-space: nowrap;
@@ -86,10 +86,10 @@
   display: -ms-flexbox;
   display: flex;
   -webkit-box-flex: 1;
-  -ms-flex-positive: 1;
-  flex-grow: 1;
+      -ms-flex-positive: 1;
+          flex-grow: 1;
   -ms-flex-negative: 1;
-  flex-shrink: 1;
+      flex-shrink: 1;
   position: relative;
   overflow: hidden;
 }
@@ -108,7 +108,7 @@
   position: absolute;
   left: 0;
   -webkit-box-sizing: border-box;
-  box-sizing: border-box;
+          box-sizing: border-box;
   border-top: 1px solid #ebebeb;
   border-bottom: 1px solid #ebebeb;
 }
@@ -132,21 +132,21 @@
   display: none;
   z-index: 6;
   -webkit-box-pack: center;
-  -ms-flex-pack: center;
-  justify-content: center;
+      -ms-flex-pack: center;
+          justify-content: center;
   -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
 }
 .q-select-loading-svg {
   height: 30px;
   width: 30px;
   -webkit-animation: loading-rotate 2s linear infinite;
-  animation: loading-rotate 2s linear infinite;
+          animation: loading-rotate 2s linear infinite;
 }
 .q-select-loading-svg__circle {
   -webkit-animation: loading-dash 1.5s ease-in-out infinite;
-  animation: loading-dash 1.5s ease-in-out infinite;
+          animation: loading-dash 1.5s ease-in-out infinite;
   stroke-dasharray: 90, 150;
   stroke-dashoffset: 0;
   stroke-width: 2;
@@ -155,9 +155,9 @@
 }
 .animated {
   -webkit-animation-fill-mode: both;
-  animation-fill-mode: both;
+          animation-fill-mode: both;
   -webkit-animation-duration: 400ms;
-  animation-duration: 400ms;
+          animation-duration: 400ms;
 }
 
 @-webkit-keyframes loading-dash {
@@ -193,14 +193,14 @@
 @-webkit-keyframes loading-rotate {
   100% {
     -webkit-transform: rotate(360deg);
-    transform: rotate(360deg);
+            transform: rotate(360deg);
   }
 }
 
 @keyframes loading-rotate {
   100% {
     -webkit-transform: rotate(360deg);
-    transform: rotate(360deg);
+            transform: rotate(360deg);
   }
 }
 
@@ -223,7 +223,7 @@
 }
 .fadeIn {
   -webkit-animation-name: fadeIn;
-  animation-name: fadeIn;
+          animation-name: fadeIn;
 }
 
 @-webkit-keyframes fadeOut {
@@ -245,7 +245,7 @@
 }
 .fadeOut {
   -webkit-animation-name: fadeOut;
-  animation-name: fadeOut;
+          animation-name: fadeOut;
 }
 
 @-webkit-keyframes slideInUp {
@@ -273,7 +273,7 @@
 }
 .slideInUp {
   -webkit-animation-name: slideInUp;
-  animation-name: slideInUp;
+          animation-name: slideInUp;
 }
 
 @-webkit-keyframes slideOutDown {

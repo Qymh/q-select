@@ -1,7 +1,7 @@
 {
   "private": true,
   "workspaces": [
-    "packages/*"
+    "packages/@qymh/*"
   ],
   "description": "一个高性能的移动端下拉选择插件",
   "author": {
@@ -20,8 +20,8 @@
     "dev:demovue": "rollup -wc build/demovue/dev.js",
     "build:demojs": "rollup -c build/demojs/prod.js",
     "build:demovue": "rollup -c build/demovue/prod.js",
-    "build:js": "rm -rf packages/q-select/dist && node build/package/js.js",
-    "build:vue": "rm -rf packages/vue-q-select/dist && node build/package/vue.js",
+    "build:js": "rm -rf packages/@qymh/q-select/dist && node build/package/js.js",
+    "build:vue": "rm -rf packages/@qymh/vue-q-select/dist && node build/package/vue.js",
     "pub": "node scripts/publish",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 1"
   },

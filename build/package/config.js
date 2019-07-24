@@ -11,13 +11,13 @@ const pack = require('../../lerna.json');
 const version = pack.version;
 
 const bannerJs = `/**
- * q-select v${version}
+ * @qymh/q-select v${version}
  * (c) ${new Date().getFullYear()} Qymh
  * @license MIT
  */`;
 
 const bannerVue = `/**
- * vue-q-select v${version}
+ * @qymh/vue-q-select v${version}
  * (c) ${new Date().getFullYear()} Qymh
  * @license MIT
  */`;
@@ -42,40 +42,40 @@ exports.blueTips = msg => {
 
 const mapsJs = {
   umdProd: {
-    input: this.resolve('packages/q-select/src/index.ts'),
-    file: this.resolve('packages/q-select/dist/q-select.min.js'),
-    cssFile: this.resolve('packages/q-select/dist/q-select.css'),
+    input: this.resolve('packages/@qymh/q-select/src/index.ts'),
+    file: this.resolve('packages/@qymh/q-select/dist/q-select.min.js'),
+    cssFile: this.resolve('packages/@qymh/q-select/dist/q-select.css'),
     format: 'umd',
     env: 'production'
   },
   commonjs: {
-    input: this.resolve('packages/q-select/src/index.ts'),
-    file: this.resolve('packages/q-select/dist/q-select.common.js'),
+    input: this.resolve('packages/@qymh/q-select/src/index.ts'),
+    file: this.resolve('packages/@qymh/q-select/dist/q-select.common.js'),
     format: 'cjs'
   },
   esm: {
-    input: this.resolve('packages/q-select/src/index.ts'),
-    file: this.resolve('packages/q-select/dist/q-select.esm.js'),
+    input: this.resolve('packages/@qymh/q-select/src/index.ts'),
+    file: this.resolve('packages/@qymh/q-select/dist/q-select.esm.js'),
     format: 'es'
   }
 };
 
 const mapsVue = {
   umdProd: {
-    input: this.resolve('packages/vue-q-select/src/index.ts'),
-    file: this.resolve('packages/vue-q-select/dist/q-select.min.js'),
-    cssFile: this.resolve('packages/vue-q-select/dist/q-select.css'),
+    input: this.resolve('packages/@qymh/vue-q-select/src/index.ts'),
+    file: this.resolve('packages/@qymh/vue-q-select/dist/q-select.min.js'),
+    cssFile: this.resolve('packages/@qymh/vue-q-select/dist/q-select.css'),
     format: 'umd',
     env: 'production'
   },
   commonjs: {
-    input: this.resolve('packages/vue-q-select/src/index.ts'),
-    file: this.resolve('packages/vue-q-select/dist/q-select.common.js'),
+    input: this.resolve('packages/@qymh/vue-q-select/src/index.ts'),
+    file: this.resolve('packages/@qymh/vue-q-select/dist/q-select.common.js'),
     format: 'cjs'
   },
   esm: {
-    input: this.resolve('packages/vue-q-select/src/index.ts'),
-    file: this.resolve('packages/vue-q-select/dist/q-select.esm.js'),
+    input: this.resolve('packages/@qymh/vue-q-select/src/index.ts'),
+    file: this.resolve('packages/@qymh/vue-q-select/dist/q-select.esm.js'),
     format: 'es'
   }
 };

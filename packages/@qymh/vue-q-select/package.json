@@ -1,7 +1,8 @@
 {
-  "name": "vue-q-select",
+  "name": "@qymh/vue-q-select",
   "version": "0.1.0",
   "description": "一个高性能的vue移动端下拉选择插件",
+  "main": "dist/q-select.esm.js",
   "keywords": [
     "vue",
     "vue-picker",
@@ -18,7 +19,7 @@
     "node": ">=8.6"
   },
   "dependencies": {
-    "q-select": "^0.1.0",
+    "@qymh/q-select": "^0.1.0",
     "vue": "^2.6.10",
     "vue-function-api": "^2.0.6"
   }

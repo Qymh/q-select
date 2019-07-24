@@ -42,6 +42,6 @@
     // 使用的JSX工厂函数
     "jsxFactory": "h",
   },
-  "include": ["build/**/*.ts", "packages/**/*.ts", "typings/**/*.d.ts"],
+  "include": ["build/**/*.ts", "packages/**/*.ts","packages/**/*.d.ts", "typings/**/*.d.ts"],
   "exclude": ["node_modules"]
 }

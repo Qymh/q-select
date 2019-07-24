@@ -1,13 +1,17 @@
 /**
- * vue-q-select v0.1.0
+ * @qymh/vue-q-select v0.1.0
  * (c) 2019 Qymh
  * @license MIT
  */
-import Vue from 'vue';
-import { value, onCreated, watch, plugin } from 'vue-function-api';
+'use strict';
+
+function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
+
+var Vue = _interopDefault(require('vue'));
+var vueFunctionApi = require('vue-function-api');
 
 /**
- * q-select vundefined
+ * @qymh/q-select v0.1.0
  * (c) 2019 Qymh
  * @license MIT
  */
@@ -496,9 +500,8 @@ var Touch = (function () {
         }
     };
     Touch.prototype.doSlideAnimate = function (time) {
-        var pre;
         var post = this.positions.length - 1;
-        pre = this.positions.filter(function (v) { return v.time >= time - 100; })[0];
+        var pre = this.positions.filter(function (v) { return v.time >= time - 100; })[0];
         var timeOffset = this.positions[post].time - pre.time;
         var movedTop = this.touchDiff - pre.top;
         var decelerationTrans;
@@ -1401,10 +1404,10 @@ function assert$1(condition, msg) {
 
 var script = {
     setup: function (props, context) {
-        var pending = value(true);
-        var uid = value(0);
+        var pending = vueFunctionApi.value(true);
+        var uid = vueFunctionApi.value(0);
         var ins;
-        onCreated(function () {
+        vueFunctionApi.onCreated(function () {
             Vue.nextTick(function () {
                 ins = new QSelect({
                     data: props.data,
@@ -1521,7 +1524,7 @@ var script = {
                 return ins.cancelLoading();
             }
         };
-        watch(function () { return props.visible; }, function (val) {
+        vueFunctionApi.watch(function () { return props.visible; }, function (val) {
             if (val) {
                 if (pending) {
                     Vue.nextTick(function () {
@@ -1538,7 +1541,7 @@ var script = {
                 }
             }
         });
-        watch(function () { return props.loading; }, function (val) {
+        vueFunctionApi.watch(function () { return props.loading; }, function (val) {
             if (val) {
                 if (pending) ;
                 else {
@@ -1754,9 +1757,9 @@ const __vue_script__ = script;
 
 var index = {
     install: function (Vue) {
-        Vue.use(plugin);
+        Vue.use(vueFunctionApi.plugin);
         Vue.component('QSelect', QSelect$1);
     }
 };
 
-export default index;
+module.exports = index;
