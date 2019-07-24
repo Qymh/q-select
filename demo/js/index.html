@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="./bundle.css">
+</head>
+
+<body>
+  <div id="app">
+    <div class="box">
+      <div class="title">一层非联动</div>
+      <div class="cell">
+        <div class="cell__title cell__title--1">当前数据：</div>
+        <div class="cell__details cell__details--1">点击显示</div>
+      </div>
+      <div class="settings">
+        <div class="settings__btn--1">重新初始化数据(非联动转联动)</div>
+      </div>
+      <div class="settings">
+        <div class="settings__btn--1">重新初始化数据(联动转非联动)</div>
+      </div>
+      <div class="settings">
+        <div class="settings__btn--1">获取当前data(vConsole查看)</div>
+      </div>
+      <div class="settings">
+        <div class="settings__btn--1">获取当前index(vConsole查看)</div>
+      </div>
+    </div>
+
+    <div class="box" style="background-color: #fbf9fe;">
+      <div class="title">非联动内联展示异步设置值</div>
+      <div class="cell">
+        <div class="cell__title cell__title--2">当前数据：</div>
+      </div>
+      <div class="inline2"></div>
+      <div class="settings">
+        <div class="settings__btn--2">点击此处才会异步设置值</div>
+      </div>
+      <div class="settings">
+        <div class="settings__btn--2">获取当前data(vConsole查看)</div>
+      </div>
+      <div class="settings">
+        <div class="settings__btn--2">获取当前index(vConsole查看)</div>
+      </div>
+    </div>
+
+    <div class="box">
+      <div class="title">多层非联动</div>
+      <div class="cell">
+        <div class="cell__title cell__title--3">当前数据：</div>
+        <div class="cell__details cell__details--3">点击显示</div>
+      </div>
+    </div>
+
+    <div class="box">
+      <div class="title">多层非联动实测</div>
+      <div class="cell">
+        <div class="cell__title cell__title--4">当前数据：</div>
+        <div class="cell__details cell__details--4">点击显示</div>
+      </div>
+      <div class="settings">
+        <div class="settings__btn--4">点击设置索引为10 10 10 10 10</div>
+      </div>
+      <div class="settings">
+        <div class="settings__btn--4">点击设置值为10 10 10 10 10</div>
+      </div>
+      <div class="settings">
+        <div class="settings__btn--4">点击设置key为20k 20k 20k 20k 20k</div>
+      </div>
+      <div class="settings">
+        <div class="settings__btn--4">获取当前data(vConsole查看)</div>
+      </div>
+      <div class="settings">
+        <div class="settings__btn--4">获取当前index(vConsole查看)</div>
+      </div>
+    </div>
+
+    <div class="box">
+      <div class="title">简单联动</div>
+      <div class="cell">
+        <div class="cell__title cell__title--5">当前数据：</div>
+        <div class="cell__details cell__details--5">点击显示</div>
+      </div>
+      <div class="settings">
+        <div class="settings__btn--5">点击设置值为水果 西瓜 无子瓜 5块 两斤</div>
+      </div>
+      <div class="settings">
+        <div class="settings__btn--5">点击设置索引为2 0 1</div>
+      </div>
+      <div class="settings">
+        <div class="settings__btn--5">点击将第一栏滚动到索引2</div>
+      </div>
+      <div class="settings">
+        <div class="settings__btn--5">获取当前data(vConsole查看)</div>
+      </div>
+      <div class="settings">
+        <div class="settings__btn--5">获取当前index(vConsole查看)</div>
+      </div>
+    </div>
+
+    <div class="box">
+      <div class="title">省市区联动实测</div>
+      <div class="cell">
+        <div class="cell__title cell__title--6">当前数据：</div>
+        <div class="cell__details cell__details--6">点击显示</div>
+      </div>
+      <div class="settings">
+        <div class="settings__btn--6">点击设置索引为3 1 2</div>
+      </div>
+      <div class="settings">
+        <div class="settings__btn--6">点击设置值为 四川省 成都市 武侯区</div>
+      </div>
+      <div class="settings">
+        <div class="settings__btn--6">点击设置key为 32 3201 320102</div>
+      </div>
+      <div class="settings">
+        <div class="settings__btn--6">获取当前data(vConsole查看)</div>
+      </div>
+      <div class="settings">
+        <div class="settings__btn--6">获取当前index(vConsole查看)</div>
+      </div>
+    </div>
+
+    <div class="box" style="background-color: #fbf9fe;">
+      <div class="title">省市区非联动异步实测</div>
+      <div class="cell">
+        <div class="cell__title cell__title--7">当前数据：</div>
+      </div>
+      <div class="inline7"></div>
+    </div>
+  </div>
+</body>
+
+</html>

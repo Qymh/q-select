@@ -1,0 +1,8 @@
+packages/q-select/dist/*
+packages/vue-q-select/dist/*
+demo/js/dist/*.js
+demo/js/lib/*.js
+demo/vue/lib/*.js
+demo/vue/dist/*.js
+gitpage/js/*.js
+gitpage/vue/*.js

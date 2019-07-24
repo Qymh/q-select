@@ -1,0 +1,20 @@
+{
+  "name": "q-select",
+  "version": "0.1.0",
+  "description": "一个高性能的移动端下拉选择插件",
+  "main": "dist/q-select.esm.js",
+  "keywords": [
+    "select",
+    "mobile-select",
+    "picker"
+  ],
+  "types": "types/index.d.ts",
+  "author": {
+    "name": "Qymh",
+    "email": "415570450@qq.com"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=8.6"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "vue-q-select",
+  "version": "0.1.0",
+  "description": "一个高性能的vue移动端下拉选择插件",
+  "keywords": [
+    "vue",
+    "vue-picker",
+    "vue-select",
+    "picker"
+  ],
+  "types": "types/index.d.ts",
+  "author": {
+    "name": "Qymh",
+    "email": "415570450@qq.com"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=8.6"
+  },
+  "dependencies": {
+    "q-select": "^0.1.0",
+    "vue": "^2.6.10",
+    "vue-function-api": "^2.0.6"
+  }
+}
