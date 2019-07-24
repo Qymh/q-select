@@ -59,13 +59,14 @@ async function release() {
     return;
   }
 
-  await execa('bash', ['scripts/publish.sh', curVersion, npmTag])
-    .stdout.on('data', chunk => {
+  await execa('bash', ['scripts/publish.sh', curVersion, npmTag]).stdout.on(
+    'data',
+    chunk => {
       redTips(chunk.toString());
-    })
-    .on('error', err => {
-      redTips(err);
-    });
+    }
+  );
 }
 
-release();
+release().catch(err => {
+  redTips(err);
+});
