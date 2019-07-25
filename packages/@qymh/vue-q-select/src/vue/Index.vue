@@ -2,7 +2,7 @@
 import Vue from 'vue';
 import QSelect from '@qymh/q-select';
 import { value, onCreated, watch } from 'vue-function-api';
-import { assert } from '../../../q-select/src/uitls';
+import { assert } from '@qymh/q-select/src/uitls';
 export default {
   setup(props, context) {
     let pending = value(true);
