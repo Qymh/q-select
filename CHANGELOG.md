@@ -1,3 +1,17 @@
+# [](https://github.com/Qymh/q-select/compare/v0.1.6...v) (2019-07-26)
+
+
+
+## [0.1.6](https://github.com/Qymh/q-select/compare/v0.1.5...v0.1.6) (2019-07-26)
+
+
+### Features
+
+* add split css readme ([76115c6](https://github.com/Qymh/q-select/commit/76115c6))
+* split css ([82caa02](https://github.com/Qymh/q-select/commit/82caa02))
+
+
+
 # [](https://github.com/Qymh/q-select/compare/v0.1.5...v) (2019-07-26)
 
 
