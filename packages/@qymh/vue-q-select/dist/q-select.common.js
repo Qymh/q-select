@@ -28,39 +28,41 @@ var script = {
         var pending = vueFunctionApi.value(true);
         var uid = vueFunctionApi.value(0);
         var ins;
-        vueFunctionApi.onCreated(function () {
-            Vue.nextTick(function () {
-                ins = new QSelect$1({
-                    data: props.data,
-                    index: props.index,
-                    target: props.inline ? ".q-select-inline--" + uid.value : '',
-                    count: props.count,
-                    title: props.title,
-                    chunkHeight: props.chunkHeight,
-                    loading: props.loading,
-                    ready: function (value, key, data) {
-                        pending = false;
-                        context.emit('ready', value, key, data);
-                    },
-                    cancel: function () {
-                        context.emit('input', false);
-                        context.emit('cancel');
-                    },
-                    confirm: function (value, key, data) {
-                        context.emit('input', false);
-                        context.emit('confirm', value, key, data);
-                    },
-                    change: function (weight, value, key, data) {
-                        context.emit('change', weight, value, key, data);
-                    },
-                    show: function () {
-                        context.emit('show');
-                    },
-                    hide: function () {
-                        context.emit('hide');
-                    }
-                });
+        vueFunctionApi.onMounted(function () {
+            ins = new QSelect$1({
+                data: props.data,
+                index: props.index,
+                target: props.inline ? ".q-select-inline--" + uid.value : '',
+                count: props.count,
+                title: props.title,
+                chunkHeight: props.chunkHeight,
+                loading: props.loading,
+                disableDefaultCancel: props.disableDefaultCancel,
+                ready: function (value, key, data) {
+                    pending = false;
+                    context.emit('ready', value, key, data);
+                },
+                cancel: function () {
+                    context.emit('input', false);
+                    context.emit('cancel');
+                },
+                confirm: function (value, key, data) {
+                    context.emit('input', false);
+                    context.emit('confirm', value, key, data);
+                },
+                change: function (weight, value, key, data) {
+                    context.emit('change', weight, value, key, data);
+                },
+                show: function () {
+                    context.emit('show');
+                },
+                hide: function () {
+                    context.emit('hide');
+                }
             });
+        });
+        vueFunctionApi.onUnmounted(function () {
+            ins && ins.destroy();
         });
         var warnIns = function () {
             if (!ins) {
@@ -174,6 +176,17 @@ var script = {
                     cancelLoading();
                 }
             }
+        });
+        vueFunctionApi.watch(function () { return props.data; }, function (val) {
+            setData(val);
+        }, {
+            lazy: true,
+            deep: props.deep
+        });
+        vueFunctionApi.watch(function () { return props.index; }, function (val) {
+            setIndex(val);
+        }, {
+            lazy: true
         });
         return {
             pending: pending,
@@ -378,6 +391,7 @@ const __vue_script__ = script;
 
 var index = {
     install: function (Vue, options) {
+        if (options === void 0) { options = {}; }
         Vue.use(vueFunctionApi.plugin);
         Vue.component(options.name || 'QSelect', QSelect);
     }

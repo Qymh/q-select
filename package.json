@@ -84,10 +84,6 @@
     }
   },
   "lint-staged": {
-    "*.css": [
-      "stylelint --fix",
-      "git add"
-    ],
     "*.(t|j)s": [
       "eslint --ext .js,.ts --fix",
       "git add"

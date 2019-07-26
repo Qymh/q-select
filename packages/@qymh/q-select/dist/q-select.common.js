@@ -227,6 +227,9 @@ var Dom = (function () {
 function easeOutCubic(pos) {
     return Math.pow(pos - 1, 3) + 1;
 }
+function firstUpper(str) {
+    return str.slice(0, 1).toUpperCase() + str.slice(1);
+}
 function isPlainObj(obj) {
     return Object.prototype.toString.call(obj).slice(8, -1) === 'Object';
 }
@@ -284,6 +287,10 @@ function deepClone(val) {
     }
 }
 
+window.requestAnimationFrame =
+    window.requestAnimationFrame || window.webkitRequestAnimationFrame;
+window.cancelAnimationFrame =
+    window.cancelAnimationFrame || window.webkitCancelAnimationFrame;
 var Animate = (function () {
     function Animate(duration) {
         if (duration === void 0) { duration = 200; }
@@ -1173,11 +1180,8 @@ styleInject(css);
 
 function argumentsAssert(argumentsVar, argumentsStr, functionName, reject) {
     argumentsVar.forEach(function (v, i) {
-        try {
-            assert(!!v, argumentsStr[i] + " is required as the first argument of " + functionName);
-        }
-        catch (error) {
-            reject && reject(error);
+        if (!assert(!!v, argumentsStr[i] + " is required as the first argument of " + functionName)) {
+            reject && reject();
         }
     });
 }
@@ -1221,7 +1225,7 @@ var QSelect = (function (_super) {
         });
     };
     QSelect.prototype.scrollTo = function (column, index) {
-        argumentsAssert([column, index], ['column', 'index'], 'setColumnData');
+        argumentsAssert([column, index], ['column', 'index'], 'scrollTo');
         assert(!!index, 'index is required');
         var later = this.dynamicIndex.slice();
         later[column] = index;
@@ -1231,7 +1235,7 @@ var QSelect = (function (_super) {
         var _this = this;
         return new Promise(function (resolve, reject) {
             try {
-                argumentsAssert([index], ['index'], 'setColumnData', reject);
+                argumentsAssert([index], ['index'], 'setIndex', reject);
                 if (_this.validateIndex(index)) {
                     _this._setIndex(index);
                     resolve(_this.getChangeCallData());
@@ -1293,6 +1297,7 @@ var QSelect = (function (_super) {
     QSelect.prototype._setKeyAndValue = function (type, value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
+            argumentsAssert([value], [type], "set" + firstUpper(type), reject);
             var findedIndex = [];
             var index = 0;
             function findIndex(data) {

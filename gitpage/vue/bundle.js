@@ -16529,7 +16529,7 @@
 	  );
 
 	/**
-	 * @qymh/q-select v0.1.2
+	 * @qymh/q-select v0.1.4
 	 * (c) 2019 Qymh
 	 * @license MIT
 	 */
@@ -16755,6 +16755,9 @@
 	function easeOutCubic(pos) {
 	    return Math.pow(pos - 1, 3) + 1;
 	}
+	function firstUpper(str) {
+	    return str.slice(0, 1).toUpperCase() + str.slice(1);
+	}
 	function isPlainObj(obj) {
 	    return Object.prototype.toString.call(obj).slice(8, -1) === 'Object';
 	}
@@ -16796,6 +16799,10 @@
 	    }
 	}
 
+	window.requestAnimationFrame =
+	    window.requestAnimationFrame || window.webkitRequestAnimationFrame;
+	window.cancelAnimationFrame =
+	    window.cancelAnimationFrame || window.webkitCancelAnimationFrame;
 	var Animate = (function () {
 	    function Animate(duration) {
 	        if (duration === void 0) { duration = 200; }
@@ -17681,6 +17688,13 @@
 	var css = ".q-select-bk {\n  position: fixed;\n  left: 0;\n  top: 0;\n  height: 100vh;\n  width: 100%;\n  background-color: #000;\n  opacity: 0.3;\n}\n.q-select {\n  position: fixed;\n  width: 100%;\n  height: auto;\n  background-color: #fff;\n  bottom: 0;\n  left: 0;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}\n.q-select-header {\n  padding: 10px 20px;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  border-bottom: 1px solid #ebebeb;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}\n.q-select-header > .q-select-header-title {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  -ms-flex-negative: 1;\n      flex-shrink: 1;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  text-align: center;\n  width: 100%;\n  overflow: hidden;\n}\n.q-select-header > .q-select-header-cancel,\n.q-select-header > .q-select-header-confirm {\n  -webkit-box-flex: 0;\n      -ms-flex-positive: 0;\n          flex-grow: 0;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  width: 100px;\n  font-size: 14px;\n}\n.q-select-header > .q-select-header-confirm {\n  -webkit-box-pack: end;\n      -ms-flex-pack: end;\n          justify-content: flex-end;\n}\n.q-select-header-title__value {\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  text-align: center;\n  width: 100%;\n  overflow: hidden;\n  color: #4a90e2;\n}\n.q-select-box {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n}\n.q-select-box-item {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  -ms-flex-negative: 1;\n      flex-shrink: 1;\n  position: relative;\n  overflow: hidden;\n}\n.q-select-box-item-collections {\n  width: 100%;\n  will-change: transform;\n}\n.q-select-box-item-collections__tick {\n  text-align: center;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n.q-select-box-item__highlight {\n  width: 100%;\n  position: absolute;\n  left: 0;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n  border-top: 1px solid #ebebeb;\n  border-bottom: 1px solid #ebebeb;\n}\n.q-select-box-item__overlay {\n  height: 100%;\n  width: 100%;\n  position: absolute;\n  z-index: 5;\n  background-position: top, bottom;\n  background-repeat: no-repeat;\n  background-image:\n    -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0.95)), to(rgba(255, 255, 255, 0.6))),\n    -webkit-gradient(linear, left bottom, left top, from(rgba(255, 255, 255, 0.95)), to(rgba(255, 255, 255, 0.6)));\n  background-image:\n    linear-gradient(to bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.6)),\n    linear-gradient(to top, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.6));\n}\n.q-select-loading {\n  width: 100%;\n  position: absolute;\n  display: none;\n  z-index: 6;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n.q-select-loading-svg {\n  height: 30px;\n  width: 30px;\n  -webkit-animation: loading-rotate 2s linear infinite;\n          animation: loading-rotate 2s linear infinite;\n}\n.q-select-loading-svg__circle {\n  -webkit-animation: loading-dash 1.5s ease-in-out infinite;\n          animation: loading-dash 1.5s ease-in-out infinite;\n  stroke-dasharray: 90, 150;\n  stroke-dashoffset: 0;\n  stroke-width: 2;\n  stroke-linecap: round;\n  stroke: #4a90e2;\n}\n.animated {\n  -webkit-animation-fill-mode: both;\n          animation-fill-mode: both;\n  -webkit-animation-duration: 400ms;\n          animation-duration: 400ms;\n}\n\n@-webkit-keyframes loading-dash {\n  0% {\n    stroke-dasharray: 1, 200;\n    stroke-dashoffset: 0;\n  }\n  50% {\n    stroke-dasharray: 90, 150;\n    stroke-dashoffset: -40;\n  }\n  100% {\n    stroke-dasharray: 90, 150;\n    stroke-dashoffset: -120;\n  }\n}\n\n@keyframes loading-dash {\n  0% {\n    stroke-dasharray: 1, 200;\n    stroke-dashoffset: 0;\n  }\n  50% {\n    stroke-dasharray: 90, 150;\n    stroke-dashoffset: -40;\n  }\n  100% {\n    stroke-dasharray: 90, 150;\n    stroke-dashoffset: -120;\n  }\n}\n\n@-webkit-keyframes loading-rotate {\n  100% {\n    -webkit-transform: rotate(360deg);\n            transform: rotate(360deg);\n  }\n}\n\n@keyframes loading-rotate {\n  100% {\n    -webkit-transform: rotate(360deg);\n            transform: rotate(360deg);\n  }\n}\n\n@-webkit-keyframes fadeIn {\n  from {\n    opacity: 0;\n  }\n  to {\n    opacity: 0.3;\n  }\n}\n\n@keyframes fadeIn {\n  from {\n    opacity: 0;\n  }\n  to {\n    opacity: 0.3;\n  }\n}\n.fadeIn {\n  -webkit-animation-name: fadeIn;\n          animation-name: fadeIn;\n}\n\n@-webkit-keyframes fadeOut {\n  from {\n    opacity: 0.3;\n  }\n  to {\n    opacity: 0;\n  }\n}\n\n@keyframes fadeOut {\n  from {\n    opacity: 0.3;\n  }\n  to {\n    opacity: 0;\n  }\n}\n.fadeOut {\n  -webkit-animation-name: fadeOut;\n          animation-name: fadeOut;\n}\n\n@-webkit-keyframes slideInUp {\n  from {\n    -webkit-transform: translate3d(0, 100%, 0);\n    transform: translate3d(0, 100%, 0);\n    visibility: visible;\n  }\n  to {\n    -webkit-transform: translate3d(0, 0, 0);\n    transform: translate3d(0, 0, 0);\n  }\n}\n\n@keyframes slideInUp {\n  from {\n    -webkit-transform: translate3d(0, 100%, 0);\n    transform: translate3d(0, 100%, 0);\n    visibility: visible;\n  }\n  to {\n    -webkit-transform: translate3d(0, 0, 0);\n    transform: translate3d(0, 0, 0);\n  }\n}\n.slideInUp {\n  -webkit-animation-name: slideInUp;\n          animation-name: slideInUp;\n}\n\n@-webkit-keyframes slideOutDown {\n  from {\n    -webkit-transform: translate3d(0, 0, 0);\n    transform: translate3d(0, 0, 0);\n  }\n  to {\n    visibility: hidden;\n    -webkit-transform: translate3d(0, 100%, 0);\n    transform: translate3d(0, 100%, 0);\n  }\n}\n\n@keyframes slideOutDown {\n  from {\n    -webkit-transform: translate3d(0, 0, 0);\n    transform: translate3d(0, 0, 0);\n  }\n  to {\n    visibility: hidden;\n    -webkit-transform: translate3d(0, 100%, 0);\n    transform: translate3d(0, 100%, 0);\n  }\n}\n.slideOutDown {\n  -webkit-animation-name: slideOutDown;\n  animation-name: slideOutDown;\n}\n";
 	styleInject(css);
 
+	function argumentsAssert(argumentsVar, argumentsStr, functionName, reject) {
+	    argumentsVar.forEach(function (v, i) {
+	        if (!assert(!!v, argumentsStr[i] + " is required as the first argument of " + functionName)) {
+	            reject && reject();
+	        }
+	    });
+	}
 	var QSelect = (function (_super) {
 	    __extends(QSelect, _super);
 	    function QSelect() {
@@ -17690,6 +17704,7 @@
 	        var _this = this;
 	        return new Promise(function (resolve, reject) {
 	            try {
+	                argumentsAssert([column, data], ['column', 'data'], 'setColumnData', reject);
 	                var preTrans = _this.dataTrans.slice();
 	                var realData = [];
 	                if (Array.isArray(column)) {
@@ -17720,6 +17735,7 @@
 	        });
 	    };
 	    QSelect.prototype.scrollTo = function (column, index) {
+	        argumentsAssert([column, index], ['column', 'index'], 'scrollTo');
 	        var later = this.dynamicIndex.slice();
 	        later[column] = index;
 	        return this.setIndex(later);
@@ -17728,6 +17744,7 @@
 	        var _this = this;
 	        return new Promise(function (resolve, reject) {
 	            try {
+	                argumentsAssert([index], ['index'], 'setIndex', reject);
 	                if (_this.validateIndex(index)) {
 	                    _this._setIndex(index);
 	                    resolve(_this.getChangeCallData());
@@ -17789,6 +17806,7 @@
 	    QSelect.prototype._setKeyAndValue = function (type, value) {
 	        var _this = this;
 	        return new Promise(function (resolve, reject) {
+	            argumentsAssert([value], [type], "set" + firstUpper(type), reject);
 	            var findedIndex = [];
 	            var index = 0;
 	            function findIndex(data) {
@@ -18607,12 +18625,6 @@
 	var vueFunctionApi_18 = vueFunctionApi.value;
 	var vueFunctionApi_19 = vueFunctionApi.watch;
 
-	/**
-	 * @qymh/vue-q-select v0.1.2
-	 * (c) 2019 Qymh
-	 * @license MIT
-	 */
-
 	function assert$1(condition, msg) {
 	    return true;
 	}
@@ -18622,39 +18634,41 @@
 	        var pending = vueFunctionApi_18(true);
 	        var uid = vueFunctionApi_18(0);
 	        var ins;
-	        vueFunctionApi_8(function () {
-	            vue_runtime_common.nextTick(function () {
-	                ins = new QSelect({
-	                    data: props.data,
-	                    index: props.index,
-	                    target: props.inline ? ".q-select-inline--" + uid.value : '',
-	                    count: props.count,
-	                    title: props.title,
-	                    chunkHeight: props.chunkHeight,
-	                    loading: props.loading,
-	                    ready: function (value, key, data) {
-	                        pending = false;
-	                        context.emit('ready', value, key, data);
-	                    },
-	                    cancel: function () {
-	                        context.emit('input', false);
-	                        context.emit('cancel');
-	                    },
-	                    confirm: function (value, key, data) {
-	                        context.emit('input', false);
-	                        context.emit('confirm', value, key, data);
-	                    },
-	                    change: function (weight, value, key, data) {
-	                        context.emit('change', weight, value, key, data);
-	                    },
-	                    show: function () {
-	                        context.emit('show');
-	                    },
-	                    hide: function () {
-	                        context.emit('hide');
-	                    }
-	                });
+	        vueFunctionApi_12(function () {
+	            ins = new QSelect({
+	                data: props.data,
+	                index: props.index,
+	                target: props.inline ? ".q-select-inline--" + uid.value : '',
+	                count: props.count,
+	                title: props.title,
+	                chunkHeight: props.chunkHeight,
+	                loading: props.loading,
+	                disableDefaultCancel: props.disableDefaultCancel,
+	                ready: function (value, key, data) {
+	                    pending = false;
+	                    context.emit('ready', value, key, data);
+	                },
+	                cancel: function () {
+	                    context.emit('input', false);
+	                    context.emit('cancel');
+	                },
+	                confirm: function (value, key, data) {
+	                    context.emit('input', false);
+	                    context.emit('confirm', value, key, data);
+	                },
+	                change: function (weight, value, key, data) {
+	                    context.emit('change', weight, value, key, data);
+	                },
+	                show: function () {
+	                    context.emit('show');
+	                },
+	                hide: function () {
+	                    context.emit('hide');
+	                }
 	            });
+	        });
+	        vueFunctionApi_13(function () {
+	            ins && ins.destroy();
 	        });
 	        var warnIns = function () {
 	            if (!ins) {
@@ -18769,6 +18783,17 @@
 	                }
 	            }
 	        });
+	        vueFunctionApi_19(function () { return props.data; }, function (val) {
+	            setData(val);
+	        }, {
+	            lazy: true,
+	            deep: props.deep
+	        });
+	        vueFunctionApi_19(function () { return props.index; }, function (val) {
+	            setIndex(val);
+	        }, {
+	            lazy: true
+	        });
 	        return {
 	            pending: pending,
 	            ins: ins,
@@ -18855,91 +18880,6 @@
 	    }
 	};
 
-	function normalizeComponent$1(template, style, script, scopeId, isFunctionalTemplate, moduleIdentifier
-	/* server only */
-	, shadowMode, createInjector, createInjectorSSR, createInjectorShadow) {
-	  if (typeof shadowMode !== 'boolean') {
-	    createInjectorSSR = createInjector;
-	    createInjector = shadowMode;
-	    shadowMode = false;
-	  } // Vue.extend constructor export interop.
-
-
-	  var options = typeof script === 'function' ? script.options : script; // render functions
-
-	  if (template && template.render) {
-	    options.render = template.render;
-	    options.staticRenderFns = template.staticRenderFns;
-	    options._compiled = true; // functional template
-
-	    if (isFunctionalTemplate) {
-	      options.functional = true;
-	    }
-	  } // scopedId
-
-
-	  if (scopeId) {
-	    options._scopeId = scopeId;
-	  }
-
-	  var hook;
-
-	  if (moduleIdentifier) {
-	    // server build
-	    hook = function hook(context) {
-	      // 2.3 injection
-	      context = context || // cached call
-	      this.$vnode && this.$vnode.ssrContext || // stateful
-	      this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext; // functional
-	      // 2.2 with runInNewContext: true
-
-	      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
-	        context = __VUE_SSR_CONTEXT__;
-	      } // inject component styles
-
-
-	      if (style) {
-	        style.call(this, createInjectorSSR(context));
-	      } // register component module identifier for async chunk inference
-
-
-	      if (context && context._registeredComponents) {
-	        context._registeredComponents.add(moduleIdentifier);
-	      }
-	    }; // used by ssr in case component is cached and beforeCreate
-	    // never gets called
-
-
-	    options._ssrRegister = hook;
-	  } else if (style) {
-	    hook = shadowMode ? function () {
-	      style.call(this, createInjectorShadow(this.$root.$options.shadowRoot));
-	    } : function (context) {
-	      style.call(this, createInjector(context));
-	    };
-	  }
-
-	  if (hook) {
-	    if (options.functional) {
-	      // register for functional component in vue file
-	      var originalRender = options.render;
-
-	      options.render = function renderWithStyleInjection(h, context) {
-	        hook.call(context);
-	        return originalRender(h, context);
-	      };
-	    } else {
-	      // inject component registration as beforeCreate hook
-	      var existing = options.beforeCreate;
-	      options.beforeCreate = existing ? [].concat(existing, hook) : [hook];
-	    }
-	  }
-
-	  return script;
-	}
-
-	var normalizeComponent_1$1 = normalizeComponent$1;
-
 	/* script */
 	const __vue_script__$3 = script$3;
 
@@ -18959,7 +18899,7 @@
 	  
 
 	  
-	  var QSelect$1 = normalizeComponent_1$1(
+	  var QSelect$1 = normalizeComponent_1(
 	    {},
 	    __vue_inject_styles__$3,
 	    __vue_script__$3,
@@ -18970,14 +18910,15 @@
 	    undefined
 	  );
 
-	var index = {
-	    install: function (Vue) {
+	var QSelect$2 = {
+	    install: function (Vue, options) {
+	        if (options === void 0) { options = {}; }
 	        Vue.use(vueFunctionApi_15);
-	        Vue.component('QSelect', QSelect$1);
+	        Vue.component(options.name || 'QSelect', QSelect$1);
 	    }
 	};
 
-	vue_runtime_common.use(index);
+	vue_runtime_common.use(QSelect$2);
 	new vue_runtime_common({
 	  el: '#app',
 	  render: h => h(App)
