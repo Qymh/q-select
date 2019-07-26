@@ -1,3 +1,21 @@
+# [](https://github.com/Qymh/q-select/compare/v0.1.5...v) (2019-07-26)
+
+
+
+## [0.1.5](https://github.com/Qymh/q-select/compare/v0.1.4...v0.1.5) (2019-07-26)
+
+
+### Features
+
+* complete vue-q-select ([65cc300](https://github.com/Qymh/q-select/commit/65cc300))
+* complete vue-q-select ([1c11845](https://github.com/Qymh/q-select/commit/1c11845))
+* strong compatibility ([f385c79](https://github.com/Qymh/q-select/commit/f385c79))
+* **build:** build demo and js ([bbfb926](https://github.com/Qymh/q-select/commit/bbfb926))
+* **readme:** add q-select readme ([17e581e](https://github.com/Qymh/q-select/commit/17e581e))
+* **readme:** add q-select readme ([7a82245](https://github.com/Qymh/q-select/commit/7a82245))
+
+
+
 # [](https://github.com/Qymh/q-select/compare/v0.1.4...v) (2019-07-24)
 
 
