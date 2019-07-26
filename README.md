@@ -34,6 +34,7 @@ yarn add @qymh/q-select
 
 ```javascript
 import QSelect from '@qymh/q-select';
+import '@qymh/q-select/dist/q-select.css';
 
 new Qselect({});
 ```
@@ -42,6 +43,7 @@ new Qselect({});
 
 ```javascript
 const QSelect = require('@qymh/q-select/dist/q-select.common.js');
+import '@qymh/q-select/dist/q-select.css';
 
 new Qselect({});
 ```
@@ -54,6 +56,12 @@ new Qselect({});
 
 ```javascript
 <script src="https://unpkg.com/@qymh/q-select/dist/q-select.min.js"></script>
+```
+
+同时也需要引入 css
+
+```javascript
+<link rel="stylesheet" href="https://unpkg.com/@qymh/q-select/dist/q-select.css">
 ```
 
 ### 沙盒演示
@@ -663,6 +671,7 @@ Vue.use(QSelect);
 ```javascript
 import Vue from 'vue';
 import QSelect from '@qymh/vue-q-select';
+import '@qymh/vue-q-select/dist/q-select.css';
 Vue.use(QSelect, { name: 'QPicker' });
 ```
 
