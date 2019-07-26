@@ -43,7 +43,7 @@ new Qselect({});
 
 ```javascript
 const QSelect = require('@qymh/q-select/dist/q-select.common.js');
-import '@qymh/q-select/dist/q-select.css';
+require('@qymh/q-select/dist/q-select.css');
 
 new Qselect({});
 ```
