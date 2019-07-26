@@ -1,5 +1,11 @@
 import { easeOutCubic } from './uitls';
 
+window.requestAnimationFrame =
+  window.requestAnimationFrame || window.webkitRequestAnimationFrame;
+
+window.cancelAnimationFrame =
+  window.cancelAnimationFrame || window.webkitCancelAnimationFrame;
+
 class Animate {
   private start: number;
 

@@ -2,6 +2,10 @@ export function easeOutCubic(pos: number): number {
   return Math.pow(pos - 1, 3) + 1;
 }
 
+export function firstUpper(str: string) {
+  return str.slice(0, 1).toUpperCase() + str.slice(1);
+}
+
 export function isPlainObj(obj: any): boolean {
   return Object.prototype.toString.call(obj).slice(8, -1) === 'Object';
 }

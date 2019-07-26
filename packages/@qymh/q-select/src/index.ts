@@ -1,7 +1,25 @@
 import Layer from './layer';
 import Dom from './dom';
 import '../style/q-select.css';
-import { deepClone, sameIndex, isPlainObj } from './uitls';
+import { deepClone, sameIndex, isPlainObj, assert, firstUpper } from './uitls';
+
+function argumentsAssert(
+  argumentsVar: any[],
+  argumentsStr: string[],
+  functionName: string,
+  reject?: any
+) {
+  argumentsVar.forEach((v, i) => {
+    if (
+      !assert(
+        !!v,
+        `${argumentsStr[i]} is required as the first argument of ${functionName}`
+      )
+    ) {
+      reject && reject();
+    }
+  });
+}
 
 class QSelect extends Layer {
   /**
@@ -15,6 +33,12 @@ class QSelect extends Layer {
   ) {
     return new Promise((resolve, reject) => {
       try {
+        argumentsAssert(
+          [column, data],
+          ['column', 'data'],
+          'setColumnData',
+          reject
+        );
         const preTrans = [...this.dataTrans];
         let realData = [];
         if (Array.isArray(column)) {
@@ -48,6 +72,8 @@ class QSelect extends Layer {
    * @param index 索引
    */
   scrollTo(column: number, index: number) {
+    argumentsAssert([column, index], ['column', 'index'], 'scrollTo');
+    assert(!!index, 'index is required');
     const later = [...this.dynamicIndex];
     later[column] = index;
     return this.setIndex(later);
@@ -60,6 +86,7 @@ class QSelect extends Layer {
   setIndex(index: number[]) {
     return new Promise((resolve, reject) => {
       try {
+        argumentsAssert([index], ['index'], 'setIndex', reject);
         if (this.validateIndex(index)) {
           this._setIndex(index);
           resolve(this.getChangeCallData());
@@ -158,6 +185,7 @@ class QSelect extends Layer {
    */
   _setKeyAndValue(type: 'key' | 'value', value: any[]) {
     return new Promise((resolve, reject) => {
+      argumentsAssert([value], [type], `set${firstUpper(type)}`, reject);
       const findedIndex: number[] = [];
       let index = 0;
       function findIndex(data: GangedData[]) {

@@ -1,5 +1,5 @@
 /**
- * @qymh/q-select v0.1.3
+ * @qymh/q-select v0.1.4
  * (c) 2019 Qymh
  * @license MIT
  */
@@ -1169,6 +1169,16 @@ function styleInject(css, ref) {
 var css = ".q-select-bk {\n  position: fixed;\n  left: 0;\n  top: 0;\n  height: 100vh;\n  width: 100%;\n  background-color: #000;\n  opacity: 0.3;\n}\n.q-select {\n  position: fixed;\n  width: 100%;\n  height: auto;\n  background-color: #fff;\n  bottom: 0;\n  left: 0;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}\n.q-select-header {\n  padding: 10px 20px;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  border-bottom: 1px solid #ebebeb;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}\n.q-select-header > .q-select-header-title {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  -ms-flex-negative: 1;\n      flex-shrink: 1;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  text-align: center;\n  width: 100%;\n  overflow: hidden;\n}\n.q-select-header > .q-select-header-cancel,\n.q-select-header > .q-select-header-confirm {\n  -webkit-box-flex: 0;\n      -ms-flex-positive: 0;\n          flex-grow: 0;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  width: 100px;\n  font-size: 14px;\n}\n.q-select-header > .q-select-header-confirm {\n  -webkit-box-pack: end;\n      -ms-flex-pack: end;\n          justify-content: flex-end;\n}\n.q-select-header-title__value {\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  text-align: center;\n  width: 100%;\n  overflow: hidden;\n  color: #4a90e2;\n}\n.q-select-box {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n}\n.q-select-box-item {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  -ms-flex-negative: 1;\n      flex-shrink: 1;\n  position: relative;\n  overflow: hidden;\n}\n.q-select-box-item-collections {\n  width: 100%;\n  will-change: transform;\n}\n.q-select-box-item-collections__tick {\n  text-align: center;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n.q-select-box-item__highlight {\n  width: 100%;\n  position: absolute;\n  left: 0;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n  border-top: 1px solid #ebebeb;\n  border-bottom: 1px solid #ebebeb;\n}\n.q-select-box-item__overlay {\n  height: 100%;\n  width: 100%;\n  position: absolute;\n  z-index: 5;\n  background-position: top, bottom;\n  background-repeat: no-repeat;\n  background-image:\n    -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0.95)), to(rgba(255, 255, 255, 0.6))),\n    -webkit-gradient(linear, left bottom, left top, from(rgba(255, 255, 255, 0.95)), to(rgba(255, 255, 255, 0.6)));\n  background-image:\n    linear-gradient(to bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.6)),\n    linear-gradient(to top, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.6));\n}\n.q-select-loading {\n  width: 100%;\n  position: absolute;\n  display: none;\n  z-index: 6;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n.q-select-loading-svg {\n  height: 30px;\n  width: 30px;\n  -webkit-animation: loading-rotate 2s linear infinite;\n          animation: loading-rotate 2s linear infinite;\n}\n.q-select-loading-svg__circle {\n  -webkit-animation: loading-dash 1.5s ease-in-out infinite;\n          animation: loading-dash 1.5s ease-in-out infinite;\n  stroke-dasharray: 90, 150;\n  stroke-dashoffset: 0;\n  stroke-width: 2;\n  stroke-linecap: round;\n  stroke: #4a90e2;\n}\n.animated {\n  -webkit-animation-fill-mode: both;\n          animation-fill-mode: both;\n  -webkit-animation-duration: 400ms;\n          animation-duration: 400ms;\n}\n\n@-webkit-keyframes loading-dash {\n  0% {\n    stroke-dasharray: 1, 200;\n    stroke-dashoffset: 0;\n  }\n  50% {\n    stroke-dasharray: 90, 150;\n    stroke-dashoffset: -40;\n  }\n  100% {\n    stroke-dasharray: 90, 150;\n    stroke-dashoffset: -120;\n  }\n}\n\n@keyframes loading-dash {\n  0% {\n    stroke-dasharray: 1, 200;\n    stroke-dashoffset: 0;\n  }\n  50% {\n    stroke-dasharray: 90, 150;\n    stroke-dashoffset: -40;\n  }\n  100% {\n    stroke-dasharray: 90, 150;\n    stroke-dashoffset: -120;\n  }\n}\n\n@-webkit-keyframes loading-rotate {\n  100% {\n    -webkit-transform: rotate(360deg);\n            transform: rotate(360deg);\n  }\n}\n\n@keyframes loading-rotate {\n  100% {\n    -webkit-transform: rotate(360deg);\n            transform: rotate(360deg);\n  }\n}\n\n@-webkit-keyframes fadeIn {\n  from {\n    opacity: 0;\n  }\n  to {\n    opacity: 0.3;\n  }\n}\n\n@keyframes fadeIn {\n  from {\n    opacity: 0;\n  }\n  to {\n    opacity: 0.3;\n  }\n}\n.fadeIn {\n  -webkit-animation-name: fadeIn;\n          animation-name: fadeIn;\n}\n\n@-webkit-keyframes fadeOut {\n  from {\n    opacity: 0.3;\n  }\n  to {\n    opacity: 0;\n  }\n}\n\n@keyframes fadeOut {\n  from {\n    opacity: 0.3;\n  }\n  to {\n    opacity: 0;\n  }\n}\n.fadeOut {\n  -webkit-animation-name: fadeOut;\n          animation-name: fadeOut;\n}\n\n@-webkit-keyframes slideInUp {\n  from {\n    -webkit-transform: translate3d(0, 100%, 0);\n    transform: translate3d(0, 100%, 0);\n    visibility: visible;\n  }\n  to {\n    -webkit-transform: translate3d(0, 0, 0);\n    transform: translate3d(0, 0, 0);\n  }\n}\n\n@keyframes slideInUp {\n  from {\n    -webkit-transform: translate3d(0, 100%, 0);\n    transform: translate3d(0, 100%, 0);\n    visibility: visible;\n  }\n  to {\n    -webkit-transform: translate3d(0, 0, 0);\n    transform: translate3d(0, 0, 0);\n  }\n}\n.slideInUp {\n  -webkit-animation-name: slideInUp;\n          animation-name: slideInUp;\n}\n\n@-webkit-keyframes slideOutDown {\n  from {\n    -webkit-transform: translate3d(0, 0, 0);\n    transform: translate3d(0, 0, 0);\n  }\n  to {\n    visibility: hidden;\n    -webkit-transform: translate3d(0, 100%, 0);\n    transform: translate3d(0, 100%, 0);\n  }\n}\n\n@keyframes slideOutDown {\n  from {\n    -webkit-transform: translate3d(0, 0, 0);\n    transform: translate3d(0, 0, 0);\n  }\n  to {\n    visibility: hidden;\n    -webkit-transform: translate3d(0, 100%, 0);\n    transform: translate3d(0, 100%, 0);\n  }\n}\n.slideOutDown {\n  -webkit-animation-name: slideOutDown;\n  animation-name: slideOutDown;\n}\n";
 styleInject(css);
 
+function argumentsAssert(argumentsVar, argumentsStr, functionName, reject) {
+    argumentsVar.forEach(function (v, i) {
+        try {
+            assert(!!v, argumentsStr[i] + " is required as the first argument of " + functionName);
+        }
+        catch (error) {
+            reject && reject(error);
+        }
+    });
+}
 var QSelect = (function (_super) {
     __extends(QSelect, _super);
     function QSelect() {
@@ -1178,6 +1188,7 @@ var QSelect = (function (_super) {
         var _this = this;
         return new Promise(function (resolve, reject) {
             try {
+                argumentsAssert([column, data], ['column', 'data'], 'setColumnData', reject);
                 var preTrans = _this.dataTrans.slice();
                 var realData = [];
                 if (Array.isArray(column)) {
@@ -1208,6 +1219,8 @@ var QSelect = (function (_super) {
         });
     };
     QSelect.prototype.scrollTo = function (column, index) {
+        argumentsAssert([column, index], ['column', 'index'], 'setColumnData');
+        assert(!!index, 'index is required');
         var later = this.dynamicIndex.slice();
         later[column] = index;
         return this.setIndex(later);
@@ -1216,6 +1229,7 @@ var QSelect = (function (_super) {
         var _this = this;
         return new Promise(function (resolve, reject) {
             try {
+                argumentsAssert([index], ['index'], 'setColumnData', reject);
                 if (_this.validateIndex(index)) {
                     _this._setIndex(index);
                     resolve(_this.getChangeCallData());

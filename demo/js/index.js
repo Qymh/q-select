@@ -1,4 +1,4 @@
-import QSelect from '@qymh/q-select';
+import QSelect from '@qymh/q-select/src/index';
 import City from './lib/city';
 import './style/demo.css';
 import axios from 'axios/dist/axios';
