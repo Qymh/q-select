@@ -6,7 +6,23 @@
 
 ### 下载
 
-占位
+- npm
+
+```shell
+npm install @qymh/q-select
+```
+
+- cnpm
+
+```shell
+cnpm install @qymh/q-select
+```
+
+- yarn
+
+```shell
+yarn add @qymh/q-select
+```
 
 ### 在线 demo 演示地址
 
@@ -82,12 +98,12 @@
 - 解释 默认索引值
 - 数据格式 数组包含数字
 
-  ```javascript
-  new QSelect({
-    data: [[1, 2, 3]],
-    index: [0]
-  });
-  ```
+```javascript
+new QSelect({
+  data: [[1, 2, 3]],
+  index: [0]
+});
+```
 
 如果当前指定的索引值大于当前滚动栏目的最大值,那么索引会重置为当前最大值,也就是滚动到当前栏目的最后一项,同样如果指定的索引个数大于联动栏目的个数多余的会忽略,少的会补全
 
@@ -98,48 +114,49 @@
 - 解释 一个栏目展示多少数目
 - 数据格式 数字 因为双数不好看 只能是 5 7 9 默认是 7
 
-  ```javascript
-  new QSelect({
-    data: [[1, 2, 3]],
-    count: 9
-  });
-  ```
+```javascript
+new QSelect({
+  data: [[1, 2, 3]],
+  count: 9
+});
+```
 
 #### chunkHeight
 
 - 解释 一个栏目块的高度
 - 数据格式 数字 默认是 40 也就是 40px
 
-  ```javascript
-  new QSelect({
-    data: [[1, 2, 3]],
-    chunkHeight: 50
-  });
-  ```
+```javascript
+new QSelect({
+  data: [[1, 2, 3]],
+  chunkHeight: 50
+});
+s;
+```
 
 #### bkIndex
 
 - 解释 背景的 z-index
 - 数据格式 数字 默认是 500
 
-  ```javascript
-  new QSelect({
-    data: [[1, 2, 3]],
-    bkIndex: 1000
-  });
-  ```
+```javascript
+new QSelect({
+  data: [[1, 2, 3]],
+  bkIndex: 1000
+});
+```
 
 #### selectIndex
 
 - 解释 选择栏的 z-index
 - 数据格式 数字 默认是 600
 
-  ```javascript
-  new QSelect({
-    data: [[1, 2, 3]],
-    selectIndex: 2000
-  });
-  ```
+```javascript
+new QSelect({
+  data: [[1, 2, 3]],
+  selectIndex: 2000
+});
+```
 
 > 这个值别小于 bkIndex 不然背景会挡住下拉选择框
 
@@ -148,48 +165,48 @@
 - 解释 选择栏的标题
 - 数据格式 字符 默认是 请选择
 
-  ```javascript
-  new QSelect({
-    data: [[1, 2, 3]],
-    title: '选择下面的内容'
-  });
-  ```
+```javascript
+new QSelect({
+  data: [[1, 2, 3]],
+  title: '选择下面的内容'
+});
+```
 
 #### confirmBtn
 
 - 解释 选择栏的确认文案
 - 数据格式 字符 默认是 确定
 
-  ```javascript
-  new QSelect({
-    data: [[1, 2, 3]],
-    confirmBtn: '同意'
-  });
-  ```
+```javascript
+new QSelect({
+  data: [[1, 2, 3]],
+  confirmBtn: '同意'
+});
+```
 
 #### cancelBtn
 
 - 解释 选择栏的取消文案
 - 数据格式 字符 默认是 取消
 
-  ```javascript
-  new QSelect({
-    data: [[1, 2, 3]],
-    cancelBtn: '关闭'
-  });
-  ```
+```javascript
+new QSelect({
+  data: [[1, 2, 3]],
+  cancelBtn: '关闭'
+});
+```
 
 #### disableDefaultCancel
 
 - 解释 默认点击选择栏取消会关闭背景蒙层,如果这个值为 true,则点击了关闭也不会关闭
 - 数据格式 布尔 默认是 false
 
-  ```javascript
-  new QSelect({
-    data: [[1, 2, 3]],
-    disableDefaultCancel: true
-  });
-  ```
+```javascript
+new QSelect({
+  data: [[1, 2, 3]],
+  disableDefaultCancel: true
+});
+```
 
 > 这个值指定了为 true,请参考下面的 close 手动关闭选择框
 
@@ -198,12 +215,12 @@
 - 解释 如果不想让选择栏有背景蒙层,而是内联流式布局放在页面中,这个值要指定挂载元素,比如 id 就是`#test`,而 class 就是`.test`
 - 数据格式 字符
 
-  ```javascript
-  new QSelect({
-    data: [[1, 2, 3]],
-    target: '#test'
-  });
-  ```
+```javascript
+new QSelect({
+  data: [[1, 2, 3]],
+  target: '#test'
+});
+```
 
 > 这个值为 true,不会有导航栏也就是不会有取消确认事件
 
@@ -212,12 +229,12 @@
 - 解释 这个值为 true 会在选择栏上放一个滚动 loading,且不可点击,在异步加载的时候有用
 - 数据格式 布尔 默认是 false
 
-  ```javascript
-  new QSelect({
-    data: [[1, 2, 3]],
-    loading: true
-  });
-  ```
+```javascript
+new QSelect({
+  data: [[1, 2, 3]],
+  loading: true
+});
+```
 
 > 这个值指定了为 true,请参考下面的 cancelLoading 手动关闭 loading
 
@@ -241,12 +258,12 @@
         - key 当前 key
         - index 当前索引
 
-  ```javascript
-  new QSelect({
-    data: [[1, 2, 3]],
-    ready(values, keys, data) {}
-  });
-  ```
+```javascript
+new QSelect({
+  data: [[1, 2, 3]],
+  ready(values, keys, data) {}
+});
+```
 
 #### show
 
@@ -268,12 +285,12 @@
         - key 当前 key
         - index 当前索引
 
-  ```javascript
-  new QSelect({
-    data: [[1, 2, 3]],
-    show(values, keys, data) {}
-  });
-  ```
+```javascript
+new QSelect({
+  data: [[1, 2, 3]],
+  show(values, keys, data) {}
+});
+```
 
 #### hide
 
@@ -295,12 +312,12 @@
         - key 当前 key
         - index 当前索引
 
-  ```javascript
-  new QSelect({
-    data: [[1, 2, 3]],
-    hide(values, keys, data) {}
-  });
-  ```
+```javascript
+new QSelect({
+  data: [[1, 2, 3]],
+  hide(values, keys, data) {}
+});
+```
 
 #### confirm
 
@@ -322,12 +339,12 @@
         - key 当前 key
         - index 当前索引
 
-  ```javascript
-  new QSelect({
-    data: [[1, 2, 3]],
-    confirm(values, keys, data) {}
-  });
-  ```
+```javascript
+new QSelect({
+  data: [[1, 2, 3]],
+  confirm(values, keys, data) {}
+});
+```
 
 #### cancel
 
@@ -335,12 +352,12 @@
 - 数据格式 function
 - 没有回调参数
 
-  ```javascript
-  new QSelect({
-    data: [[1, 2, 3]],
-    cancel() {}
-  });
-  ```
+```javascript
+new QSelect({
+  data: [[1, 2, 3]],
+  cancel() {}
+});
+```
 
 #### change
 
@@ -363,12 +380,12 @@
         - key 当前 key
         - index 当前索引
 
-  ```javascript
-  new QSelect({
-    data: [[1, 2, 3]],
-    change(weight, values, keys, data) {}
-  });
-  ```
+```javascript
+new QSelect({
+  data: [[1, 2, 3]],
+  change(weight, values, keys, data) {}
+});
+```
 
 ### 实例上的方法
 
@@ -440,12 +457,19 @@ setTimeout(() => {
 }, 1000);
 ```
 
+#### scrollTo
+
+- 解释 这个是`setIndex`的子方法,scrollTo 可以指定特定的栏目的特定栏目的索引,而`setIndex`需要指定当前栏目和当前栏目前的索引
+- 参数
+  - column(必填) 栏目
+  - index（必填） 栏目索引
+
 #### setColumnData
 
-- 解释 setData 是设置所有的 data,而 setColumnData 是设定指定栏目的 data
+- 解释 setData 是设置所有的 data,而 setColumnData 是设定指定栏目的 data,也就是异步一栏一栏加载 data 的
 - 参数
-  - column 栏目索引 可以指定多个栏目 多个栏目用数组表示比如[1,2] 单栏目就直接是数字比如 1
-  - data 当前栏目的值 同 options 中**非联动**下的 data
+  - column(必填) 栏目索引 可以指定多个栏目 多个栏目用数组表示比如[1,2] 单栏目就直接是数字比如 1
+  - data(必填) 当前栏目的值 同 options 中**非联动**下的 data
 
 ```javascript
 const s1 = new QSelect({
@@ -456,6 +480,50 @@ setTimeout(() => {
   s1.setColumnData(1, [[1, 2, 3]]);
 }, 1000);
 ```
+
+#### setLoading
+
+- 解释 调出 loading 加载图案
+
+```javascript
+const s1 = new QSelect({
+  data: [[{ value: 1, key: '1k' }, { value: 2, key: '2k' }]]
+});
+
+s1.setLoading();
+setTimeout(() => {
+  s1.setData([[1, 2, 3]]);
+  s1.cancelLoading();
+}, 1000);
+```
+
+#### cancelLoading
+
+- 解释 关闭 loading 加载图案
+
+```javascript
+const s1 = new QSelect({
+  data: [[{ value: 1, key: '1k' }, { value: 2, key: '2k' }]]
+});
+
+s1.setLoading();
+setTimeout(() => {
+  s1.setData([[1, 2, 3]]);
+  s1.cancelLoading();
+}, 1000);
+```
+
+#### show
+
+- 解释 手动呼出下拉选择
+
+#### close
+
+- 解释 手动关闭下拉选择
+
+#### destroy
+
+- 解释 摧毁下拉选择
 
 ### 分 api 沙盒演示
 
