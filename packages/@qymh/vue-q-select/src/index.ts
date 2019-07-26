@@ -3,10 +3,10 @@ import QSelect from './vue/Index.vue';
 import { VueConstructor } from 'vue';
 import { plugin } from 'vue-function-api';
 interface Options {
-  name: string;
+  name?: string;
 }
 export default {
-  install(Vue: VueConstructor, options: Options) {
+  install(Vue: VueConstructor, options: Options = {}) {
     Vue.use(plugin);
     Vue.component(options.name || 'QSelect', QSelect as any);
   }

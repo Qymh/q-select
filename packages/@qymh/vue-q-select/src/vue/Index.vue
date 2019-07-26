@@ -1,7 +1,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import QSelect from '@qymh/q-select';
-import { value, onCreated, watch } from 'vue-function-api';
+import { value, onMounted, watch } from 'vue-function-api';
 import { assert } from '@qymh/q-select/src/uitls';
 export default {
   setup(props, context) {
@@ -9,38 +9,37 @@ export default {
     const uid = value(0);
     let ins: QSelect;
 
-    onCreated(() => {
-      Vue.nextTick(() => {
-        ins = new QSelect({
-          data: props.data,
-          index: props.index,
-          target: props.inline ? `.q-select-inline--${uid.value}` : '',
-          count: props.count,
-          title: props.title,
-          chunkHeight: props.chunkHeight,
-          loading: props.loading,
-          ready(value, key, data) {
-            pending = false;
-            context.emit('ready', value, key, data);
-          },
-          cancel() {
-            context.emit('input', false);
-            context.emit('cancel');
-          },
-          confirm(value, key, data) {
-            context.emit('input', false);
-            context.emit('confirm', value, key, data);
-          },
-          change(weight, value, key, data) {
-            context.emit('change', weight, value, key, data);
-          },
-          show() {
-            context.emit('show');
-          },
-          hide() {
-            context.emit('hide');
-          }
-        });
+    onMounted(() => {
+      ins = new QSelect({
+        data: props.data,
+        index: props.index,
+        target: props.inline ? `.q-select-inline--${uid.value}` : '',
+        count: props.count,
+        title: props.title,
+        chunkHeight: props.chunkHeight,
+        loading: props.loading,
+        disableDefaultCancel: props.disableDefaultCancel,
+        ready(value, key, data) {
+          pending = false;
+          context.emit('ready', value, key, data);
+        },
+        cancel() {
+          context.emit('input', false);
+          context.emit('cancel');
+        },
+        confirm(value, key, data) {
+          context.emit('input', false);
+          context.emit('confirm', value, key, data);
+        },
+        change(weight, value, key, data) {
+          context.emit('change', weight, value, key, data);
+        },
+        show() {
+          context.emit('show');
+        },
+        hide() {
+          context.emit('hide');
+        }
       });
     });
 
@@ -174,6 +173,27 @@ export default {
             cancelLoading();
           }
         }
+      }
+    );
+
+    watch(
+      () => props.data,
+      val => {
+        setData(val);
+      },
+      {
+        lazy: true,
+        deep: props.deep
+      }
+    );
+
+    watch(
+      () => props.index,
+      val => {
+        setIndex(val);
+      },
+      {
+        lazy: true
       }
     );
 
