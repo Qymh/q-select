@@ -4,6 +4,10 @@
 
 ## JavaScript
 
+### 在线体验
+
+[demo 在线体验](https://qymh.github.io/q-select/gitpage/js/index.html)
+
 ### 下载
 
 - npm
@@ -24,9 +28,61 @@ cnpm install @qymh/q-select
 yarn add @qymh/q-select
 ```
 
-### 在线 demo 演示地址
+下载完后引用
 
-[demo 演示](https://qymh.github.io/q-select/gitpage/js/index.html)
+- es6
+
+```javascript
+import QSelect from '@qymh/q-select';
+
+new Qselect({});
+```
+
+- commonjs
+
+```javascript
+const QSelect = require('@qymh/q-select/dist/q-select.common.js');
+
+new Qselect({});
+```
+
+- cdn
+
+如果没有引入模块化的打包工具比如`webpack` `rollup`等,可以去拷贝[仓库](https://github.com/Qymh/q-select/blob/master/packages/%40qymh/q-select/dist/q-select.min.js)中的 js 到自己的项目或者 cdn,也可以直接通过 unpkg 提供的 cdn 进行访问
+
+如下是 unpkg 的 cdn
+
+```javascript
+<script src="https://unpkg.com/@qymh/q-select/dist/q-select.min.js"></script>
+```
+
+### 沙盒演示
+
+沙盒演示可以配合 options 一起查看 食用更佳
+
+- 一层非联动
+
+占位
+
+- 非联动内联展示异步设置值
+
+占位
+
+- 多层非联动实测
+
+占位
+
+- 简单联动
+
+占位
+
+- 省市区联动实测
+
+占位
+
+- 省市区非联动异步实测
+
+占位
 
 ### options
 
@@ -43,28 +99,28 @@ yarn add @qymh/q-select
     - key 标志
     - children 子联动数据
 
-    ```javascript
-    new QSelect({
-      data:[
-        {
-          value: '外部1',
-          children: [
-            '外部1-内部1',
-            {
-              key: '1-2',
-              value: '外部1-内部2'
-            }
-          ]
-        },
-        {
-          value: '外部2',
-          children: ['外部2-内部1', '外部2-内部2']
-        }
-      ];
-    })
-    ```
+  ```javascript
+  new QSelect({
+    data:[
+      {
+        value: '外部1',
+        children: [
+          '外部1-内部1',
+          {
+            key: '1-2',
+            value: '外部1-内部2'
+          }
+        ]
+      },
+      {
+        value: '外部2',
+        children: ['外部2-内部1', '外部2-内部2']
+      }
+    ];
+  })
+  ```
 
-    这里为了区分联动和非联动的数据格式,第一层数据必须是对象,到子联动数据后,如果不指定 key 值和 children,可以直接用数组
+  这里为了区分联动和非联动的数据格式,第一层数据必须是对象,到子联动数据后,如果不指定 key 值和 children,可以直接用数组
 
   - 非联动
 
@@ -75,19 +131,19 @@ yarn add @qymh/q-select
     - value(必填) 展示的值
     - key 标志
 
-    ```javascript
-    new QSelect({
-      data: [
-        ['1', '2', '3'],
-        ['4', '5', '6'],
-        [
-          { key: '7k', value: '7' },
-          { key: '8k', value: '8' },
-          { key: '9k', value: '9' }
-        ]
+  ```javascript
+  new QSelect({
+    data: [
+      ['1', '2', '3'],
+      ['4', '5', '6'],
+      [
+        { key: '7k', value: '7' },
+        { key: '8k', value: '8' },
+        { key: '9k', value: '9' }
       ]
-    });
-    ```
+    ]
+  });
+  ```
 
 > 注释非联动和联动的区别,联动是数组包含对象,内部子联动通过 children 连接,而非联动是数组包含数组,一个数组就是一层联动
 
@@ -124,7 +180,7 @@ new QSelect({
 #### chunkHeight
 
 - 解释 一个栏目块的高度
-- 数据格式 数字 默认是 40 也就是 40px
+- 数据格式 数字 默认是 40 也就是 40px 最小 30 最大 100
 
 ```javascript
 new QSelect({
@@ -517,32 +573,141 @@ setTimeout(() => {
 
 - 解释 手动呼出下拉选择
 
+```javascript
+const s1 = new QSelect({
+  data: [[{ value: 1, key: '1k' }, { value: 2, key: '2k' }]]
+});
+
+s1.show();
+setTimeout(() => {
+  s1.setData([[1, 2, 3]]);
+  s1.cancelLoading();
+}, 1000);
+```
+
 #### close
 
 - 解释 手动关闭下拉选择
+
+```javascript
+const s1 = new QSelect({
+  data: [[{ value: 1, key: '1k' }, { value: 2, key: '2k' }]]
+});
+
+s1.show();
+setTimeout(() => {
+  s1.close();
+}, 1000);
+```
 
 #### destroy
 
 - 解释 摧毁下拉选择
 
-### 分 api 沙盒演示
+```javascript
+const s1 = new QSelect({
+  data: [[{ value: 1, key: '1k' }, { value: 2, key: '2k' }]]
+});
 
-占位
+setTimeout(() => {
+  s1.destroy();
+}, 1000);
+```
 
 ## Vue
 
+### 在线体验
+
+[demo 在线体验](https://qymh.github.io/q-select/gitpage/vue/index.html)
+
 ### 下载
 
+- npm
+
+```shell
+npm install @qymh/vue-q-select
+```
+
+- cnpm
+
+```shell
+cnpm install @qymh/vue-q-select
+```
+
+- yarn
+
+```shell
+yarn add @qymh/vue-q-select
+```
+
+下载完后在入口 js 文件中引用
+
+```javascript
+import Vue from 'vue';
+import QSelect from '@qymh/vue-q-select';
+Vue.use(QSelect);
+```
+
+然后就可以在 vue 文件中使用了
+
+```vue
+<template>
+  <div>
+    <q-select></q-select>
+  </div>
+</template>
+```
+
+你也可以通过`Vue.use`的`options`更改注册组件的名字,默认是`QSelect`
+
+```javascript
+import Vue from 'vue';
+import QSelect from '@qymh/vue-q-select';
+Vue.use(QSelect, { name: 'QPicker' });
+```
+
+对应的组件就是这样
+
+```vue
+<template>
+  <div>
+    <q-picker></q-picker>
+  </div>
+</template>
+```
+
+### props
+
+| prop                 |  类型   | 是否必填 | 默认值 |       描述       |                                         数据格式 |
+| -------------------- | :-----: | :------: | :----: | :--------------: | -----------------------------------------------: |
+| v-model              | Boolean |   true   | false  | 是否显示下拉组件 |                                                  |
+| data                 |  Array  |   true   |  [[]]  |    下拉数据值    |                                 [同 data](#data) |
+| index                |  Array  |  false   |  [0]   |      索引值      |                               [同 index](#index) |
+| count                | Number  |  false   |   7    |   栏目展示数目   |                               [同 count](#count) |
+| chunkHeight          | Number  |  false   |   40   |   栏目块的高度   |                   [同 chunkHeight](#chunkHeight) |
+| bkIndex              | Number  |  false   |  500   |  背景的 z-index  |                            [同 bkIndex](#bkIndx) |
+| selectIndex          | Number  |  false   |  600   | 选择栏的 z-index |                    [同 selectIndex](#selectIndx) |
+| title                | String  |  false   | 请选择 |   选择栏的标题   |                               [同 title](#title) |
+| confirmBtn           | String  |  false   |  确定  | 选择栏的确认文案 |                     [同 confirmBtn](#confirmBtn) |
+| cancelBtn            | String  |  fales   |  取消  | 选择栏的取消文案 |                       [同 cancelBtn](#cancelBtn) |
+| disableDefaultCancel | Boolean |  false   | false  | 禁止默认取消事件 | [同 disableDefaultCancel](#disableDefaultCancel) |
+| target               | String  |  false   |   ''   |   内联挂载元素   |                             [同 target](#target) |
+| loading              | Boolean |  false   | false  |  是否启用加载图  |                           [同 loading](#loading) |
+|                      |         |          |   ''   |                  |                                                  |
+
+### refs
+
 占位
 
-### 在线 demo 演示地址
-
-[demo 演示](https://qymh.github.io/q-select/gitpage/vue/index.html)
-
-### api
+### events
 
 占位
 
-### 分 api 沙盒演示
+## 项目即将支持
 
-占位
+- 沙盒演示
+- 单元测试
+
+## 项目延后支持
+
+- React 组件化

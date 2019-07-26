@@ -1,7 +1,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import QSelect from '@qymh/q-select';
-import { value, onMounted, watch } from 'vue-function-api';
+import { value, onMounted, onUnmounted, watch } from 'vue-function-api';
 import { assert } from '@qymh/q-select/src/uitls';
 export default {
   setup(props, context) {
@@ -41,6 +41,10 @@ export default {
           context.emit('hide');
         }
       });
+    });
+
+    onUnmounted(() => {
+      ins && ins.destroy();
     });
 
     const warnIns = () => {
