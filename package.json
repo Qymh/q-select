@@ -20,10 +20,10 @@
     "dev:demovue": "rollup -wc build/demovue/dev.js",
     "build:demojs": "rollup -c build/demojs/prod.js",
     "build:demovue": "rollup -c build/demovue/prod.js",
-    "build:demo":"npm run build:demojs && npm run build:demovue",
+    "build:demo": "npm run build:demojs && npm run build:demovue",
     "build:js": "rm -rf packages/@qymh/q-select/dist && node build/package/js.js",
     "build:vue": "rm -rf packages/@qymh/vue-q-select/dist && node build/package/vue.js",
-    "pack":"npm run build:js && npm run build:vue",
+    "pack": "npm run build:js && npm run build:vue",
     "pub": "node scripts/publish",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 2"
   },
@@ -84,6 +84,10 @@
     }
   },
   "lint-staged": {
+    "*.css": [
+      "stylelint --fix",
+      "git add"
+    ],
     "*.(t|j)s": [
       "eslint --ext .js,.ts --fix",
       "git add"
