@@ -15,7 +15,7 @@ log "code review"
 npm run lint
 
 log "build"
-npm run pack
+npm run build
 
 git add .
 git commit -m "chore: $verson build"

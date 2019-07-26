@@ -1,5 +1,5 @@
 /**
- * @qymh/q-select v0.1.4
+ * @qymh/q-select v0.1.5
  * (c) 2019 Qymh
  * @license MIT
  */
@@ -52,12 +52,12 @@ var Dom = (function () {
         var id = options.id, loading = options.loading;
         var baseSize = Math.floor(options.count / 2) * options.chunkHeight;
         if (!inline) {
-            this.initialDomString += "\n        <div class=\"q-select-header q-select-header--" + id + "\">\n          <div class=\"q-select-header-cancel q-select-header-cancel--" + id + "\">\n            <div class=\"q-select-header-cancel__value q-select-header-cancel__value--" + id + "\">" + (options.cancelBtn ||
+            this.initialDomString += "\n        <div class=\"q-select-header q-select-header--" + id + "\" style=\"padding: 10px 20px;\">\n          <div class=\"q-select-header-cancel q-select-header-cancel--" + id + "\" style=\"width:100px; font-size:14px;\">\n            <div class=\"q-select-header-cancel__value q-select-header-cancel__value--" + id + "\">" + (options.cancelBtn ||
                 '取消') + "</div>\n          </div>\n          <div class=\"q-select-header-title q-select-header-title--" + id + "\">\n            <div class=\"q-select-header-title__value q-select-header-title__value--" + id + "\">" + (options.title ||
-                '请选择') + "</div>\n          </div>\n          <div class=\"q-select-header-confirm q-select-header-confirm--" + id + "\">\n            <div class=\"q-select-header-confirm__value q-select-header-confirm__value--" + id + "\">" + (options.confirmBtn ||
+                '请选择') + "</div>\n          </div>\n          <div class=\"q-select-header-confirm q-select-header-confirm--" + id + "\" style=\"width:100px; font-size:14px;\">\n            <div class=\"q-select-header-confirm__value q-select-header-confirm__value--" + id + "\">" + (options.confirmBtn ||
                 '确定') + "</div>\n          </div>\n        </div>\n      ";
         }
-        this.initialDomString += "\n      <div style=\"height:" + options.count * options.chunkHeight + "px;display:" + (loading ? 'flex' : 'none') + "\" class=\"q-select-loading q-select-loading--" + id + "\">\n        <svg class=\"q-select-loading-svg\" viewBox=\"25 25 50 50\">\n          <circle\n            class=\"q-select-loading-svg__circle\"\n            cx=\"50\"\n            cy=\"50\"\n            r=\"20\"\n            fill=\"none\"\n          />\n        </svg>\n      </div>\n      <div style=\"height:" + options.count *
+        this.initialDomString += "\n      <div style=\"height:" + options.count * options.chunkHeight + "px;display:" + (loading ? 'flex' : 'none') + "\" class=\"q-select-loading q-select-loading--" + id + "\">\n        <svg class=\"q-select-loading-svg\" viewBox=\"25 25 50 50\" style=\"height:30px; width:30px;\">\n          <circle\n            class=\"q-select-loading-svg__circle\"\n            cx=\"50\"\n            cy=\"50\"\n            r=\"20\"\n            fill=\"none\"\n          />\n        </svg>\n      </div>\n      <div style=\"height:" + options.count *
             options.chunkHeight + "px\" class=\"q-select-box q-select-box--" + id + "\">\n    ";
         data.forEach(function (v) {
             _this.initialDomString += "\n      <div class=\"q-select-box-item q-select-box-item--" + id + "\">\n        <div class=\"q-select-box-item__overlay q-select-box-item__overlay--" + id + "\" style=\"background-size: 100% " + (!loading ? baseSize + 'px' : '100%') + ";\"></div>\n        <div class=\"q-select-box-item__highlight q-select-box-item__highlight--" + id + "\" style=\"top: " + baseSize + "px;height: " + options.chunkHeight + "px\"></div>\n        <div class=\"q-select-box-item-collections q-select-box-item-collections--" + id + "\">\n        " + v
@@ -194,7 +194,17 @@ var Dom = (function () {
         return $els[$els.length - 1];
     };
     Dom.addClass = function (el, className) {
-        el.className = Array.isArray(className) ? className.join(' ') : className;
+        var add = Array.isArray(className) ? className.join(' ') : className;
+        el.className += " " + add;
+    };
+    Dom.removeClass = function (el, className) {
+        var _a;
+        if (Array.isArray(className)) {
+            (_a = el.classList).remove.apply(_a, className);
+        }
+        else {
+            el.classList.remove(className);
+        }
     };
     Dom.addStyle = function (el, style) {
         var _this = this;
@@ -918,20 +928,23 @@ var Layer = (function () {
         this.$options.ready && (_a = this.$options).ready.apply(_a, this.getChangeCallData());
     };
     Layer.prototype.closeSelect = function () {
-        var _a;
+        var _this = this;
         if (this.hidden) {
             return;
         }
         var $select = Dom.find("q-select--" + this.id);
         var $bk = Dom.find("q-select-bk");
-        Dom.addStyle($select, {
-            display: 'none'
-        });
         Dom.addStyle($bk, {
             display: 'none'
         });
-        this.hidden = true;
-        this.$options.hide && (_a = this.$options).hide.apply(_a, this.getChangeCallData());
+        this.slideAnimation('out', $select, function () {
+            var _a;
+            Dom.addStyle($select, {
+                display: 'none'
+            });
+            _this.hidden = true;
+            _this.$options.hide && (_a = _this.$options).hide.apply(_a, _this.getChangeCallData());
+        });
     };
     Layer.prototype.destroySelect = function () {
         var _this = this;
@@ -944,7 +957,7 @@ var Layer = (function () {
         });
     };
     Layer.prototype.showSelect = function () {
-        var _a;
+        var _this = this;
         if (!this.hidden) {
             return;
         }
@@ -952,8 +965,25 @@ var Layer = (function () {
         var $bk = Dom.find("q-select-bk");
         Dom.addStyle($select, { display: 'block' });
         Dom.addStyle($bk, { display: 'block' });
-        this.hidden = false;
-        this.$options.show && (_a = this.$options).show.apply(_a, this.getChangeCallData());
+        this.slideAnimation('in', $select, function () {
+            var _a;
+            _this.hidden = false;
+            _this.$options.show && (_a = _this.$options).show.apply(_a, _this.getChangeCallData());
+        });
+    };
+    Layer.prototype.slideAnimation = function (type, $select, callback) {
+        Dom.addClass($select, [
+            'animated',
+            type === 'in' ? 'slideInUp' : 'slideOutDown'
+        ]);
+        var timer = setTimeout(function () {
+            Dom.removeClass($select, [
+                'animated',
+                type === 'in' ? 'slideInUp' : 'slideOutDown'
+            ]);
+            callback && callback();
+            clearTimeout(timer);
+        }, 200);
     };
     Layer.prototype.stopAll = function () {
         var _this = this;
@@ -1145,36 +1175,6 @@ var Layer = (function () {
     };
     return Layer;
 }());
-
-function styleInject(css, ref) {
-  if ( ref === void 0 ) ref = {};
-  var insertAt = ref.insertAt;
-
-  if (!css || typeof document === 'undefined') { return; }
-
-  var head = document.head || document.getElementsByTagName('head')[0];
-  var style = document.createElement('style');
-  style.type = 'text/css';
-
-  if (insertAt === 'top') {
-    if (head.firstChild) {
-      head.insertBefore(style, head.firstChild);
-    } else {
-      head.appendChild(style);
-    }
-  } else {
-    head.appendChild(style);
-  }
-
-  if (style.styleSheet) {
-    style.styleSheet.cssText = css;
-  } else {
-    style.appendChild(document.createTextNode(css));
-  }
-}
-
-var css = ".q-select-bk {\n  position: fixed;\n  left: 0;\n  top: 0;\n  height: 100vh;\n  width: 100%;\n  background-color: #000;\n  opacity: 0.3;\n}\n.q-select {\n  position: fixed;\n  width: 100%;\n  height: auto;\n  background-color: #fff;\n  bottom: 0;\n  left: 0;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}\n.q-select-header {\n  padding: 10px 20px;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  border-bottom: 1px solid #ebebeb;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}\n.q-select-header > .q-select-header-title {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  -ms-flex-negative: 1;\n      flex-shrink: 1;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  text-align: center;\n  width: 100%;\n  overflow: hidden;\n}\n.q-select-header > .q-select-header-cancel,\n.q-select-header > .q-select-header-confirm {\n  -webkit-box-flex: 0;\n      -ms-flex-positive: 0;\n          flex-grow: 0;\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  width: 100px;\n  font-size: 14px;\n}\n.q-select-header > .q-select-header-confirm {\n  -webkit-box-pack: end;\n      -ms-flex-pack: end;\n          justify-content: flex-end;\n}\n.q-select-header-title__value {\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  text-align: center;\n  width: 100%;\n  overflow: hidden;\n  color: #4a90e2;\n}\n.q-select-box {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n}\n.q-select-box-item {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-flex: 1;\n      -ms-flex-positive: 1;\n          flex-grow: 1;\n  -ms-flex-negative: 1;\n      flex-shrink: 1;\n  position: relative;\n  overflow: hidden;\n}\n.q-select-box-item-collections {\n  width: 100%;\n  will-change: transform;\n}\n.q-select-box-item-collections__tick {\n  text-align: center;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n.q-select-box-item__highlight {\n  width: 100%;\n  position: absolute;\n  left: 0;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n  border-top: 1px solid #ebebeb;\n  border-bottom: 1px solid #ebebeb;\n}\n.q-select-box-item__overlay {\n  height: 100%;\n  width: 100%;\n  position: absolute;\n  z-index: 5;\n  background-position: top, bottom;\n  background-repeat: no-repeat;\n  background-image:\n    -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0.95)), to(rgba(255, 255, 255, 0.6))),\n    -webkit-gradient(linear, left bottom, left top, from(rgba(255, 255, 255, 0.95)), to(rgba(255, 255, 255, 0.6)));\n  background-image:\n    linear-gradient(to bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.6)),\n    linear-gradient(to top, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.6));\n}\n.q-select-loading {\n  width: 100%;\n  position: absolute;\n  display: none;\n  z-index: 6;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n.q-select-loading-svg {\n  height: 30px;\n  width: 30px;\n  -webkit-animation: loading-rotate 2s linear infinite;\n          animation: loading-rotate 2s linear infinite;\n}\n.q-select-loading-svg__circle {\n  -webkit-animation: loading-dash 1.5s ease-in-out infinite;\n          animation: loading-dash 1.5s ease-in-out infinite;\n  stroke-dasharray: 90, 150;\n  stroke-dashoffset: 0;\n  stroke-width: 2;\n  stroke-linecap: round;\n  stroke: #4a90e2;\n}\n.animated {\n  -webkit-animation-fill-mode: both;\n          animation-fill-mode: both;\n  -webkit-animation-duration: 400ms;\n          animation-duration: 400ms;\n}\n\n@-webkit-keyframes loading-dash {\n  0% {\n    stroke-dasharray: 1, 200;\n    stroke-dashoffset: 0;\n  }\n  50% {\n    stroke-dasharray: 90, 150;\n    stroke-dashoffset: -40;\n  }\n  100% {\n    stroke-dasharray: 90, 150;\n    stroke-dashoffset: -120;\n  }\n}\n\n@keyframes loading-dash {\n  0% {\n    stroke-dasharray: 1, 200;\n    stroke-dashoffset: 0;\n  }\n  50% {\n    stroke-dasharray: 90, 150;\n    stroke-dashoffset: -40;\n  }\n  100% {\n    stroke-dasharray: 90, 150;\n    stroke-dashoffset: -120;\n  }\n}\n\n@-webkit-keyframes loading-rotate {\n  100% {\n    -webkit-transform: rotate(360deg);\n            transform: rotate(360deg);\n  }\n}\n\n@keyframes loading-rotate {\n  100% {\n    -webkit-transform: rotate(360deg);\n            transform: rotate(360deg);\n  }\n}\n\n@-webkit-keyframes fadeIn {\n  from {\n    opacity: 0;\n  }\n  to {\n    opacity: 0.3;\n  }\n}\n\n@keyframes fadeIn {\n  from {\n    opacity: 0;\n  }\n  to {\n    opacity: 0.3;\n  }\n}\n.fadeIn {\n  -webkit-animation-name: fadeIn;\n          animation-name: fadeIn;\n}\n\n@-webkit-keyframes fadeOut {\n  from {\n    opacity: 0.3;\n  }\n  to {\n    opacity: 0;\n  }\n}\n\n@keyframes fadeOut {\n  from {\n    opacity: 0.3;\n  }\n  to {\n    opacity: 0;\n  }\n}\n.fadeOut {\n  -webkit-animation-name: fadeOut;\n          animation-name: fadeOut;\n}\n\n@-webkit-keyframes slideInUp {\n  from {\n    -webkit-transform: translate3d(0, 100%, 0);\n    transform: translate3d(0, 100%, 0);\n    visibility: visible;\n  }\n  to {\n    -webkit-transform: translate3d(0, 0, 0);\n    transform: translate3d(0, 0, 0);\n  }\n}\n\n@keyframes slideInUp {\n  from {\n    -webkit-transform: translate3d(0, 100%, 0);\n    transform: translate3d(0, 100%, 0);\n    visibility: visible;\n  }\n  to {\n    -webkit-transform: translate3d(0, 0, 0);\n    transform: translate3d(0, 0, 0);\n  }\n}\n.slideInUp {\n  -webkit-animation-name: slideInUp;\n          animation-name: slideInUp;\n}\n\n@-webkit-keyframes slideOutDown {\n  from {\n    -webkit-transform: translate3d(0, 0, 0);\n    transform: translate3d(0, 0, 0);\n  }\n  to {\n    visibility: hidden;\n    -webkit-transform: translate3d(0, 100%, 0);\n    transform: translate3d(0, 100%, 0);\n  }\n}\n\n@keyframes slideOutDown {\n  from {\n    -webkit-transform: translate3d(0, 0, 0);\n    transform: translate3d(0, 0, 0);\n  }\n  to {\n    visibility: hidden;\n    -webkit-transform: translate3d(0, 100%, 0);\n    transform: translate3d(0, 100%, 0);\n  }\n}\n.slideOutDown {\n  -webkit-animation-name: slideOutDown;\n  animation-name: slideOutDown;\n}\n";
-styleInject(css);
 
 function argumentsAssert(argumentsVar, argumentsStr, functionName, reject) {
     argumentsVar.forEach(function (v, i) {

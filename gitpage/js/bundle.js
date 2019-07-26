@@ -52,12 +52,12 @@
             var id = options.id, loading = options.loading;
             var baseSize = Math.floor(options.count / 2) * options.chunkHeight;
             if (!inline) {
-                this.initialDomString += "\n        <div class=\"q-select-header q-select-header--" + id + "\">\n          <div class=\"q-select-header-cancel q-select-header-cancel--" + id + "\">\n            <div class=\"q-select-header-cancel__value q-select-header-cancel__value--" + id + "\">" + (options.cancelBtn ||
+                this.initialDomString += "\n        <div class=\"q-select-header q-select-header--" + id + "\" style=\"padding: 10px 20px;\">\n          <div class=\"q-select-header-cancel q-select-header-cancel--" + id + "\" style=\"width:100px; font-size:14px;\">\n            <div class=\"q-select-header-cancel__value q-select-header-cancel__value--" + id + "\">" + (options.cancelBtn ||
                     '取消') + "</div>\n          </div>\n          <div class=\"q-select-header-title q-select-header-title--" + id + "\">\n            <div class=\"q-select-header-title__value q-select-header-title__value--" + id + "\">" + (options.title ||
-                    '请选择') + "</div>\n          </div>\n          <div class=\"q-select-header-confirm q-select-header-confirm--" + id + "\">\n            <div class=\"q-select-header-confirm__value q-select-header-confirm__value--" + id + "\">" + (options.confirmBtn ||
+                    '请选择') + "</div>\n          </div>\n          <div class=\"q-select-header-confirm q-select-header-confirm--" + id + "\" style=\"width:100px; font-size:14px;\">\n            <div class=\"q-select-header-confirm__value q-select-header-confirm__value--" + id + "\">" + (options.confirmBtn ||
                     '确定') + "</div>\n          </div>\n        </div>\n      ";
             }
-            this.initialDomString += "\n      <div style=\"height:" + options.count * options.chunkHeight + "px;display:" + (loading ? 'flex' : 'none') + "\" class=\"q-select-loading q-select-loading--" + id + "\">\n        <svg class=\"q-select-loading-svg\" viewBox=\"25 25 50 50\">\n          <circle\n            class=\"q-select-loading-svg__circle\"\n            cx=\"50\"\n            cy=\"50\"\n            r=\"20\"\n            fill=\"none\"\n          />\n        </svg>\n      </div>\n      <div style=\"height:" + options.count *
+            this.initialDomString += "\n      <div style=\"height:" + options.count * options.chunkHeight + "px;display:" + (loading ? 'flex' : 'none') + "\" class=\"q-select-loading q-select-loading--" + id + "\">\n        <svg class=\"q-select-loading-svg\" viewBox=\"25 25 50 50\" style=\"height:30px; width:30px;\">\n          <circle\n            class=\"q-select-loading-svg__circle\"\n            cx=\"50\"\n            cy=\"50\"\n            r=\"20\"\n            fill=\"none\"\n          />\n        </svg>\n      </div>\n      <div style=\"height:" + options.count *
                 options.chunkHeight + "px\" class=\"q-select-box q-select-box--" + id + "\">\n    ";
             data.forEach(function (v) {
                 _this.initialDomString += "\n      <div class=\"q-select-box-item q-select-box-item--" + id + "\">\n        <div class=\"q-select-box-item__overlay q-select-box-item__overlay--" + id + "\" style=\"background-size: 100% " + (!loading ? baseSize + 'px' : '100%') + ";\"></div>\n        <div class=\"q-select-box-item__highlight q-select-box-item__highlight--" + id + "\" style=\"top: " + baseSize + "px;height: " + options.chunkHeight + "px\"></div>\n        <div class=\"q-select-box-item-collections q-select-box-item-collections--" + id + "\">\n        " + v
@@ -194,7 +194,17 @@
             return $els[$els.length - 1];
         };
         Dom.addClass = function (el, className) {
-            el.className = Array.isArray(className) ? className.join(' ') : className;
+            var add = Array.isArray(className) ? className.join(' ') : className;
+            el.className += " " + add;
+        };
+        Dom.removeClass = function (el, className) {
+            var _a;
+            if (Array.isArray(className)) {
+                (_a = el.classList).remove.apply(_a, className);
+            }
+            else {
+                el.classList.remove(className);
+            }
         };
         Dom.addStyle = function (el, style) {
             var _this = this;
@@ -900,20 +910,23 @@
             this.$options.ready && (_a = this.$options).ready.apply(_a, this.getChangeCallData());
         };
         Layer.prototype.closeSelect = function () {
-            var _a;
+            var _this = this;
             if (this.hidden) {
                 return;
             }
             var $select = Dom.find("q-select--" + this.id);
             var $bk = Dom.find("q-select-bk");
-            Dom.addStyle($select, {
-                display: 'none'
-            });
             Dom.addStyle($bk, {
                 display: 'none'
             });
-            this.hidden = true;
-            this.$options.hide && (_a = this.$options).hide.apply(_a, this.getChangeCallData());
+            this.slideAnimation('out', $select, function () {
+                var _a;
+                Dom.addStyle($select, {
+                    display: 'none'
+                });
+                _this.hidden = true;
+                _this.$options.hide && (_a = _this.$options).hide.apply(_a, _this.getChangeCallData());
+            });
         };
         Layer.prototype.destroySelect = function () {
             var _this = this;
@@ -926,7 +939,7 @@
             });
         };
         Layer.prototype.showSelect = function () {
-            var _a;
+            var _this = this;
             if (!this.hidden) {
                 return;
             }
@@ -934,8 +947,25 @@
             var $bk = Dom.find("q-select-bk");
             Dom.addStyle($select, { display: 'block' });
             Dom.addStyle($bk, { display: 'block' });
-            this.hidden = false;
-            this.$options.show && (_a = this.$options).show.apply(_a, this.getChangeCallData());
+            this.slideAnimation('in', $select, function () {
+                var _a;
+                _this.hidden = false;
+                _this.$options.show && (_a = _this.$options).show.apply(_a, _this.getChangeCallData());
+            });
+        };
+        Layer.prototype.slideAnimation = function (type, $select, callback) {
+            Dom.addClass($select, [
+                'animated',
+                type === 'in' ? 'slideInUp' : 'slideOutDown'
+            ]);
+            var timer = setTimeout(function () {
+                Dom.removeClass($select, [
+                    'animated',
+                    type === 'in' ? 'slideInUp' : 'slideOutDown'
+                ]);
+                callback && callback();
+                clearTimeout(timer);
+            }, 200);
         };
         Layer.prototype.stopAll = function () {
             var _this = this;

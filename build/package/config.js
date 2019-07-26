@@ -94,7 +94,7 @@ function generateOpts(opts, type, category) {
       commonjs(),
       typescript(),
       postcss({
-        extract: type === 'vue',
+        extract: true,
         extensions: ['.css']
       }),
       resolve({

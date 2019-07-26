@@ -25,8 +25,8 @@ class Dom {
     const baseSize = Math.floor(options.count / 2) * options.chunkHeight;
     if (!inline) {
       this.initialDomString += `
-        <div class="q-select-header q-select-header--${id}">
-          <div class="q-select-header-cancel q-select-header-cancel--${id}">
+        <div class="q-select-header q-select-header--${id}" style="padding: 10px 20px;">
+          <div class="q-select-header-cancel q-select-header-cancel--${id}" style="width:100px; font-size:14px;">
             <div class="q-select-header-cancel__value q-select-header-cancel__value--${id}">${options.cancelBtn ||
         '取消'}</div>
           </div>
@@ -34,7 +34,7 @@ class Dom {
             <div class="q-select-header-title__value q-select-header-title__value--${id}">${options.title ||
         '请选择'}</div>
           </div>
-          <div class="q-select-header-confirm q-select-header-confirm--${id}">
+          <div class="q-select-header-confirm q-select-header-confirm--${id}" style="width:100px; font-size:14px;">
             <div class="q-select-header-confirm__value q-select-header-confirm__value--${id}">${options.confirmBtn ||
         '确定'}</div>
           </div>
@@ -45,7 +45,7 @@ class Dom {
       <div style="height:${options.count * options.chunkHeight}px;display:${
       loading ? 'flex' : 'none'
     }" class="q-select-loading q-select-loading--${id}">
-        <svg class="q-select-loading-svg" viewBox="25 25 50 50">
+        <svg class="q-select-loading-svg" viewBox="25 25 50 50" style="height:30px; width:30px;">
           <circle
             class="q-select-loading-svg__circle"
             cx="50"
@@ -266,7 +266,16 @@ class Dom {
   }
 
   static addClass(el: HTMLElement, className: string | string[]) {
-    el.className = Array.isArray(className) ? className.join(' ') : className;
+    const add = Array.isArray(className) ? className.join(' ') : className;
+    el.className += ` ${add}`;
+  }
+
+  static removeClass(el: HTMLElement, className: string | string[]) {
+    if (Array.isArray(className)) {
+      el.classList.remove(...className);
+    } else {
+      el.classList.remove(className);
+    }
   }
 
   static addStyle(el: HTMLElement, style: obj | obj[]) {

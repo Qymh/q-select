@@ -518,14 +518,16 @@ class Layer {
     }
     const $select = Dom.find(`q-select--${this.id}`);
     const $bk = Dom.find(`q-select-bk`);
-    Dom.addStyle($select, {
-      display: 'none'
-    });
     Dom.addStyle($bk, {
       display: 'none'
     });
-    this.hidden = true;
-    this.$options.hide && this.$options.hide(...this.getChangeCallData());
+    this.slideAnimation('out', $select, () => {
+      Dom.addStyle($select, {
+        display: 'none'
+      });
+      this.hidden = true;
+      this.$options.hide && this.$options.hide(...this.getChangeCallData());
+    });
   }
 
   /**
@@ -553,8 +555,31 @@ class Layer {
     const $bk = Dom.find(`q-select-bk`);
     Dom.addStyle($select, { display: 'block' });
     Dom.addStyle($bk, { display: 'block' });
-    this.hidden = false;
-    this.$options.show && this.$options.show(...this.getChangeCallData());
+    this.slideAnimation('in', $select, () => {
+      this.hidden = false;
+      this.$options.show && this.$options.show(...this.getChangeCallData());
+    });
+  }
+
+  /**
+   * 平滑进入离开动画
+   * @param type 进入还是离开
+   * @param $select 下拉选择元素
+   * @param callback 回调
+   */
+  slideAnimation(type: 'in' | 'out', $select: HTMLElement, callback: Function) {
+    Dom.addClass($select, [
+      'animated',
+      type === 'in' ? 'slideInUp' : 'slideOutDown'
+    ]);
+    const timer = setTimeout(() => {
+      Dom.removeClass($select, [
+        'animated',
+        type === 'in' ? 'slideInUp' : 'slideOutDown'
+      ]);
+      callback && callback();
+      clearTimeout(timer);
+    }, 200);
   }
 
   /**

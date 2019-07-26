@@ -17,7 +17,6 @@
   box-sizing: border-box;
 }
 .q-select-header {
-  padding: 10px 20px;
   display: flex;
   border-bottom: 1px solid #ebebeb;
   box-sizing: border-box;
@@ -40,8 +39,6 @@
   flex-shrink: 0;
   align-items: center;
   display: flex;
-  width: 100px;
-  font-size: 14px;
 }
 .q-select-header > .q-select-header-confirm {
   justify-content: flex-end;
@@ -102,8 +99,6 @@
   align-items: center;
 }
 .q-select-loading-svg {
-  height: 30px;
-  width: 30px;
   animation: loading-rotate 2s linear infinite;
 }
 .q-select-loading-svg__circle {
@@ -116,7 +111,7 @@
 }
 .animated {
   animation-fill-mode: both;
-  animation-duration: 400ms;
+  animation-duration: 200ms;
 }
 
 @keyframes loading-dash {
@@ -138,30 +133,6 @@
   100% {
     transform: rotate(360deg);
   }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 0.3;
-  }
-}
-.fadeIn {
-  animation-name: fadeIn;
-}
-
-@keyframes fadeOut {
-  from {
-    opacity: 0.3;
-  }
-  to {
-    opacity: 0;
-  }
-}
-.fadeOut {
-  animation-name: fadeOut;
 }
 
 @keyframes slideInUp {
