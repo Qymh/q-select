@@ -95,7 +95,7 @@ const $click1 = document.querySelector('.cell__details--1');
 $click1.addEventListener('click', () => {
   qSelect1.show();
 });
-// 一层非联动带key值
+// 非联动内联展示异步设置值
 const data2 = [];
 const $show2 = document.querySelector('.cell__title--2');
 for (let i = 1; i <= 40; i++) {
@@ -105,7 +105,7 @@ for (let i = 1; i <= 40; i++) {
   });
 }
 const qSelect2 = new QSelect({
-  title: '一层非联动带key值',
+  title: '非联动内联展示异步设置值',
   data: [],
   loading: true,
   target: '.inline2',
@@ -151,46 +151,6 @@ $setBtn2.forEach((v, i) => {
         break;
     }
   });
-});
-
-// 多级非联动带key值
-const data3 = [];
-const $show3 = document.querySelector('.cell__title--3');
-for (let i = 1; i <= 40; i++) {
-  data3.push({
-    value: i,
-    key: i + 'k'
-  });
-}
-const qSelect3 = new QSelect({
-  title: '多级非联动带key值',
-  data: [data3, data3, data3, data3, data3],
-  ready(data, key) {
-    $show3.textContent = `数据:${data.join(',')},key:${key.join(',')}`;
-  },
-  show() {
-    // eslint-disable-next-line
-    console.log('3-show');
-  },
-  hide() {
-    // eslint-disable-next-line
-    console.log('3-hide');
-  },
-  cancel() {
-    // eslint-disable-next-line
-    console.log('3-cancel');
-  },
-  change(weight, data) {
-    // eslint-disable-next-line
-    console.log(`3-change:${data.join(',')}`);
-  },
-  confirm(data, key) {
-    $show3.textContent = `数据:${data.join(',')},key:${key.join(',')}`;
-  }
-});
-const $click3 = document.querySelector('.cell__details--3');
-$click3.addEventListener('click', () => {
-  qSelect3.show();
 });
 
 // 多级非联动实测

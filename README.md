@@ -68,25 +68,27 @@ new Qselect({});
 
 沙盒演示可以配合 options 一起查看 食用更佳
 
+> 沙盒演示中无法触发`touchmove`事件,点击沙盒右侧网址的右边的`新窗口打开`,在新窗口中查看演示,在当前页面查看代码
+
 - 一层非联动
 
-占位
+[沙盒演示](https://codesandbox.io/s/yicengfeiliandong-7x0zy?fontsize=14)
 
 - 非联动内联展示异步设置值
 
-占位
+[沙盒演示](https://codesandbox.io/s/feiliandongneilianzhanshiyibushezhizhi-4wtvb?fontsize=14)
 
 - 多层非联动实测
 
-占位
+[沙盒演示](https://codesandbox.io/s/duocengfeiliandongshice-8hf8n?fontsize=14)
 
 - 简单联动
 
-占位
+[沙盒演示](https://codesandbox.io/s/jiandanliandong-bhyxr?fontsize=14)
 
 - 省市区联动实测
 
-占位
+[沙盒演示](https://codesandbox.io/s/shengshiquliandongshice-ubxqx?fontsize=14)
 
 - 省市区非联动异步实测
 
@@ -97,61 +99,60 @@ new Qselect({});
 #### data
 
 - 解释: 展示的下拉数据值
-- 数据格式
 
-  - 联动
+- 联动
 
-    联动下是一个数组对象结构,对象一共有三个值
+  联动下是一个数组对象结构,对象一共有三个值
 
-    - value(必填) 展示的值
-    - key 标志
-    - children 子联动数据
+  - value(必填) 展示的值
+  - key 标志
+  - children 子联动数据
 
-  ```javascript
-  new QSelect({
-    data:[
-      {
-        value: '外部1',
-        children: [
-          '外部1-内部1',
-          {
-            key: '1-2',
-            value: '外部1-内部2'
-          }
-        ]
-      },
-      {
-        value: '外部2',
-        children: ['外部2-内部1', '外部2-内部2']
-      }
-    ];
-  })
-  ```
-
-  这里为了区分联动和非联动的数据格式,第一层数据必须是对象,到子联动数据后,如果不指定 key 值和 children,可以直接用数组
-
-  - 非联动
-
-    非联动下是一个数组包含数组的结构,如果需要指定 key 那么值就得是一个对象
-
-    对象的数据结构
-
-    - value(必填) 展示的值
-    - key 标志
-
-  ```javascript
-  new QSelect({
-    data: [
-      ['1', '2', '3'],
-      ['4', '5', '6'],
-      [
-        { key: '7k', value: '7' },
-        { key: '8k', value: '8' },
-        { key: '9k', value: '9' }
+```javascript
+new QSelect({
+  data:[
+    {
+      value: '外部1',
+      children: [
+        '外部1-内部1',
+        {
+          key: '1-2',
+          value: '外部1-内部2'
+        }
       ]
+    },
+    {
+      value: '外部2',
+      children: ['外部2-内部1', '外部2-内部2']
+    }
+  ];
+})
+```
+
+这里为了区分联动和非联动的数据格式,第一层数据必须是对象,到子联动数据后,如果不指定 key 值和 children,可以直接用数组
+
+- 非联动
+
+  非联动下是一个数组包含数组的结构,如果需要指定 key 那么值就得是一个对象
+
+  对象的数据结构
+
+  - value(必填) 展示的值
+  - key 标志
+
+```javascript
+new QSelect({
+  data: [
+    ['1', '2', '3'],
+    ['4', '5', '6'],
+    [
+      { key: '7k', value: '7' },
+      { key: '8k', value: '8' },
+      { key: '9k', value: '9' }
     ]
-  });
-  ```
+  ]
+});
+```
 
 > 注释非联动和联动的区别,联动是数组包含对象,内部子联动通过 children 连接,而非联动是数组包含数组,一个数组就是一层联动
 
