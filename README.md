@@ -70,25 +70,15 @@ new Qselect({});
 
 > 沙盒演示中无法触发`touchmove`事件,点击沙盒右侧网址的右边的`新窗口打开`,在新窗口中查看演示,在当前页面查看代码
 
-- 一层非联动
+- 一层非联动 [沙盒演示](https://codesandbox.io/s/yicengfeiliandong-7x0zy?fontsize=14)
 
-[沙盒演示](https://codesandbox.io/s/yicengfeiliandong-7x0zy?fontsize=14)
+- 非联动内联展示异步设置值 [沙盒演示](https://codesandbox.io/s/feiliandongneilianzhanshiyibushezhizhi-4wtvb?fontsize=14)
 
-- 非联动内联展示异步设置值
+- 多层非联动实测 [沙盒演示](https://codesandbox.io/s/duocengfeiliandongshice-8hf8n?fontsize=14)
 
-[沙盒演示](https://codesandbox.io/s/feiliandongneilianzhanshiyibushezhizhi-4wtvb?fontsize=14)
+- 简单联动 [沙盒演示](https://codesandbox.io/s/jiandanliandong-bhyxr?fontsize=14)
 
-- 多层非联动实测
-
-[沙盒演示](https://codesandbox.io/s/duocengfeiliandongshice-8hf8n?fontsize=14)
-
-- 简单联动
-
-[沙盒演示](https://codesandbox.io/s/jiandanliandong-bhyxr?fontsize=14)
-
-- 省市区联动实测
-
-[沙盒演示](https://codesandbox.io/s/shengshiquliandongshice-ubxqx?fontsize=14)
+- 省市区联动实测 [沙盒演示](https://codesandbox.io/s/shengshiquliandongshice-ubxqx?fontsize=14)
 
 - 省市区非联动异步实测
 
