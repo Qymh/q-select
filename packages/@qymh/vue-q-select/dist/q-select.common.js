@@ -1,5 +1,5 @@
 /**
- * @qymh/vue-q-select v0.1.5
+ * @qymh/vue-q-select v0.1.6
  * (c) 2019 Qymh
  * @license MIT
  */
