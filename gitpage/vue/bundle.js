@@ -16529,7 +16529,7 @@
 	  );
 
 	/**
-	 * @qymh/q-select v0.1.5
+	 * @qymh/q-select v0.1.6
 	 * (c) 2019 Qymh
 	 * @license MIT
 	 */
@@ -16807,6 +16807,9 @@
 	        }
 	        return res;
 	    }
+	}
+	function isDefined(val) {
+	    return val === 0 || !!val;
 	}
 
 	window.requestAnimationFrame =
@@ -17689,11 +17692,16 @@
 	}());
 
 	function argumentsAssert(argumentsVar, argumentsStr, functionName, reject) {
+	    var bool = false;
 	    argumentsVar.forEach(function (v, i) {
-	        if (!assert(!!v, argumentsStr[i] + " is required as the first argument of " + functionName)) {
+	        if (!assert(isDefined(v), argumentsStr[i] + " is required as the first argument of " + functionName)) {
+	            if (!bool) {
+	                bool = true;
+	            }
 	            reject && reject();
 	        }
 	    });
+	    return bool;
 	}
 	var QSelect = (function (_super) {
 	    __extends(QSelect, _super);
@@ -17704,7 +17712,13 @@
 	        var _this = this;
 	        return new Promise(function (resolve, reject) {
 	            try {
-	                argumentsAssert([column, data], ['column', 'data'], 'setColumnData', reject);
+	                if (argumentsAssert([column, data], ['column', 'data'], 'setColumnData', reject)) {
+	                    return;
+	                }
+	                if (_this.touchs.filter(function (v) { return !v.hidden; }).some(function (v) { return v.isAnimating; })) {
+	                    reject('[SelectQ]: Please wait for animating stops');
+	                    return;
+	                }
 	                var preTrans = _this.dataTrans.slice();
 	                var realData = [];
 	                if (Array.isArray(column)) {
@@ -17735,7 +17749,9 @@
 	        });
 	    };
 	    QSelect.prototype.scrollTo = function (column, index) {
-	        argumentsAssert([column, index], ['column', 'index'], 'scrollTo');
+	        if (argumentsAssert([column, index], ['column', 'index'], 'scrollTo')) {
+	            return;
+	        }
 	        var later = this.dynamicIndex.slice();
 	        later[column] = index;
 	        return this.setIndex(later);
@@ -17746,7 +17762,7 @@
 	            try {
 	                argumentsAssert([index], ['index'], 'setIndex', reject);
 	                if (_this.validateIndex(index)) {
-	                    _this._setIndex(index);
+	                    _this._setIndex(index, reject);
 	                    resolve(_this.getChangeCallData());
 	                }
 	                else {
@@ -17758,8 +17774,12 @@
 	            }
 	        });
 	    };
-	    QSelect.prototype._setIndex = function (index, preDataTrans, diff) {
+	    QSelect.prototype._setIndex = function (index, reject, preDataTrans, diff) {
 	        var _this = this;
+	        if (this.touchs.filter(function (v) { return !v.hidden; }).some(function (v) { return v.isAnimating; })) {
+	            reject('[SelectQ]: Please wait for animating stops');
+	            return;
+	        }
 	        var preIndex = this.realIndex.slice();
 	        this.dynamicIndex = index.slice();
 	        this.realIndex = index.slice();
@@ -17832,7 +17852,7 @@
 	                        findedIndex.push(res === -1 ? 0 : res);
 	                    });
 	                }
-	                _this._setIndex(findedIndex);
+	                _this._setIndex(findedIndex, reject);
 	                resolve(_this.getChangeCallData());
 	            }
 	            catch (error) {
@@ -17850,7 +17870,7 @@
 	                _this.data = data;
 	                _this.normalizeData();
 	                _this._setIndex(index ||
-	                    Array.from({ length: _this.dataTrans.length }).fill(0), preDataTrans, true);
+	                    Array.from({ length: _this.dataTrans.length }).fill(0), reject, preDataTrans, true);
 	                resolve(_this.getChangeCallData());
 	            }
 	            else {
