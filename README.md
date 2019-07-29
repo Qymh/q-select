@@ -186,7 +186,6 @@ new QSelect({
   data: [[1, 2, 3]],
   chunkHeight: 50
 });
-s;
 ```
 
 #### bkIndex
@@ -295,7 +294,7 @@ new QSelect({
 
 #### ready
 
-- 解释 选择栏挂载准备好的时候触发 在手动调用`setData` `setKey` `setValue`后也会触发
+- 解释 选择栏挂载准备好的时候触发 在手动调用`setData` `setKey` `setValue` `setIndex`后也会触发
 - 数据格式 function
 - 回调参数
 
@@ -418,6 +417,7 @@ new QSelect({
 
 - 解释 选择栏数据更改且**全部动画结束后**触发
 - 数据格式 function
+- **在调用`setData` `setIndex` `setKey` `setValue`后不会触发`change`只会触发`readt`**
 - 回调参数
 
   - weight 当前更改的最高权值的栏目索引 比如第一栏和第二栏同时滚动 这个值就是 第一栏的索引 0
@@ -461,6 +461,32 @@ setTimeout(() => {
 }, 1000);
 ```
 
+#### getData
+
+- 解释 获取当前 data
+- 数据格式
+  - values 当前选择的值 如 [1]
+  - keys 当前选择的 key 如 ['1k']
+  - data 完整的 data 值
+    - 数组第一项
+      - 同 values
+    - 数组第二项
+      - 同 keys
+    - 数组第三项
+      - 当前的详情 data
+      - 数据格式 数组对象
+        - value 当前 value
+        - key 当前 key
+        - index 当前索引
+
+```javascript
+const s1 = new QSelect({
+  data: [[1, 2, 3]]
+});
+
+console.log(s1.getData());
+```
+
 #### setValue
 
 - 解释 在当前选择栏下设定选择的值,选择栏会自动聚焦到当前值,如果没有这个值,则会聚焦到当前栏目第一项
@@ -478,6 +504,20 @@ setTimeout(() => {
 }, 1000);
 ```
 
+#### getValue
+
+- 解释 获取当前 value
+- 数据格式
+  - values 当前选择的值 如 [1]
+
+```javascript
+const s1 = new QSelect({
+  data: [[1, 2, 3]]
+});
+
+console.log(s1.getValue());
+```
+
 #### setKey
 
 - 解释 在当前选择栏下设定选择的 key 值,选择栏会自动聚焦到当前值,如果没有这个值,则会聚焦到当前栏目第一项
@@ -493,6 +533,20 @@ const s1 = new QSelect({
 setTimeout(() => {
   s1.setKey(['2k']);
 }, 1000);
+```
+
+#### getKey
+
+- 解释 获取当前 key
+- 数据格式
+  - keys 当前选择的 key 值 如 ['1k']
+
+```javascript
+const s1 = new QSelect({
+  data: [[{ value: 1, key: '1k' }, 2, 3]]
+});
+
+console.log(s1.getKey());
 ```
 
 #### setIndex
@@ -516,8 +570,32 @@ setTimeout(() => {
 
 - 解释 这个是`setIndex`的子方法,scrollTo 可以指定特定的栏目的特定栏目的索引,而`setIndex`需要指定当前栏目和当前栏目前的索引
 - 参数
-  - column(必填) 栏目
-  - index（必填） 栏目索引
+  - column(必填) 栏目 Number
+  - index（必填） 栏目索引 Number
+
+```javascript
+const s1 = new QSelect({
+  data: [[{ value: 1, key: '1k' }, { value: 2, key: '2k' }]]
+});
+
+setTimeout(() => {
+  s1.scrollTo(0, 0);
+}, 1000);
+```
+
+#### getIndex
+
+- 解释 获取当前索引
+- 数据格式
+  - index 当前选择的值 如 [0]
+
+```javascript
+const s1 = new QSelect({
+  data: [[1, 2, 3]]
+});
+
+console.log(s1.getIndex());
+```
 
 #### setColumnData
 
@@ -580,7 +658,7 @@ const s1 = new QSelect({
 s1.show();
 setTimeout(() => {
   s1.setData([[1, 2, 3]]);
-  s1.cancelLoading();
+  s1.hide();
 }, 1000);
 ```
 
@@ -697,17 +775,371 @@ Vue.use(QSelect, { name: 'QPicker' });
 
 ### refs
 
-占位
+ 以下方法通过在组件上绑定 ref 通过 `this.$refs.select`调用
+
+```vue
+<template>
+  <q-select ref="select"></q-select>
+</template>
+```
+
+- setData
+
+  - 解释 重新渲染选择栏的数据
+  - 参数
+    - data(必填) 同 options 中的 data
+    - index 同 options 中的 index
+
+```javascript
+this.$refs.select.setData([[4, 5, 6], [2]]);
+```
+
+- setValue
+
+  - 解释 在当前选择栏下设定选择的值,选择栏会自动聚焦到当前值,如果没有这个值,则会聚焦到当前栏目第一项
+  - 参数
+    - value(必填)
+      - 数据格式 数组 直接指定要聚焦到的值如 [1,2,3]
+
+```javascript
+this.$refs.select.setValue([3]);
+```
+
+- setKey
+
+  - 解释 在当前选择栏下设定选择的 key 值,选择栏会自动聚焦到当前值,如果没有这个值,则会聚焦到当前栏目第一项
+  - 参数
+  - key(必填)
+    - 数据格式 数组 直接指定要聚焦到的 key 值如 ['1k','2k','3k']
+
+```javascript
+this.$refs.select.setKey(['2k']);
+```
+
+- setIndex
+
+  - 解释 在当前选择栏下设定选择的索引值,选择栏会自动聚焦到当前值,如果没有这个值,则会聚焦到当前栏目第一项
+  - 参数
+    - key(必填)
+      - 数据格式 数组 直接指定要聚焦到的索引如 [0,0,0]
+
+```javascript
+this.$refs.select.setIndex([0]);
+```
+
+- scrollTo
+
+  - 解释 这个是`setIndex`的子方法,scrollTo 可以指定特定的栏目的特定栏目的索引,而`setIndex`需要指定当前栏目和当前栏目前的索引
+  - 参数
+    - column(必填) 栏目 Number
+    - index（必填） 栏目索引 Number
+
+```javascript
+this.$refs.select.scrollTo(0, 0);
+```
+
+- setColumnData
+
+  - 解释 setData 是设置所有的 data,而 setColumnData 是设定指定栏目的 data,也就是异步一栏一栏加载 data 的
+  - 参数
+    - column(必填) 栏目索引 可以指定多个栏目 多个栏目用数组表示比如[1,2] 单栏目就直接是数字比如 1
+    - data(必填) 当前栏目的值 同 options 中**非联动**下的 data
+
+```javascript
+this.$refs.select.setColumnData(1, [[1, 2, 3]]);
+```
+
+- getData
+
+  - 解释 获取当前 data
+  - 数据格式
+    - values 当前选择的值 如 [1]
+    - keys 当前选择的 key 如 ['1k']
+    - data 完整的 data 值
+      - 数组第一项
+        - 同 values
+      - 数组第二项
+        - 同 keys
+      - 数组第三项
+        - 当前的详情 data
+        - 数据格式 数组对象
+          - value 当前 value
+          - key 当前 key
+          - index 当前索引
+
+```javascript
+this.$refs.select.getData();
+```
+
+- getValue
+
+  - 解释 获取当前 value
+  - 数据格式
+    - values 当前选择的值 如 [1]
+
+```javascript
+this.$refs.select.getValue();
+```
+
+- getKey
+
+  - 解释 获取当前 key
+  - 数据格式
+    - keys 当前选择的 key 值 如 ['1k']
+
+```javascript
+this.$refs.select.getKey();
+```
+
+- getIndex
+
+  - 解释 获取当前索引
+  - 数据格式
+    - index 当前选择的索引 如 [0]
+
+```javascript
+this.$refs.select.getIndex();
+```
+
+- setLoading
+
+  - 解释 调出 loading 加载图案
+
+```javascript
+this.$refs.select.setLoading();
+```
+
+- cancelLoading
+
+  - 解释 关闭 loading 加载图案
+
+```javascript
+this.$refs.select.cancelLoading();
+```
+
+- show
+
+  - 解释 手动呼出下拉选择
+
+```javascript
+this.$refs.select.show();
+```
+
+- close
+
+  - 解释 手动关闭下拉选择
+
+```javascript
+this.$refs.select.close();
+```
+
+- destroy
+
+  - 解释 摧毁下拉选择
+
+```javascript
+this.$refs.select.destroy();
+```
 
 ### events
 
-占位
+- ready
+
+  - 解释 选择栏挂载准备好的时候触发 在手动调用`setData` `setKey` `setValue` `setIndex`后也会触发
+  - 数据格式 function
+  - 回调参数
+
+    - values 当前选择的值 如 [1]
+    - keys 当前选择的 key 如 ['1k']
+    - data 完整的 data 值
+      - 数组第一项
+        - 同 values
+      - 数组第二项
+        - 同 keys
+      - 数组第三项
+        - 当前的详情 data
+        - 数据格式 数组对象
+          - value 当前 value
+          - key 当前 key
+          - index 当前索引
+
+```vue
+<template>
+  <q-select @ready="doReady"></q-select>
+</template>
+
+<script>
+export default {
+  methods: {
+    doReady(values, keys, data) {}
+  }
+};
+</script>
+```
+
+- show
+
+  - 解释 选择栏显示的时候触发
+  - 数据格式 function
+  - 回调参数
+
+    - values 当前选择的值 如 [1]
+    - keys 当前选择的 key 如 ['1k']
+    - data 完整的 data 值
+      - 数组第一项
+        - 同 values
+      - 数组第二项
+        - 同 keys
+      - 数组第三项
+        - 当前的详情 data
+        - 数据格式 数组对象
+          - value 当前 value
+          - key 当前 key
+          - index 当前索引
+
+```vue
+<template>
+  <q-select @show="doShow"></q-select>
+</template>
+
+<script>
+export default {
+  methods: {
+    doShow(values, keys, data) {}
+  }
+};
+</script>
+```
+
+- hide
+
+  - 解释 选择栏隐藏的时候触发
+  - 数据格式 function
+  - 回调参数
+
+    - values 当前选择的值 如 [1]
+    - keys 当前选择的 key 如 ['1k']
+    - data 完整的 data 值
+      - 数组第一项
+        - 同 values
+      - 数组第二项
+        - 同 keys
+      - 数组第三项
+        - 当前的详情 data
+        - 数据格式 数组对象
+          - value 当前 value
+          - key 当前 key
+          - index 当前索引
+
+```vue
+<template>
+  <q-select @hide="doHide"></q-select>
+</template>
+
+<script>
+export default {
+  methods: {
+    doHide(values, keys, data) {}
+  }
+};
+</script>
+```
+
+- confirm
+
+  - 解释 选择栏导航点击确认的时候触发
+  - 数据格式 function
+  - 回调参数
+
+    - values 当前选择的值 如 [1]
+    - keys 当前选择的 key 如 ['1k']
+    - data 完整的 data 值
+      - 数组第一项
+        - 同 values
+      - 数组第二项
+        - 同 keys
+      - 数组第三项
+        - 当前的详情 data
+        - 数据格式 数组对象
+          - value 当前 value
+          - key 当前 key
+          - index 当前索引
+
+```vue
+<template>
+  <q-select @confirm="doConfirm"></q-select>
+</template>
+
+<script>
+export default {
+  methods: {
+    doConfirm(values, keys, data) {}
+  }
+};
+</script>
+```
+
+- cancel
+
+  - 解释 选择栏导航点击取消触发
+  - 数据格式 function
+  - 没有回调参数
+
+```vue
+<template>
+  <q-select @cancel="doCancel"></q-select>
+</template>
+
+<script>
+export default {
+  methods: {
+    doCancel(values, keys, data) {}
+  }
+};
+</script>
+```
+
+- change
+
+  - 解释 选择栏数据更改且**全部动画结束后**触发
+  - 数据格式 function
+  - **在调用`setData` `setIndex` `setKey` `setValue`后不会触发`change`只会触发`readt`**
+  - 回调参数
+
+    - weight 当前更改的最高权值的栏目索引 比如第一栏和第二栏同时滚动 这个值就是 第一栏的索引 0
+    - values 当前选择的值 如 [1]
+    - keys 当前选择的 key 如 ['1k']
+    - data 完整的 data 值
+      - 数组第一项
+        - 同 values
+      - 数组第二项
+        - 同 keys
+      - 数组第三项
+        - 当前的详情 data
+        - 数据格式 数组对象
+          - value 当前 value
+          - key 当前 key
+          - index 当前索引
+
+```vue
+<template>
+  <q-select @change="doChange"></q-select>
+</template>
+
+<script>
+export default {
+  methods: {
+    doChange(values, keys, data) {}
+  }
+};
+</script>
+```
 
 ## 项目即将支持
 
-- 沙盒演示
-- 单元测试
+- [] 沙盒演示
+- [] 单元测试
 
 ## 项目延后支持
 
-- React 组件化
+- [] React 组件化
