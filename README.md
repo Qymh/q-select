@@ -2,6 +2,8 @@
 
 一个高性能的移动端下拉选择插件 同时支持 js 和 vue
 
+[Vue文档](##Vue)
+
 ## JavaScript
 
 ### 在线体验
@@ -722,6 +724,7 @@ yarn add @qymh/vue-q-select
 ```javascript
 import Vue from 'vue';
 import QSelect from '@qymh/vue-q-select';
+import '@qymh/vue-q-select/dist/q-select.css';
 Vue.use(QSelect);
 ```
 
