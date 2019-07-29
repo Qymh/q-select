@@ -798,7 +798,7 @@ Vue.use(QSelect, { name: 'QPicker' });
 
 ### refs
 
- 以下方法通过在组件上绑定 ref 通过 `this.$refs.select`调用
+以下方法通过在组件上绑定 ref 通过 `this.$refs.select`调用
 
 ```vue
 <template>
