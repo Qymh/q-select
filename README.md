@@ -757,6 +757,26 @@ Vue.use(QSelect, { name: 'QPicker' });
 </template>
 ```
 
+### 沙盒演示
+
+沙盒演示可以配合 props refs events 一起查看 食用更佳
+
+> 沙盒演示中无法触发`touchmove`事件,点击沙盒右侧网址的右边的`新窗口打开`,在新窗口中查看演示,在当前页面查看代码
+
+- 一层非联动 [沙盒演示](https://codesandbox.io/s/yicengfeiliandong-7xzsj?fontsize=14)
+
+- 非联动内联展示异步设置值 [沙盒演示](https://codesandbox.io/s/yicengfeiliandongyibu-llfi8?fontsize=14)
+
+- 多层非联动实测 [沙盒演示](https://codesandbox.io/s/duocengfeiliandongshice-k5o0i?fontsize=14)
+
+- 简单联动 [沙盒演示](https://codesandbox.io/s/jiandanliandong-lc3fd?fontsize=14)
+
+- 省市区联动实测 [沙盒演示](https://codesandbox.io/s/jiandanliandong-zq7v6?fontsize=14)
+
+- 省市区非联动异步实测
+
+占位
+
 ### props
 
 | prop                 |  类型   | 是否必填 | 默认值 |       描述       |                                         数据格式 |
