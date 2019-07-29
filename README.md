@@ -2,7 +2,7 @@
 
 一个高性能的移动端下拉选择插件 同时支持 js 和 vue
 
-[Vue文档](##Vue)
+[Vue文档](#Vue)
 
 ## JavaScript
 
