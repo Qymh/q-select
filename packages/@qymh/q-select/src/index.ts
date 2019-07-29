@@ -1,7 +1,14 @@
 import Layer from './layer';
 import Dom from './dom';
 import '../style/q-select.css';
-import { deepClone, sameIndex, isPlainObj, assert, firstUpper } from './uitls';
+import {
+  deepClone,
+  sameIndex,
+  isPlainObj,
+  assert,
+  firstUpper,
+  isDefined
+} from './uitls';
 
 function argumentsAssert(
   argumentsVar: any[],
@@ -9,16 +16,21 @@ function argumentsAssert(
   functionName: string,
   reject?: any
 ) {
+  let bool = false;
   argumentsVar.forEach((v, i) => {
     if (
       !assert(
-        !!v,
+        isDefined(v),
         `${argumentsStr[i]} is required as the first argument of ${functionName}`
       )
     ) {
+      if (!bool) {
+        bool = true;
+      }
       reject && reject();
     }
   });
+  return bool;
 }
 
 class QSelect extends Layer {
@@ -33,12 +45,22 @@ class QSelect extends Layer {
   ) {
     return new Promise((resolve, reject) => {
       try {
-        argumentsAssert(
-          [column, data],
-          ['column', 'data'],
-          'setColumnData',
-          reject
-        );
+        if (
+          argumentsAssert(
+            [column, data],
+            ['column', 'data'],
+            'setColumnData',
+            reject
+          )
+        ) {
+          return;
+        }
+
+        if (this.touchs.filter(v => !v.hidden).some(v => v.isAnimating)) {
+          reject('[SelectQ]: Please wait for animating stops');
+          return;
+        }
+
         const preTrans = [...this.dataTrans];
         let realData = [];
         if (Array.isArray(column)) {
@@ -72,8 +94,9 @@ class QSelect extends Layer {
    * @param index 索引
    */
   scrollTo(column: number, index: number) {
-    argumentsAssert([column, index], ['column', 'index'], 'scrollTo');
-    assert(!!index, 'index is required');
+    if (argumentsAssert([column, index], ['column', 'index'], 'scrollTo')) {
+      return;
+    }
     const later = [...this.dynamicIndex];
     later[column] = index;
     return this.setIndex(later);
@@ -88,7 +111,7 @@ class QSelect extends Layer {
       try {
         argumentsAssert([index], ['index'], 'setIndex', reject);
         if (this.validateIndex(index)) {
-          this._setIndex(index);
+          this._setIndex(index, reject);
           resolve(this.getChangeCallData());
         } else {
           reject();
@@ -105,7 +128,16 @@ class QSelect extends Layer {
    * @param preDataTrans
    * @param diff 是否需要进行diff
    */
-  _setIndex(index: number[], preDataTrans?: DataTrans[][], diff?: boolean) {
+  _setIndex(
+    index: number[],
+    reject: Function,
+    preDataTrans?: DataTrans[][],
+    diff?: boolean
+  ) {
+    if (this.touchs.filter(v => !v.hidden).some(v => v.isAnimating)) {
+      reject('[SelectQ]: Please wait for animating stops');
+      return;
+    }
     const preIndex = [...this.realIndex];
     this.dynamicIndex = [...index];
     this.realIndex = [...index];
@@ -213,7 +245,7 @@ class QSelect extends Layer {
             findedIndex.push(res === -1 ? 0 : res);
           });
         }
-        this._setIndex(findedIndex);
+        this._setIndex(findedIndex, reject);
         resolve(this.getChangeCallData());
       } catch (error) {
         reject(error);
@@ -239,6 +271,7 @@ class QSelect extends Layer {
         this._setIndex(
           index ||
             Array.from<number>({ length: this.dataTrans.length }).fill(0),
+          reject,
           preDataTrans,
           true
         );

@@ -66,3 +66,7 @@ export function deepClone(val: any[] | obj): any {
     return res;
   }
 }
+
+export function isDefined(val: any) {
+  return val === 0 || !!val;
+}
