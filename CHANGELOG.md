@@ -1,3 +1,28 @@
+# [](https://github.com/Qymh/q-select/compare/v0.1.7...v) (2019-07-29)
+
+
+
+## [0.1.7](https://github.com/Qymh/q-select/compare/v0.1.6...v0.1.7) (2019-07-29)
+
+
+### Bug Fixes
+
+* clerical error ([8e1d6ba](https://github.com/Qymh/q-select/commit/8e1d6ba))
+* wrong alias ([fea9ad2](https://github.com/Qymh/q-select/commit/fea9ad2))
+* wrong module ([cf52a5e](https://github.com/Qymh/q-select/commit/cf52a5e))
+
+
+### Features
+
+* add sandbox demo ([bb56eb7](https://github.com/Qymh/q-select/commit/bb56eb7))
+* add vue-q-select demo ([65d357f](https://github.com/Qymh/q-select/commit/65d357f))
+* friendly demo ([301abbb](https://github.com/Qymh/q-select/commit/301abbb))
+* optimize vue readme ([f55fc7d](https://github.com/Qymh/q-select/commit/f55fc7d))
+* vue-q-select readme ([34bfcbb](https://github.com/Qymh/q-select/commit/34bfcbb))
+* warning use function of the instance when select is in animating ([1c93ab3](https://github.com/Qymh/q-select/commit/1c93ab3))
+
+
+
 # [](https://github.com/Qymh/q-select/compare/v0.1.6...v) (2019-07-26)
 
 
