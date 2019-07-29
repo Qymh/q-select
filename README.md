@@ -771,7 +771,7 @@ Vue.use(QSelect, { name: 'QPicker' });
 
 - 简单联动 [沙盒演示](https://codesandbox.io/s/jiandanliandong-lc3fd?fontsize=14)
 
-- 省市区联动实测 [沙盒演示](https://codesandbox.io/s/jiandanliandong-zq7v6?fontsize=14)
+- 省市区联动实测 [沙盒演示](https://codesandbox.io/s/shengshiquliandongshice-zq7v6?fontsize=14)
 
 - 省市区非联动异步实测
 
