@@ -1,3 +1,22 @@
+# [](https://github.com/Qymh/q-select/compare/v0.1.8...v) (2019-07-31)
+
+
+
+## [0.1.8](https://github.com/Qymh/q-select/compare/v0.1.7...v0.1.8) (2019-07-31)
+
+
+### Bug Fixes
+
+* wrong url for demo ([f735bd5](https://github.com/Qymh/q-select/commit/f735bd5))
+
+
+### Features
+
+* optimize destroy ([b3ef919](https://github.com/Qymh/q-select/commit/b3ef919))
+* optimize publish ([b87ca79](https://github.com/Qymh/q-select/commit/b87ca79))
+
+
+
 # [](https://github.com/Qymh/q-select/compare/v0.1.7...v) (2019-07-29)
 
 
