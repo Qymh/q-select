@@ -535,12 +535,13 @@ class Layer {
    */
   destroySelect() {
     nextTick(() => {
+      this.touchs.forEach(v => v.destroy());
+      Dom.remove(document.body, Dom.find(`q-select--${this.id}`));
       // eslint-disable-next-line
       (this as any).__proto__ = null;
       for (const key in this) {
         (this as any)[key] = null;
       }
-      Dom.remove(document.body, Dom.find(`q-select--${id}`));
     });
   }
 

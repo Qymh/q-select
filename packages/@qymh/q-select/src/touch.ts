@@ -440,6 +440,13 @@ class Touch {
   getFeatureScrollTop(featureIndex: number) {
     return (this.average - featureIndex) * this.pre.chunkHeight;
   }
+
+  // 摧毁当前touch
+  destroy() {
+    Dom.unbind(this.overlay, 'touchstart');
+    Dom.unbind(this.overlay, 'touchmove');
+    Dom.unbind(this.overlay, 'touchend');
+  }
 }
 
 export default Touch;
