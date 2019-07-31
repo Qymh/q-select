@@ -59,20 +59,9 @@ async function release() {
     return;
   }
 
-  try {
-    const { stdout } = await execa('bash', [
-      'scripts/publish.sh',
-      curVersion,
-      npmTag
-    ]);
-    redTips(stdout);
-  } catch (error) {
-    if (error.stderr) {
-      redTips(error.stderr);
-    }
-  }
+  const shell = execa('bash', ['scripts/publish.sh', curVersion, npmTag]);
+  shell.stdout.pipe(process.stdout);
+  shell.stderr.pipe(process.stderr);
 }
 
-release().catch(err => {
-  redTips(err);
-});
+release();
