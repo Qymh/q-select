@@ -30,7 +30,7 @@
     "paths": {}, // 模块名到基于 baseUrl 的路径映射的列表
     "rootDirs": [], // 根文件夹列表，其组合内容表示项目运行时的结构内容
     "typeRoots": [], // 包含类型声明的文件列表
-    "types": ["node"], // 需要包含的类型声明文件名列表
+    "types": ["node", "@types/jest"], // 需要包含的类型声明文件名列表
     "allowSyntheticDefaultImports": true, // 允许从没有设置默认导出的模块中默认导入。
     /* Source Map Options */
     "sourceRoot": "./", // 指定调试器应该找到 TypeScript 文件而不是源文件的位置
@@ -42,6 +42,6 @@
     // 使用的JSX工厂函数
     "jsxFactory": "h",
   },
-  "include": ["build/**/*.ts", "packages/**/*.ts","packages/**/*.d.ts", "typings/**/*.d.ts"],
+  "include": ["build/**/*.ts", "packages/**/*.ts","packages/**/*.d.ts", "typings/**/*.d.ts", "tests/**/*.ts"],
   "exclude": ["node_modules"]
 }

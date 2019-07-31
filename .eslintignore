@@ -6,3 +6,4 @@ demo/vue/lib/*.js
 demo/vue/dist/*.js
 gitpage/js/*.js
 gitpage/vue/*.js
+coverage/*

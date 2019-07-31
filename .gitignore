@@ -2,3 +2,4 @@ node_modules
 demo/js/dist/*
 demo/vue/dist/*
 .DS_Store
+coverage/*
