@@ -18,7 +18,7 @@ log "build"
 npm run build
 
 git add .
-git commit -m "chore: $verson build"
+git commit -m "chore: $verson build packages"
 
 log "write version"
 lerna publish $version --yes --force-publish --npm-tag $tag

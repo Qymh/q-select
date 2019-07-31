@@ -1,5 +1,5 @@
 /**
- * @qymh/q-select v0.1.6
+ * @qymh/q-select v0.1.7
  * (c) 2019 Qymh
  * @license MIT
  */
@@ -601,6 +601,11 @@ var Touch = (function () {
     Touch.prototype.getFeatureScrollTop = function (featureIndex) {
         return (this.average - featureIndex) * this.pre.chunkHeight;
     };
+    Touch.prototype.destroy = function () {
+        Dom.unbind(this.overlay, 'touchstart');
+        Dom.unbind(this.overlay, 'touchmove');
+        Dom.unbind(this.overlay, 'touchend');
+    };
     return Touch;
 }());
 
@@ -952,11 +957,12 @@ var Layer = (function () {
     Layer.prototype.destroySelect = function () {
         var _this = this;
         nextTick(function () {
+            _this.touchs.forEach(function (v) { return v.destroy(); });
+            Dom.remove(document.body, Dom.find("q-select--" + _this.id));
             _this.__proto__ = null;
             for (var key in _this) {
                 _this[key] = null;
             }
-            Dom.remove(document.body, Dom.find("q-select--" + id));
         });
     };
     Layer.prototype.showSelect = function () {
