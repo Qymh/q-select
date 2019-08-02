@@ -63,6 +63,7 @@ export default {
 
     const close = () => {
       if (warnIns()) {
+        this.$emit('input', false);
         return ins.close();
       }
     };
@@ -204,13 +205,10 @@ export default {
     return {
       pending,
       ins,
-      show,
-      close,
       destroy,
       setData,
       setColumnData,
       scrollTo,
-      setIndex,
       setValue,
       setKey,
       getData,

@@ -138,7 +138,7 @@ class QSelect extends Layer {
       reject('[SelectQ]: Please wait for animating stops');
       return;
     }
-    const preIndex = [...this.realIndex];
+    const preIndex = [...this.dynamicIndex];
     this.dynamicIndex = [...index];
     this.realIndex = [...index];
     if (!sameIndex(preIndex, index) || diff) {

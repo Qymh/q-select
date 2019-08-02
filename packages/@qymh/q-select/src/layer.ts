@@ -70,7 +70,8 @@ class Layer {
   public loading: boolean;
 
   constructor(options: QOptions) {
-    this.$options = options;
+    this.$options = options || {};
+    options = options || {};
     this.id = id++;
     this.target = null;
     if (options.target) {
@@ -96,12 +97,12 @@ class Layer {
     this.index = options.index;
     this.dynamicIndex = [];
     this.realIndex = [];
-    this.isGanged = this.data.every((v: any) => isPlainObj(v));
     this.touchs = [];
     this.dynamicData = [];
     this.realData = [];
     this.cachedCall = [];
     this.isReady = false;
+    this.isGanged = false;
     this.hidden = true;
     this.loading = !!options.loading;
     this.dom = new Dom();
@@ -146,15 +147,17 @@ class Layer {
    * @param forceData 需要覆盖验证的data
    */
   validateData(forceData?: Data): boolean {
-    const data = forceData || this.$options.data;
+    let data = forceData || this.$options.data;
     if (
       !data ||
       !Array.isArray(data) ||
       (Array.isArray(data) && data.length === 0)
     ) {
       tips(false, 'data can only be an array');
-      this.data = [['']];
+      this.data = data = [['']];
     }
+
+    this.isGanged = [[]].every((v: any) => isPlainObj(v));
 
     /**
      * 递归验证联动下的data
@@ -536,6 +539,7 @@ class Layer {
   destroySelect() {
     nextTick(() => {
       this.touchs.forEach(v => v.destroy());
+      Dom.remove(document.body, Dom.find(`q-select-bk`));
       Dom.remove(document.body, Dom.find(`q-select--${this.id}`));
       // eslint-disable-next-line
       (this as any).__proto__ = null;

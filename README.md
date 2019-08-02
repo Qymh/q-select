@@ -2,7 +2,7 @@
 
 一个高性能的移动端下拉选择插件 同时支持 js 和 vue
 
-[Vue文档](#Vue)
+[Vue 文档](#Vue)
 
 ## JavaScript
 
@@ -794,11 +794,31 @@ Vue.use(QSelect, { name: 'QPicker' });
 | disableDefaultCancel | Boolean |  false   | false  | 禁止默认取消事件 | [同 disableDefaultCancel](#disableDefaultCancel) |
 | target               | String  |  false   |   ''   |   内联挂载元素   |                             [同 target](#target) |
 | loading              | Boolean |  false   | false  |  是否启用加载图  |                           [同 loading](#loading) |
-|                      |         |          |   ''   |                  |                                                  |
+| deep                 | Boolean |  false   | false  |                  |                                是否深度观察 data |
+
+#### 注意事项
+
+vue 下`q-select`的使用和在 js 下不同,我们运用了`vue`响应式的优势,去掉了在原生 js 中的`setIndex` `show` `close` `setLoading` `cancelLoading` 方法
+
+- 设置 data
+
+  直接通过改变 props 下 data 将会重新渲染 data,不过考虑到性能优化,这里的 data 并不是深度观察的,如果需要深度观察,可以将`deep`属性设置为 true,也可以使用`this.$refs.select.setData`进行原生设置
+
+- 设置 index
+
+  直接通过改变 props 下 index 将会设置 index
+
+- 设置是否显示
+
+  通过改变 v-model 的布尔值改变显示与否
+
+- 设置是否有 loading
+
+  通过改变 props 下 loading 的布尔值 将会设置是否显示 loading
 
 ### refs
 
-以下方法通过在组件上绑定 ref 通过 `this.$refs.select`调用
+ 以下方法通过在组件上绑定 ref 通过 `this.$refs.select`调用
 
 ```vue
 <template>
@@ -837,17 +857,6 @@ this.$refs.select.setValue([3]);
 
 ```javascript
 this.$refs.select.setKey(['2k']);
-```
-
-- setIndex
-
-  - 解释 在当前选择栏下设定选择的索引值,选择栏会自动聚焦到当前值,如果没有这个值,则会聚焦到当前栏目第一项
-  - 参数
-    - key(必填)
-      - 数据格式 数组 直接指定要聚焦到的索引如 [0,0,0]
-
-```javascript
-this.$refs.select.setIndex([0]);
 ```
 
 - scrollTo
@@ -922,38 +931,6 @@ this.$refs.select.getKey();
 
 ```javascript
 this.$refs.select.getIndex();
-```
-
-- setLoading
-
-  - 解释 调出 loading 加载图案
-
-```javascript
-this.$refs.select.setLoading();
-```
-
-- cancelLoading
-
-  - 解释 关闭 loading 加载图案
-
-```javascript
-this.$refs.select.cancelLoading();
-```
-
-- show
-
-  - 解释 手动呼出下拉选择
-
-```javascript
-this.$refs.select.show();
-```
-
-- close
-
-  - 解释 手动关闭下拉选择
-
-```javascript
-this.$refs.select.close();
 ```
 
 - destroy
