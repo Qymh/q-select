@@ -1,3 +1,19 @@
+# [](https://github.com/Qymh/q-select/compare/v0.1.9...v) (2019-08-02)
+
+
+
+## [0.1.9](https://github.com/Qymh/q-select/compare/v0.1.8...v0.1.9) (2019-08-02)
+
+
+### Features
+
+* optimize publish ([0ad8401](https://github.com/Qymh/q-select/commit/0ad8401))
+* optimize some options ([73a7716](https://github.com/Qymh/q-select/commit/73a7716))
+* unit test cache ([0cef9fb](https://github.com/Qymh/q-select/commit/0cef9fb))
+* unit test template ([d9f8e33](https://github.com/Qymh/q-select/commit/d9f8e33))
+
+
+
 # [](https://github.com/Qymh/q-select/compare/v0.1.8...v) (2019-07-31)
 
 
