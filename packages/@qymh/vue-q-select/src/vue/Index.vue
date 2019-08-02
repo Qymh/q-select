@@ -57,13 +57,14 @@ export default {
 
     const show = () => {
       if (warnIns()) {
+        context.emit('input', true);
         return ins.show();
       }
     };
 
     const close = () => {
       if (warnIns()) {
-        this.$emit('input', false);
+        context.emit('input', false);
         return ins.close();
       }
     };
