@@ -60,8 +60,8 @@ async function release() {
   }
 
   const shell = execa('bash', ['scripts/publish.sh', curVersion, npmTag]);
-  shell.stdout.pipe(process.stdout);
-  shell.stderr.pipe(process.stderr);
+  await shell.stdout.pipe(process.stdout);
+  await shell.stderr.pipe(process.stderr);
 }
 
 release();
