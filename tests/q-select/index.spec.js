@@ -1,21 +1,134 @@
 import QSelect from '../../packages/@qymh/q-select/src/index.ts';
 
 function mockError() {
-  return jest.spyOn(console, 'error').mockImplementation(() => {});
+  return jest.spyOn(console, 'error').mockImplementation(() => {
+    jest.restoreAllMocks();
+  });
 }
 
-// function env() {
-//   process.env.NODE_ENV = 'development';
-// }
+function mockTips() {
+  return jest.spyOn(console, 'warn').mockImplementation(() => {
+    jest.restoreAllMocks();
+  });
+}
 
-// function prod() {
-//   process.env.NODE_ENV = 'production';
-// }
+function env() {
+  process.env.NODE_ENV = 'development';
+}
+
+function prod() {
+  process.env.NODE_ENV = 'production';
+}
 
 describe('options', () => {
+  beforeAll(() => {
+    env();
+  });
+  afterAll(() => {
+    prod();
+  });
+
   it('works', () => {
     const ins = new QSelect();
     expect(ins).toBeDefined();
+  });
+
+  describe('validateOptions', () => {
+    describe('target', () => {
+      it('not has target', () => {
+        const error = mockError();
+        new QSelect({
+          data: [[1]],
+          target: '#test'
+        });
+        expect(error).toHaveBeenCalled();
+      });
+
+      it('hasTarget', () => {
+        const $div = document.createElement('div');
+        $div.id = 'test';
+        document.body.appendChild($div);
+        const ins = new QSelect({
+          data: [[1]],
+          target: '#test'
+        });
+        expect(ins.target).toBe($div);
+        document.body.removeChild($div);
+      });
+    });
+
+    describe('count', () => {
+      it('odd', () => {
+        const error = mockTips();
+        const ins = new QSelect({
+          data: [[1]],
+          count: 2
+        });
+        expect(error).toHaveBeenCalled();
+        expect(ins.count).toBe(7);
+      });
+
+      it('smaller than 5', () => {
+        const error = mockTips();
+        const ins = new QSelect({
+          data: [[1]],
+          count: 2
+        });
+        expect(error).toHaveBeenCalled();
+        expect(ins.count).toBe(7);
+      });
+
+      it('bigger than 9', () => {
+        const error = mockTips();
+        const ins = new QSelect({
+          data: [[1]],
+          count: 10
+        });
+        expect(error).toHaveBeenCalled();
+        expect(ins.count).toBe(7);
+      });
+    });
+
+    describe('chunkHeight', () => {
+      it('smaller than 30', () => {
+        const error = mockTips();
+        const ins = new QSelect({
+          data: [[1]],
+          chunkHeight: 20
+        });
+        expect(error).toHaveBeenCalled();
+        expect(ins.chunkHeight).toBe(40);
+      });
+
+      it('bigger than 60', () => {
+        const error = mockTips();
+        const ins = new QSelect({
+          data: [[1]],
+          chunkHeight: 70
+        });
+        expect(error).toHaveBeenCalled();
+        expect(ins.chunkHeight).toBe(40);
+      });
+    });
+
+    describe('function call', () => {
+      it('not a function', () => {
+        const error = mockTips();
+        const ins = new QSelect({
+          ready: 1,
+          cancel: 1,
+          confirm: 1,
+          show: 1,
+          close: 1
+        });
+        expect(error).toHaveBeenCalled();
+        expect(typeof ins.$options.ready).toBe('function');
+        expect(typeof ins.$options.cancel).toBe('function');
+        expect(typeof ins.$options.confirm).toBe('function');
+        expect(typeof ins.$options.show).toBe('function');
+        expect(typeof ins.$options.close).toBe('function');
+      });
+    });
   });
 
   describe('validateData', () => {
@@ -34,18 +147,81 @@ describe('options', () => {
         const ins = new QSelect({ data: [] });
         expect(ins.data).toStrictEqual([[{ key: '', value: '' }]]);
       });
+    });
 
-      describe('not ganged data', () => {
-        it('not contain arrays', () => {
-          const error = mockError();
-          new QSelect({ data: [[], [], 123] });
-          expect(error).toHaveBeenCalled();
-        });
+    describe('not ganged data', () => {
+      it('not contain arrays', () => {
+        const error = mockError();
+        new QSelect({ data: [[], [], 123] });
+        expect(error).toHaveBeenCalled();
+      });
+
+      it('object not has value', () => {
+        const error = mockError();
+        new QSelect({ data: [[{ test: '123' }]] });
+        expect(error).toHaveBeenCalled();
+      });
+
+      it('wrong types', () => {
+        const error = mockError();
+        new QSelect({ data: [[() => {}]] });
+        expect(error).toHaveBeenCalled();
+      });
+    });
+
+    describe('ganged data', () => {
+      it('first level not contain value', () => {
+        const error = mockError();
+        new QSelect({ data: [{ test: 123 }, { test: 456 }] });
+        expect(error).toHaveBeenCalled();
+      });
+
+      it('object not has value', () => {
+        const error = mockError();
+        new QSelect({ data: [{ value: '123', children: [{ test: 123 }] }] });
+        expect(error).toHaveBeenCalled();
+      });
+
+      it('wrong type', () => {
+        const error = mockError();
+        new QSelect({ data: [{ value: '123', children: [() => {}] }] });
+        expect(error).toHaveBeenCalled();
+      });
+
+      it('correct', () => {
+        const error = mockError();
+        new QSelect({ data: [{ value: '123', children: ['123'] }] });
+        expect(error).not.toHaveBeenCalled();
       });
     });
   });
 
-  // it('NotGangedData', () => {
+  describe('validateIndex', () => {
+    it('not an array', () => {
+      const error = mockError();
+      new QSelect({
+        data: [[1]],
+        index: () => {}
+      });
+      expect(error).toHaveBeenCalled();
+    });
 
-  // })
+    it('wrong type', () => {
+      const error = mockError();
+      new QSelect({
+        data: [[1]],
+        index: ['1']
+      });
+      expect(error).toHaveBeenCalled();
+    });
+
+    it('correct', () => {
+      const error = mockError();
+      new QSelect({
+        data: [[1, 2, 3]],
+        index: [0]
+      });
+      expect(error).not.toHaveBeenCalled();
+    });
+  });
 });
