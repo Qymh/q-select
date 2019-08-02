@@ -23,6 +23,7 @@ git commit -m "chore: $version build packages"
 log "build demo"
 npm run build:demo
 
+git add .
 git commit -m "chore: $version demo packages"
 
 log "write version"
