@@ -1,5 +1,5 @@
 /**
- * @qymh/q-select v0.1.7
+ * @qymh/q-select v0.1.8
  * (c) 2019 Qymh
  * @license MIT
  */
@@ -614,7 +614,8 @@ var Touch = (function () {
 var id = 0;
 var Layer = (function () {
     function Layer(options) {
-        this.$options = options;
+        this.$options = options || {};
+        options = options || {};
         this.id = id++;
         this.target = null;
         if (options.target) {
@@ -638,12 +639,12 @@ var Layer = (function () {
         this.index = options.index;
         this.dynamicIndex = [];
         this.realIndex = [];
-        this.isGanged = this.data.every(function (v) { return isPlainObj(v); });
         this.touchs = [];
         this.dynamicData = [];
         this.realData = [];
         this.cachedCall = [];
         this.isReady = false;
+        this.isGanged = false;
         this.hidden = true;
         this.loading = !!options.loading;
         this.dom = new Dom();
@@ -679,8 +680,9 @@ var Layer = (function () {
             !Array.isArray(data) ||
             (Array.isArray(data) && data.length === 0)) {
             tips(false, 'data can only be an array');
-            this.data = [['']];
+            this.data = data = [['']];
         }
+        this.isGanged = [[]].every(function (v) { return isPlainObj(v); });
         function validateGangedData(data, firstLevel) {
             return data.every(function (v) {
                 if (isPlainObj(v)) {
@@ -960,6 +962,7 @@ var Layer = (function () {
         var _this = this;
         nextTick(function () {
             _this.touchs.forEach(function (v) { return v.destroy(); });
+            Dom.remove(document.body, Dom.find("q-select-bk"));
             Dom.remove(document.body, Dom.find("q-select--" + _this.id));
             _this.__proto__ = null;
             for (var key in _this) {
@@ -1276,7 +1279,7 @@ var QSelect = (function (_super) {
             reject('[SelectQ]: Please wait for animating stops');
             return;
         }
-        var preIndex = this.realIndex.slice();
+        var preIndex = this.dynamicIndex.slice();
         this.dynamicIndex = index.slice();
         this.realIndex = index.slice();
         if (!sameIndex(preIndex, index) || diff) {

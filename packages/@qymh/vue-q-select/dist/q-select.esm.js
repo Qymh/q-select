@@ -1,26 +1,17 @@
 /**
- * @qymh/vue-q-select v0.1.7
+ * @qymh/vue-q-select v0.1.8
  * (c) 2019 Qymh
  * @license MIT
  */
 import Vue from 'vue';
 import QSelect$1 from '@qymh/q-select';
 import { value, onMounted, onUnmounted, watch, plugin } from 'vue-function-api';
-
-function assert(condition, msg) {
-    if (process.env.NODE_ENV === 'development') {
-        if (!condition) {
-            return Boolean(console.error("[SelectQ]: " + msg));
-        }
-        else {
-            return true;
-        }
-    }
-    return true;
-}
+import { assert } from '@qymh/q-select/src/uitls';
+import '@qymh/q-select/dist/q-select.css';
 
 var script = {
     setup: function (props, context) {
+        var _this = this;
         var pending = value(true);
         var uid = value(0);
         var ins;
@@ -75,6 +66,7 @@ var script = {
         };
         var close = function () {
             if (warnIns()) {
+                _this.$emit('input', false);
                 return ins.close();
             }
         };
@@ -187,13 +179,10 @@ var script = {
         return {
             pending: pending,
             ins: ins,
-            show: show,
-            close: close,
             destroy: destroy,
             setData: setData,
             setColumnData: setColumnData,
             scrollTo: scrollTo,
-            setIndex: setIndex,
             setValue: setValue,
             setKey: setKey,
             getData: getData,

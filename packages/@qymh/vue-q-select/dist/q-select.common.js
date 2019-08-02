@@ -1,5 +1,5 @@
 /**
- * @qymh/vue-q-select v0.1.7
+ * @qymh/vue-q-select v0.1.8
  * (c) 2019 Qymh
  * @license MIT
  */
@@ -10,21 +10,12 @@ function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'defau
 var Vue = _interopDefault(require('vue'));
 var QSelect$1 = _interopDefault(require('@qymh/q-select'));
 var vueFunctionApi = require('vue-function-api');
-
-function assert(condition, msg) {
-    if (process.env.NODE_ENV === 'development') {
-        if (!condition) {
-            return Boolean(console.error("[SelectQ]: " + msg));
-        }
-        else {
-            return true;
-        }
-    }
-    return true;
-}
+var uitls = require('@qymh/q-select/src/uitls');
+require('@qymh/q-select/dist/q-select.css');
 
 var script = {
     setup: function (props, context) {
+        var _this = this;
         var pending = vueFunctionApi.value(true);
         var uid = vueFunctionApi.value(0);
         var ins;
@@ -66,7 +57,7 @@ var script = {
         });
         var warnIns = function () {
             if (!ins) {
-                return assert(false, 'You should new QSelect before you use it');
+                return uitls.assert(false, 'You should new QSelect before you use it');
             }
             else {
                 return true;
@@ -79,6 +70,7 @@ var script = {
         };
         var close = function () {
             if (warnIns()) {
+                _this.$emit('input', false);
                 return ins.close();
             }
         };
@@ -191,13 +183,10 @@ var script = {
         return {
             pending: pending,
             ins: ins,
-            show: show,
-            close: close,
             destroy: destroy,
             setData: setData,
             setColumnData: setColumnData,
             scrollTo: scrollTo,
-            setIndex: setIndex,
             setValue: setValue,
             setKey: setKey,
             getData: getData,
