@@ -1,5 +1,5 @@
 /**
- * @qymh/vue-q-select v0.1.8
+ * @qymh/vue-q-select v0.1.9
  * (c) 2019 Qymh
  * @license MIT
  */
@@ -10,8 +10,18 @@ function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'defau
 var Vue = _interopDefault(require('vue'));
 var QSelect$1 = _interopDefault(require('@qymh/q-select'));
 var vueFunctionApi = require('vue-function-api');
-var uitls = require('@qymh/q-select/src/uitls');
-require('@qymh/q-select/dist/q-select.css');
+
+function assert(condition, msg) {
+    if (process.env.NODE_ENV === 'development') {
+        if (!condition) {
+            return Boolean(console.error("[SelectQ]: " + msg));
+        }
+        else {
+            return true;
+        }
+    }
+    return true;
+}
 
 var script = {
     setup: function (props, context) {
@@ -57,7 +67,7 @@ var script = {
         });
         var warnIns = function () {
             if (!ins) {
-                return uitls.assert(false, 'You should new QSelect before you use it');
+                return assert(false, 'You should new QSelect before you use it');
             }
             else {
                 return true;

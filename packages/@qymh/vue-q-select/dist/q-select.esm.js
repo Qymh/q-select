@@ -1,13 +1,23 @@
 /**
- * @qymh/vue-q-select v0.1.8
+ * @qymh/vue-q-select v0.1.9
  * (c) 2019 Qymh
  * @license MIT
  */
 import Vue from 'vue';
 import QSelect$1 from '@qymh/q-select';
 import { value, onMounted, onUnmounted, watch, plugin } from 'vue-function-api';
-import { assert } from '@qymh/q-select/src/uitls';
-import '@qymh/q-select/dist/q-select.css';
+
+function assert(condition, msg) {
+    if (process.env.NODE_ENV === 'development') {
+        if (!condition) {
+            return Boolean(console.error("[SelectQ]: " + msg));
+        }
+        else {
+            return true;
+        }
+    }
+    return true;
+}
 
 var script = {
     setup: function (props, context) {
