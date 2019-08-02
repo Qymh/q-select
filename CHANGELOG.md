@@ -1,3 +1,17 @@
+# [](https://github.com/Qymh/q-select/compare/v0.2.2...v) (2019-08-02)
+
+
+
+## [0.2.2](https://github.com/Qymh/q-select/compare/v0.2.1...v0.2.2) (2019-08-02)
+
+
+### Features
+
+* add build demo ([7944a0e](https://github.com/Qymh/q-select/commit/7944a0e))
+* correct unit test ([b87f9cc](https://github.com/Qymh/q-select/commit/b87f9cc))
+
+
+
 # [](https://github.com/Qymh/q-select/compare/v0.2.0...v) (2019-08-02)
 
 
