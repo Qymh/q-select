@@ -1,3 +1,16 @@
+# [](https://github.com/Qymh/q-select/compare/v0.2.0...v) (2019-08-02)
+
+
+
+# [0.2.0](https://github.com/Qymh/q-select/compare/v0.1.9...v0.2.0) (2019-08-02)
+
+
+### Bug Fixes
+
+* wrong modules ([144f028](https://github.com/Qymh/q-select/commit/144f028))
+
+
+
 # [](https://github.com/Qymh/q-select/compare/v0.1.9...v) (2019-08-02)
 
 
