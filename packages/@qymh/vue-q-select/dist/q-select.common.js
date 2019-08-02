@@ -1,5 +1,5 @@
 /**
- * @qymh/vue-q-select v0.1.9
+ * @qymh/vue-q-select v0.2.0
  * (c) 2019 Qymh
  * @license MIT
  */
@@ -25,7 +25,6 @@ function assert(condition, msg) {
 
 var script = {
     setup: function (props, context) {
-        var _this = this;
         var pending = vueFunctionApi.value(true);
         var uid = vueFunctionApi.value(0);
         var ins;
@@ -75,12 +74,13 @@ var script = {
         };
         var show = function () {
             if (warnIns()) {
+                context.emit('input', true);
                 return ins.show();
             }
         };
         var close = function () {
             if (warnIns()) {
-                _this.$emit('input', false);
+                context.emit('input', false);
                 return ins.close();
             }
         };
