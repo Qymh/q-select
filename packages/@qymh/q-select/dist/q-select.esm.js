@@ -1,5 +1,5 @@
 /**
- * @qymh/q-select v0.2.0
+ * @qymh/q-select v0.2.1
  * (c) 2019 Qymh
  * @license MIT
  */
@@ -658,10 +658,10 @@ var Layer = (function () {
         }
         if (this.count % 2 !== 1 && (this.count < 5 || this.count > 9)) {
             tips(false, "count can only be 5 or 7 or 9, but now get " + this.count);
-            this.count = this.$options.count = 5;
+            this.count = this.$options.count = 7;
         }
-        if (this.chunkHeight < 30 || this.chunkHeight > 100) {
-            tips(false, "chunkHeight must greater than 30 and less than 100,but now get " + this.chunkHeight);
+        if (this.chunkHeight < 30 || this.chunkHeight > 60) {
+            tips(false, "chunkHeight must greater than 30 and less than 60,but now get " + this.chunkHeight);
             this.chunkHeight = this.$options.chunkHeight = 40;
         }
         ['ready', 'cancel', 'confirm', 'show', 'close'].map(function (v) {
@@ -680,7 +680,7 @@ var Layer = (function () {
             tips(false, 'data can only be an array');
             this.data = data = [['']];
         }
-        this.isGanged = [[]].every(function (v) { return isPlainObj(v); });
+        this.isGanged = data.every(function (v) { return isPlainObj(v); });
         function validateGangedData(data, firstLevel) {
             return data.every(function (v) {
                 if (isPlainObj(v)) {
