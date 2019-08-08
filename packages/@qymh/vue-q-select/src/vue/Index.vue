@@ -216,8 +216,6 @@ export default {
       getIndex,
       getValue,
       getKey,
-      setLoading,
-      cancelLoading,
       uid
     };
   },

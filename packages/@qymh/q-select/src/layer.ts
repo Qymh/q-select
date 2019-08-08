@@ -210,13 +210,13 @@ class Layer {
         return v.every((p: NotGangedDataObj | string | number) => {
           if (isPlainObj(p)) {
             return assert(
-              (p as NotGangedDataObj).value,
-              'value is required if NotGangedData is a object'
+              (p as NotGangedDataObj).value !== undefined,
+              'value is required if NotGangedData is an object'
             );
           } else if (typeof p !== 'string' && typeof p !== 'number') {
             return assert(
               false,
-              `value can only be number or string if NotGangedData is not a object but now get ${p} which is ${typeof p}`
+              `value can only be number or string if NotGangedData is not an object but now get ${p} which is ${typeof p}`
             );
           }
           return true;
@@ -414,6 +414,7 @@ class Layer {
           };
         }
       }
+      return v;
     });
   }
 
