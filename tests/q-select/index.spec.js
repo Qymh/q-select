@@ -319,22 +319,115 @@ describe('options', () => {
   });
 });
 
-describe('instanceFunction', () => {
+describe('instance', () => {
+  beforeAll(() => {
+    env();
+  });
+  afterAll(() => {
+    prod();
+  });
   describe('setData', () => {
+    describe('notGangedData', () => {
+      it('set notGangedData', () => {
+        const s = new QSelect({
+          data: [[1], [2]]
+        });
+        s.setData([[1, 2], [2, 2], [3, 2]]);
+        expect(s.data).toStrictEqual([
+          [{ key: 1, value: 1 }, { key: 2, value: 2 }],
+          [{ key: 2, value: 2 }, { key: 2, value: 2 }],
+          [{ key: 3, value: 3 }, { key: 2, value: 2 }]
+        ]);
+        const index = s.getIndex();
+        expect(index).toStrictEqual([0, 0, 0]);
+        const data = s.getData();
+        expect(data).toStrictEqual([
+          [1, 2, 3],
+          [1, 2, 3],
+          [
+            { key: 1, value: 1, index: 0 },
+            { key: 2, value: 2, index: 0 },
+            { key: 3, value: 3, index: 0 }
+          ]
+        ]);
+      });
+      it('set notGangedData and index', () => {
+        const s = new QSelect({
+          data: [[1], [2]]
+        });
+        s.setData([[1, 2], [2, 2], [3, 2]], [1, 0, 0]);
+        expect(s.data).toStrictEqual([
+          [{ key: 1, value: 1 }, { key: 2, value: 2 }],
+          [{ key: 2, value: 2 }, { key: 2, value: 2 }],
+          [{ key: 3, value: 3 }, { key: 2, value: 2 }]
+        ]);
+        const index = s.getIndex();
+        expect(index).toStrictEqual([1, 0, 0]);
+        const data = s.getData();
+        expect(data).toStrictEqual([
+          [2, 2, 3],
+          [2, 2, 3],
+          [
+            { key: 2, value: 2, index: 1 },
+            { key: 2, value: 2, index: 0 },
+            { key: 3, value: 3, index: 0 }
+          ]
+        ]);
+      });
+      it('set error notGangedData', () => {
+        const s = new QSelect({
+          data: [[1], [2]]
+        });
+        expect(s.setData([[{ f: 123 }]])).rejects.toBe('wrong data or index');
+      });
+    });
+
+    describe('gangedData', () => {
+      it('set GangedData', () => {
+        const s = new QSelect({
+          data: [{ value: 1, children: [1] }]
+        });
+        s.setData([{ value: 1, children: [{ value: 2, children: [3] }] }]);
+        expect(s.data).toStrictEqual([
+          {
+            key: 1,
+            value: 1,
+            children: [
+              {
+                key: 2,
+                value: 2,
+                children: [{ key: 3, value: 3, children: [] }]
+              }
+            ]
+          }
+        ]);
+        expect(s.getIndex()).toStrictEqual([0, 0, 0]);
+        expect(s.getData()).toStrictEqual([
+          [1, 2, 3],
+          [1, 2, 3],
+          [
+            { key: 1, value: 1, index: 0 },
+            { key: 2, value: 2, index: 0 },
+            { key: 3, value: 3, index: 0 }
+          ]
+        ]);
+      });
+    });
+  });
+
+  describe('setIndex', () => {
     it('notGangedData', () => {
       const s = new QSelect({
-        data: [[1], [2]]
+        data: [[1, 2, 3, 4, 5], [1, 2, 3, 4, 5]]
       });
-      s.setData([[1], [2], [3]]);
-      expect(s.data).toStrictEqual([
-        [{ key: 1, value: 1 }],
-        [{ key: 2, value: 2 }],
-        [{ key: 3, value: 3 }]
+      s.setIndex([1, 1]);
+      expect(s.getIndex()).toStrictEqual([1, 1]);
+      expect(s.getValue()).toStrictEqual([2, 2]);
+      expect(s.getData()).toStrictEqual([
+        [2, 2],
+        [2, 2],
+        [{ key: 2, value: 2, index: 1 }, { key: 2, value: 2, index: 1 }]
       ]);
-      const index = s.getIndex();
-      expect(index).toStrictEqual([0, 0, 0]);
     });
   });
 });
-
-describe('actions', () => {});

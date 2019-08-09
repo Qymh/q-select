@@ -277,7 +277,7 @@ class QSelect extends Layer {
         );
         resolve(this.getChangeCallData());
       } else {
-        reject();
+        reject('wrong data or index');
       }
     });
   }
