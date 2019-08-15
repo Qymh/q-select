@@ -36,9 +36,6 @@ export default {
         },
         show() {
           context.emit('show');
-        },
-        hide() {
-          context.emit('hide');
         }
       });
     });
@@ -150,7 +147,7 @@ export default {
     watch(
       () => props.defaultKey,
       val => {
-        if (val) {
+        if (val && val.length) {
           if (pending) {
             Vue.nextTick(() => {
               ins.setKey(props.defaultKey);
@@ -165,7 +162,7 @@ export default {
     watch(
       () => props.defaultValue,
       val => {
-        if (val) {
+        if (val && val.length) {
           if (pending) {
             Vue.nextTick(() => {
               ins.setValue(props.defaultValue);
@@ -190,6 +187,7 @@ export default {
           }
         } else {
           if (!pending) {
+            context.emit('hide');
             close();
           }
         }
@@ -246,6 +244,7 @@ export default {
       pending,
       ins,
       destroy,
+      setIndex,
       setData,
       setColumnData,
       scrollTo,
