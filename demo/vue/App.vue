@@ -86,6 +86,8 @@
         v-model="show5"
         title="省市区联动实测"
         :data="data5"
+        :defaultKey="defaultKey5"
+        :defaultValue="defaultValue5"
         @ready="doReady5"
         @show="doShow5"
         @hide="doHide5"
@@ -140,6 +142,8 @@ export default {
   },
   data() {
     return {
+      defaultKey5: [],
+      defaultValue5: [],
       title1: '',
       title2: '',
       title3: '',
@@ -546,18 +550,10 @@ export default {
           });
           break;
         case 1:
-          this.$refs.select5
-            .setValue(['四川省', '成都市', '武侯区'])
-            .then(([data, key]) => {
-              this.title5 = `数据:${data.join(',')},key:${key.join(',')}`;
-            });
+          this.defaultValue5 = ['四川省', '成都市', '武侯区'];
           break;
         case 2:
-          this.$refs.select5
-            .setKey(['32', '3201', '320104'])
-            .then(([data, key]) => {
-              this.title5 = `数据:${data.join(',')},key:${key.join(',')}`;
-            });
+          this.defaultKey5 = ['32', '3201', '320104'];
           break;
         case 3:
           // eslint-disable-next-line

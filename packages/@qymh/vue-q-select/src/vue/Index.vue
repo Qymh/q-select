@@ -148,6 +148,36 @@ export default {
     };
 
     watch(
+      () => props.defaultKey,
+      val => {
+        if (val) {
+          if (pending) {
+            Vue.nextTick(() => {
+              ins.setKey(props.defaultKey);
+            });
+          } else {
+            ins.setKey(props.defaultKey);
+          }
+        }
+      }
+    );
+
+    watch(
+      () => props.defaultValue,
+      val => {
+        if (val) {
+          if (pending) {
+            Vue.nextTick(() => {
+              ins.setValue(props.defaultValue);
+            });
+          } else {
+            ins.setValue(props.defaultValue);
+          }
+        }
+      }
+    );
+
+    watch(
       () => props.visible,
       val => {
         if (val) {
@@ -283,6 +313,16 @@ export default {
     disableDefaultCancel: {
       type: Boolean,
       default: false
+    },
+    // 默认key
+    defaultKey: {
+      type: Array,
+      default: () => []
+    },
+    // 默认value
+    defaultValue: {
+      type: Array,
+      default: () => []
     }
   },
   render(h) {
