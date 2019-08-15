@@ -1,3 +1,16 @@
+# [](https://github.com/Qymh/q-select/compare/v0.2.8...v) (2019-08-15)
+
+
+
+## [0.2.8](https://github.com/Qymh/q-select/compare/v0.2.7...v0.2.8) (2019-08-15)
+
+
+### Bug Fixes
+
+* not to delete bk when destroy ([22ac5b5](https://github.com/Qymh/q-select/commit/22ac5b5))
+
+
+
 # [](https://github.com/Qymh/q-select/compare/v0.2.7...v) (2019-08-15)
 
 
