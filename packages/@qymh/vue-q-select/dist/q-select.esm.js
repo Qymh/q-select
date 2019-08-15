@@ -1586,6 +1586,12 @@ var QSelect = function (_super) {
         this.realData = deepClone(this.dynamicData);
         this.callReady();
       }
+
+      this.touchs.filter(function (v) {
+        return !v.hidden;
+      }).forEach(function (v, i) {
+        v.curIndex = v.preIndex = _this.realIndex[i];
+      });
     }
   };
 
@@ -1762,9 +1768,6 @@ var script = {
         },
         show: function show() {
           context.emit('show');
-        },
-        hide: function hide() {
-          context.emit('hide');
         }
       });
     });
@@ -1875,7 +1878,7 @@ var script = {
     (0, _vueFunctionApi.watch)(function () {
       return props.defaultKey;
     }, function (val) {
-      if (val) {
+      if (val && val.length) {
         if (pending) {
           _vue.default.nextTick(function () {
             ins.setKey(props.defaultKey);
@@ -1888,7 +1891,7 @@ var script = {
     (0, _vueFunctionApi.watch)(function () {
       return props.defaultValue;
     }, function (val) {
-      if (val) {
+      if (val && val.length) {
         if (pending) {
           _vue.default.nextTick(function () {
             ins.setValue(props.defaultValue);
@@ -1911,6 +1914,7 @@ var script = {
         }
       } else {
         if (!pending) {
+          context.emit('hide');
           close();
         }
       }
@@ -1959,6 +1963,7 @@ var script = {
       pending: pending,
       ins: ins,
       destroy: destroy,
+      setIndex: setIndex,
       setData: setData,
       setColumnData: setColumnData,
       scrollTo: scrollTo,

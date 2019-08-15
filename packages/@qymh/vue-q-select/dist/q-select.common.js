@@ -1,5 +1,5 @@
 /**
- * @qymh/vue-q-select v0.2.5
+ * @qymh/vue-q-select v0.2.6
  * (c) 2019 Qymh
  * @license MIT
  */
@@ -1589,6 +1589,12 @@ var QSelect = function (_super) {
         this.realData = deepClone(this.dynamicData);
         this.callReady();
       }
+
+      this.touchs.filter(function (v) {
+        return !v.hidden;
+      }).forEach(function (v, i) {
+        v.curIndex = v.preIndex = _this.realIndex[i];
+      });
     }
   };
 
@@ -1765,9 +1771,6 @@ var script = {
         },
         show: function show() {
           context.emit('show');
-        },
-        hide: function hide() {
-          context.emit('hide');
         }
       });
     });
@@ -1878,7 +1881,7 @@ var script = {
     vueFunctionApi.watch(function () {
       return props.defaultKey;
     }, function (val) {
-      if (val) {
+      if (val && val.length) {
         if (pending) {
           Vue.nextTick(function () {
             ins.setKey(props.defaultKey);
@@ -1891,7 +1894,7 @@ var script = {
     vueFunctionApi.watch(function () {
       return props.defaultValue;
     }, function (val) {
-      if (val) {
+      if (val && val.length) {
         if (pending) {
           Vue.nextTick(function () {
             ins.setValue(props.defaultValue);
@@ -1914,6 +1917,7 @@ var script = {
         }
       } else {
         if (!pending) {
+          context.emit('hide');
           close();
         }
       }
@@ -1962,6 +1966,7 @@ var script = {
       pending: pending,
       ins: ins,
       destroy: destroy,
+      setIndex: setIndex,
       setData: setData,
       setColumnData: setColumnData,
       scrollTo: scrollTo,

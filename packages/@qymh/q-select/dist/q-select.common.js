@@ -1,5 +1,5 @@
 /**
- * @qymh/q-select v0.2.5
+ * @qymh/q-select v0.2.6
  * (c) 2019 Qymh
  * @license MIT
  */
@@ -1315,6 +1315,11 @@ var QSelect = (function (_super) {
                 this.realData = deepClone(this.dynamicData);
                 this.callReady();
             }
+            this.touchs
+                .filter(function (v) { return !v.hidden; })
+                .forEach(function (v, i) {
+                v.curIndex = v.preIndex = _this.realIndex[i];
+            });
         }
     };
     QSelect.prototype.setValue = function (value) {
