@@ -1,6 +1,6 @@
 <script lang="ts">
 import Vue from 'vue';
-import QSelect from '@qymh/q-select';
+import QSelect from '@qymh/q-select/src/index';
 import { value, onMounted, onUnmounted, watch } from 'vue-function-api';
 import { assert } from '@qymh/q-select/src/uitls';
 export default {
@@ -216,6 +216,15 @@ export default {
       () => props.data,
       val => {
         setData(val);
+        if (props.defaultValue && props.defaultValue.length) {
+          setValue(props.defaultValue);
+        }
+        if (props.defaultKey && props.defaultKey.length) {
+          setKey(props.defaultKey);
+        }
+        if (props.index && props.index.length) {
+          setIndex(props.index);
+        }
       },
       {
         lazy: true,
