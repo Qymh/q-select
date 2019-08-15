@@ -17819,6 +17819,11 @@
 	                this.realData = deepClone(this.dynamicData);
 	                this.callReady();
 	            }
+	            this.touchs
+	                .filter(function (v) { return !v.hidden; })
+	                .forEach(function (v, i) {
+	                v.curIndex = v.preIndex = _this.realIndex[i];
+	            });
 	        }
 	    };
 	    QSelect.prototype.setValue = function (value) {
@@ -18898,9 +18903,6 @@
 	                },
 	                show: function () {
 	                    context.emit('show');
-	                },
-	                hide: function () {
-	                    context.emit('hide');
 	                }
 	            });
 	        });
@@ -18993,7 +18995,7 @@
 	            }
 	        };
 	        vueFunctionApi_20(function () { return props.defaultKey; }, function (val) {
-	            if (val) {
+	            if (val && val.length) {
 	                if (pending) {
 	                    vue_runtime_common.nextTick(function () {
 	                        ins.setKey(props.defaultKey);
@@ -19005,7 +19007,7 @@
 	            }
 	        });
 	        vueFunctionApi_20(function () { return props.defaultValue; }, function (val) {
-	            if (val) {
+	            if (val && val.length) {
 	                if (pending) {
 	                    vue_runtime_common.nextTick(function () {
 	                        ins.setValue(props.defaultValue);
@@ -19029,6 +19031,7 @@
 	            }
 	            else {
 	                if (!pending) {
+	                    context.emit('hide');
 	                    close();
 	                }
 	            }
@@ -19070,6 +19073,7 @@
 	            pending: pending,
 	            ins: ins,
 	            destroy: destroy,
+	            setIndex: setIndex,
 	            setData: setData,
 	            setColumnData: setColumnData,
 	            scrollTo: scrollTo,

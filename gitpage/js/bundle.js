@@ -1295,6 +1295,11 @@
                     this.realData = deepClone(this.dynamicData);
                     this.callReady();
                 }
+                this.touchs
+                    .filter(function (v) { return !v.hidden; })
+                    .forEach(function (v, i) {
+                    v.curIndex = v.preIndex = _this.realIndex[i];
+                });
             }
         };
         QSelect.prototype.setValue = function (value) {
