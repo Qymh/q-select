@@ -16529,7 +16529,7 @@
 	  );
 
 	/**
-	 * @qymh/q-select v0.2.1
+	 * @qymh/q-select v0.2.2
 	 * (c) 2019 Qymh
 	 * @license MIT
 	 */
@@ -17225,7 +17225,7 @@
 	                }
 	                return v.every(function (p) {
 	                    if (isPlainObj(p)) {
-	                        return assert(p.value);
+	                        return assert(p.value !== undefined);
 	                    }
 	                    else if (typeof p !== 'string' && typeof p !== 'number') {
 	                        return assert();
@@ -17386,6 +17386,7 @@
 	                    };
 	                }
 	            }
+	            return v;
 	        });
 	    };
 	    Layer.prototype.prepareMount = function () {
@@ -17883,7 +17884,7 @@
 	                resolve(_this.getChangeCallData());
 	            }
 	            else {
-	                reject();
+	                reject('wrong data or index');
 	            }
 	        });
 	    };
@@ -17941,6 +17942,10 @@
 
 	Object.defineProperty(exports, '__esModule', { value: true });
 
+	function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
+
+	var Vue = _interopDefault(vue_runtime_common);
+
 	var toString = function (x) { return Object.prototype.toString.call(x); };
 	var hasSymbol = typeof Symbol === 'function' && Symbol.for;
 	var noopFn = function (_) { return _; };
@@ -17950,10 +17955,19 @@
 	    get: noopFn,
 	    set: noopFn,
 	};
-	function proxy(target, key, getter, setter) {
-	    sharedPropertyDefinition.get = getter;
-	    sharedPropertyDefinition.set = setter || noopFn;
+	function proxy(target, key, _a) {
+	    var get = _a.get, set = _a.set;
+	    sharedPropertyDefinition.get = get || noopFn;
+	    sharedPropertyDefinition.set = set || noopFn;
 	    Object.defineProperty(target, key, sharedPropertyDefinition);
+	}
+	function def(obj, key, val, enumerable) {
+	    Object.defineProperty(obj, key, {
+	        value: val,
+	        enumerable: !!enumerable,
+	        writable: true,
+	        configurable: true,
+	    });
 	}
 	var hasOwnProperty = Object.prototype.hasOwnProperty;
 	function hasOwn(obj, key) {
@@ -17964,10 +17978,27 @@
 	        throw new Error("[vue-function-api] " + msg);
 	}
 	function isArray(x) {
-	    return toString(x) === '[object Array]';
+	    return Array.isArray(x);
+	}
+	function isObject(val) {
+	    return val !== null && typeof val === 'object';
 	}
 	function isPlainObject(x) {
 	    return toString(x) === '[object Object]';
+	}
+	function warn(msg, vm) {
+	    Vue.util.warn(msg, vm);
+	}
+	function logError(err, vm, info) {
+	    {
+	        warn("Error in " + info + ": \"" + err.toString() + "\"", vm);
+	    }
+	    if (typeof window !== 'undefined' && typeof console !== 'undefined') {
+	        console.error(err);
+	    }
+	    else {
+	        throw err;
+	    }
 	}
 
 	var currentVue = null;
@@ -17993,32 +18024,26 @@
 	    }
 	    AbstractWrapper.prototype.setVmProperty = function (vm, propName) {
 	        var _this = this;
-	        this._vm = vm;
-	        this._propName = propName;
+	        def(this, '_vm', vm);
+	        def(this, '_propName', propName);
 	        var props = vm.$options.props;
-	        var methods = vm.$options.methods;
-	        var computed = vm.$options.computed;
-	        var warn = getCurrentVue().util.warn;
-	        if (!(propName in vm)) {
-	            proxy(vm, propName, function () { return _this.value; }, function (val) {
-	                _this.value = val;
+	        if (!(propName in vm) && !(props && hasOwn(props, propName))) {
+	            proxy(vm, propName, {
+	                get: function () { return _this.value; },
+	                set: function (val) {
+	                    _this.value = val;
+	                },
 	            });
 	            {
-	                this.exposeToDevtool();
+	                // expose bindings after state has been resolved to prevent repeated works
+	                vm.$nextTick(function () {
+	                    _this.exposeToDevtool();
+	                });
 	            }
 	        }
 	        else {
-	            if (hasOwn(vm.$data, propName)) {
-	                warn("The setup binding property \"" + propName + "\" is already declared as a data.", vm);
-	            }
-	            else if (props && hasOwn(props, propName)) {
+	            if (props && hasOwn(props, propName)) {
 	                warn("The setup binding property \"" + propName + "\" is already declared as a prop.", vm);
-	            }
-	            else if (methods && hasOwn(methods, propName)) {
-	                warn("The setup binding property \"" + propName + "\" is already declared as a method.", vm);
-	            }
-	            else if (computed && propName in computed) {
-	                warn("The setup binding property \"" + propName + "\" is already declared as a computed.", vm);
 	            }
 	            else {
 	                warn("The setup binding property \"" + propName + "\" is already declared.", vm);
@@ -18068,11 +18093,28 @@
 	    return __assign.apply(this, arguments);
 	};
 
+	function __read(o, n) {
+	    var m = typeof Symbol === "function" && o[Symbol.iterator];
+	    if (!m) return o;
+	    var i = m.call(o), r, ar = [], e;
+	    try {
+	        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+	    }
+	    catch (error) { e = { error: error }; }
+	    finally {
+	        try {
+	            if (r && !r.done && (m = i["return"])) m.call(i);
+	        }
+	        finally { if (e) throw e.error; }
+	    }
+	    return ar;
+	}
+
 	var ValueWrapper = /** @class */ (function (_super) {
 	    __extends(ValueWrapper, _super);
-	    function ValueWrapper(_internal) {
+	    function ValueWrapper(internal) {
 	        var _this = _super.call(this) || this;
-	        _this._internal = _internal;
+	        def(_this, '_internal', internal);
 	        return _this;
 	    }
 	    Object.defineProperty(ValueWrapper.prototype, "value", {
@@ -18090,8 +18132,11 @@
 	        {
 	            var vm = this._vm;
 	            var name_1 = this._propName;
-	            proxy(vm._data, name_1, function () { return _this.value; }, function (val) {
-	                _this.value = val;
+	            proxy(vm._data, name_1, {
+	                get: function () { return _this.value; },
+	                set: function (val) {
+	                    _this.value = val;
+	                },
 	            });
 	        }
 	    };
@@ -18100,9 +18145,9 @@
 
 	var ComputedWrapper = /** @class */ (function (_super) {
 	    __extends(ComputedWrapper, _super);
-	    function ComputedWrapper(_internal) {
+	    function ComputedWrapper(internal) {
 	        var _this = _super.call(this) || this;
-	        _this._internal = _internal;
+	        def(_this, '_internal', internal);
 	        return _this;
 	    }
 	    Object.defineProperty(ComputedWrapper.prototype, "value", {
@@ -18112,7 +18157,7 @@
 	        set: function (val) {
 	            if (!this._internal.write) {
 	                {
-	                    getCurrentVue().util.warn('Computed property' +
+	                    warn('Computed property' +
 	                        (this._propName ? " \"" + this._propName + "\"" : '') +
 	                        ' was assigned to but it has no setter.', this._vm);
 	                }
@@ -18132,12 +18177,14 @@
 	            if (!vm.$options.computed) {
 	                vm.$options.computed = {};
 	            }
-	            proxy(vm.$options.computed, name_1, function () { return ({
-	                get: function () { return _this.value; },
-	                set: function (val) {
-	                    _this.value = val;
-	                },
-	            }); });
+	            proxy(vm.$options.computed, name_1, {
+	                get: function () { return ({
+	                    get: function () { return _this.value; },
+	                    set: function (val) {
+	                        _this.value = val;
+	                    },
+	                }); },
+	            });
 	        }
 	    };
 	    return ComputedWrapper;
@@ -18145,38 +18192,6 @@
 
 	function isWrapper(obj) {
 	    return obj instanceof AbstractWrapper;
-	}
-	function ensureCurrentVMInFn(hook) {
-	    var vm = getCurrentVM();
-	    {
-	        assert(vm, "\"" + hook + "\" get called outside of \"setup()\"");
-	    }
-	    return vm;
-	}
-	function observable(obj) {
-	    var Vue = getCurrentVue();
-	    if (Vue.observable) {
-	        return Vue.observable(obj);
-	    }
-	    var silent = Vue.config.silent;
-	    Vue.config.silent = true;
-	    var vm = new Vue({
-	        data: {
-	            $$state: obj,
-	        },
-	    });
-	    Vue.config.silent = silent;
-	    return vm._data.$$state;
-	}
-	function compoundComputed(computed) {
-	    var Vue = getCurrentVue();
-	    var silent = Vue.config.silent;
-	    Vue.config.silent = true;
-	    var reactive = new Vue({
-	        computed: computed,
-	    });
-	    Vue.config.silent = silent;
-	    return reactive;
 	}
 
 	/**
@@ -18223,39 +18238,223 @@
 	    _install(Vue);
 	}
 
+	function createSymbol(name) {
+	    return hasSymbol ? Symbol.for(name) : name;
+	}
+	var WatcherPreFlushQueueKey = createSymbol('vfa.key.preFlushQueue');
+	var WatcherPostFlushQueueKey = createSymbol('vfa.key.postFlushQueue');
+	var AccessControIdentifierlKey = createSymbol('vfa.key.accessControIdentifier');
+	var ObservableIdentifierKey = createSymbol('vfa.key.observableIdentifier');
+
+	var AccessControlIdentifier = {};
+	var ObservableIdentifier = {};
+	/**
+	 * Proxing property access of target.
+	 * We can do unwrapping and other things here.
+	 */
+	function setupAccessControl(target) {
+	    if (!isObject(target) || Array.isArray(target) || isWrapper(target)) {
+	        return;
+	    }
+	    if (hasOwn(target, AccessControIdentifierlKey) &&
+	        target[AccessControIdentifierlKey] === AccessControlIdentifier) {
+	        return;
+	    }
+	    if (Object.isExtensible(target)) {
+	        def(target, AccessControIdentifierlKey, AccessControlIdentifier);
+	    }
+	    var keys = Object.keys(target);
+	    for (var i = 0; i < keys.length; i++) {
+	        defineAccessControl(target, keys[i]);
+	    }
+	}
+	function isObservable(obj) {
+	    return (hasOwn(obj, ObservableIdentifierKey) && obj[ObservableIdentifierKey] === ObservableIdentifier);
+	}
+	/**
+	 * Auto unwrapping when acccess property
+	 */
+	function defineAccessControl(target, key, val) {
+	    if (key === '__ob__')
+	        return;
+	    var getter;
+	    var setter;
+	    var property = Object.getOwnPropertyDescriptor(target, key);
+	    if (property) {
+	        if (property.configurable === false) {
+	            return;
+	        }
+	        getter = property.get;
+	        setter = property.set;
+	        if ((!getter || setter) /* not only have getter */ && arguments.length === 2) {
+	            val = target[key];
+	        }
+	    }
+	    setupAccessControl(val);
+	    Object.defineProperty(target, key, {
+	        enumerable: true,
+	        configurable: true,
+	        get: function getterHandler() {
+	            var value = getter ? getter.call(target) : val;
+	            if (isWrapper(value)) {
+	                return value.value;
+	            }
+	            else {
+	                return value;
+	            }
+	        },
+	        set: function setterHandler(newVal) {
+	            if (getter && !setter)
+	                return;
+	            var value = getter ? getter.call(target) : val;
+	            if (isWrapper(value)) {
+	                if (isWrapper(newVal)) {
+	                    val = newVal;
+	                }
+	                else {
+	                    value.value = newVal;
+	                }
+	            }
+	            else if (setter) {
+	                setter.call(target, newVal);
+	            }
+	            else if (isWrapper(newVal)) {
+	                val = newVal;
+	            }
+	            setupAccessControl(newVal);
+	        },
+	    });
+	}
+	/**
+	 * Make obj reactivity
+	 */
+	function observable(obj) {
+	    if (!isObject(obj) || isObservable(obj)) {
+	        return obj;
+	    }
+	    var Vue = getCurrentVue();
+	    var observed;
+	    if (Vue.observable) {
+	        observed = Vue.observable(obj);
+	    }
+	    else {
+	        var silent = Vue.config.silent;
+	        Vue.config.silent = true;
+	        var vm = new Vue({
+	            data: {
+	                $$state: obj,
+	            },
+	        });
+	        Vue.config.silent = silent;
+	        observed = vm._data.$$state;
+	    }
+	    if (Object.isExtensible(observed)) {
+	        def(observed, ObservableIdentifierKey, ObservableIdentifier);
+	    }
+	    setupAccessControl(observed);
+	    return observed;
+	}
+
+	function isUndef(v) {
+	    return v === undefined || v === null;
+	}
+	function isPrimitive(value) {
+	    return (typeof value === 'string' ||
+	        typeof value === 'number' ||
+	        // $flow-disable-line
+	        typeof value === 'symbol' ||
+	        typeof value === 'boolean');
+	}
+	function isValidArrayIndex(val) {
+	    var n = parseFloat(String(val));
+	    return n >= 0 && Math.floor(n) === n && isFinite(val);
+	}
+	/**
+	 * Set a property on an object. Adds the new property, triggers change
+	 * notification and intercept it's subsequent access if the property doesn't
+	 * already exist.
+	 */
+	function set(target, key, val) {
+	    var Vue = getCurrentVue();
+	    var _a = Vue.util, warn = _a.warn, defineReactive = _a.defineReactive;
+	    if (isUndef(target) || isPrimitive(target)) {
+	        warn("Cannot set reactive property on undefined, null, or primitive value: " + target);
+	    }
+	    if (isArray(target) && isValidArrayIndex(key)) {
+	        target.length = Math.max(target.length, key);
+	        target.splice(key, 1, val);
+	        return val;
+	    }
+	    if (key in target && !(key in Object.prototype)) {
+	        target[key] = val;
+	        return val;
+	    }
+	    var ob = target.__ob__;
+	    if (target._isVue || (ob && ob.vmCount)) {
+	        warn('Avoid adding reactive properties to a Vue instance or its root $data ' +
+	                'at runtime - declare it upfront in the data option.');
+	        return val;
+	    }
+	    if (!ob) {
+	        target[key] = val;
+	        return val;
+	    }
+	    defineReactive(ob.value, key, val);
+	    // IMPORTANT: define access control before trigger watcher
+	    defineAccessControl(target, key, val);
+	    ob.dep.notify();
+	    return val;
+	}
+
+	function state(value) {
+	    return observable(value);
+	}
+	function value(value) {
+	    return new ValueWrapper(state({ $$state: value }));
+	}
+
 	function mixin(Vue) {
 	    Vue.mixin({
-	        created: vuexInit,
+	        beforeCreate: functionApiInit,
 	    });
 	    /**
 	     * Vuex init hook, injected into each instances init hooks list.
 	     */
-	    function vuexInit() {
+	    function functionApiInit() {
 	        var vm = this;
-	        var setup = vm.$options.setup;
+	        var $options = vm.$options;
+	        var setup = $options.setup;
 	        if (!setup) {
 	            return;
 	        }
 	        if (typeof setup !== 'function') {
 	            {
-	                Vue.util.warn('The "setup" option should be a function that returns a object in component definitions.', vm);
+	                warn('The "setup" option should be a function that returns a object in component definitions.', vm);
 	            }
 	            return;
 	        }
+	        var data = $options.data;
+	        // wapper the data option, so we can invoke setup before data get resolved
+	        $options.data = function wrappedData() {
+	            initSetup(vm, vm.$props);
+	            return typeof data === 'function' ? data.call(vm, vm) : data || {};
+	        };
+	    }
+	    function initSetup(vm, props) {
+	        if (props === void 0) { props = {}; }
+	        var setup = vm.$options.setup;
+	        var ctx = createSetupContext(vm);
 	        var binding;
+	        var preVm = getCurrentVM();
 	        setCurrentVM(vm);
-	        var ctx = createContext(vm);
 	        try {
-	            binding = setup(vm.$props || {}, ctx);
+	            binding = setup(props, ctx);
 	        }
 	        catch (err) {
-	            {
-	                Vue.util.warn("there is an error occuring in \"setup\"", vm);
-	            }
-	            console.log(err);
+	            logError(err, vm, 'setup()');
 	        }
 	        finally {
-	            setCurrentVM(null);
+	            setCurrentVM(preVm);
 	        }
 	        if (!binding)
 	            return;
@@ -18269,52 +18468,55 @@
 	        }
 	        Object.keys(binding).forEach(function (name) {
 	            var bindingValue = binding[name];
-	            if (isWrapper(bindingValue)) {
-	                bindingValue.setVmProperty(vm, name);
+	            // make plain value reactive
+	            if (!isWrapper(bindingValue)) {
+	                bindingValue = value(bindingValue);
 	            }
-	            else {
-	                vm[name] = bindingValue;
-	            }
+	            // bind to vm
+	            bindingValue.setVmProperty(vm, name);
 	        });
 	    }
-	    function createContext(vm) {
+	    function createSetupContext(vm) {
 	        var ctx = {};
 	        var props = [
-	            // 'el', // has workaround
-	            // 'options',
-	            'parent',
 	            'root',
-	            // 'children', // very likely
+	            'parent',
 	            'refs',
-	            'slots',
-	            // 'scopedSlots', // has workaround
-	            // 'isServer',
-	            // 'ssrContext',
-	            // 'vnode',
+	            ['slots', 'scopedSlots'],
 	            'attrs',
 	        ];
-	        var methodWithoutReturn = [
-	            // 'on',  // very likely
-	            // 'once', // very likely
-	            // 'off', // very likely
-	            'emit',
-	        ];
+	        var methodReturnVoid = ['emit'];
 	        props.forEach(function (key) {
-	            proxy(ctx, key, function () { return vm["$" + key]; }, function () {
-	                Vue.util.warn("Cannot assign to '" + key + "' because it is a read-only property", vm);
+	            var _a;
+	            var targetKey;
+	            var srcKey;
+	            if (Array.isArray(key)) {
+	                _a = __read(key, 2), targetKey = _a[0], srcKey = _a[1];
+	            }
+	            else {
+	                targetKey = srcKey = key;
+	            }
+	            srcKey = "$" + srcKey;
+	            proxy(ctx, targetKey, {
+	                get: function () { return vm[srcKey]; },
+	                set: function () {
+	                    warn("Cannot assign to '" + targetKey + "' because it is a read-only property", vm);
+	                },
 	            });
 	        });
-	        methodWithoutReturn.forEach(function (key) {
-	            return proxy(ctx, key, function () {
-	                var vmKey = "$" + key;
-	                return function () {
-	                    var args = [];
-	                    for (var _i = 0; _i < arguments.length; _i++) {
-	                        args[_i] = arguments[_i];
-	                    }
-	                    var fn = vm[vmKey];
-	                    fn.apply(vm, args);
-	                };
+	        methodReturnVoid.forEach(function (key) {
+	            var srcKey = "$" + key;
+	            proxy(ctx, key, {
+	                get: function () {
+	                    return function () {
+	                        var args = [];
+	                        for (var _i = 0; _i < arguments.length; _i++) {
+	                            args[_i] = arguments[_i];
+	                        }
+	                        var fn = vm[srcKey];
+	                        fn.apply(vm, args);
+	                    };
+	                },
 	            });
 	        });
 	        return ctx;
@@ -18325,42 +18527,44 @@
 	    return compOpions;
 	}
 
-	function upWrapping(obj) {
-	    if (!obj) {
-	        return obj;
+	function ensureCurrentVMInFn(hook) {
+	    var vm = getCurrentVM();
+	    {
+	        assert(vm, "\"" + hook + "\" get called outside of \"setup()\"");
 	    }
-	    var keys = Object.keys(obj);
-	    for (var index = 0; index < keys.length; index++) {
-	        var key = keys[index];
-	        var value_1 = obj[key];
-	        if (isWrapper(value_1)) {
-	            obj[key] = value_1.value;
-	        }
-	        else if (isPlainObject(value_1) || isArray(value_1)) {
-	            obj[key] = upWrapping(value_1);
-	        }
-	    }
-	    return obj;
+	    return vm;
 	}
-	function state(value) {
-	    return observable(isArray(value) || isPlainObject(value) ? upWrapping(value) : value);
-	}
-	function value(value) {
-	    return new ValueWrapper(observable({ $$state: isArray(value) || isPlainObject(value) ? upWrapping(value) : value }));
+	function compoundComputed(computed) {
+	    var Vue = getCurrentVue();
+	    var silent = Vue.config.silent;
+	    Vue.config.silent = true;
+	    var reactive = new Vue({
+	        computed: computed,
+	    });
+	    Vue.config.silent = silent;
+	    return reactive;
 	}
 
 	var genName = function (name) { return "on" + (name[0].toUpperCase() + name.slice(1)); };
 	function createLifeCycle(lifeCyclehook) {
 	    return function (callback) {
 	        var vm = ensureCurrentVMInFn(genName(lifeCyclehook));
-	        vm.$on("hook:" + lifeCyclehook, callback);
+	        injectHookOption(getCurrentVue(), vm, lifeCyclehook, callback);
 	    };
 	}
 	function createLifeCycles(lifeCyclehooks, name) {
 	    return function (callback) {
+	        var currentVue = getCurrentVue();
 	        var vm = ensureCurrentVMInFn(name);
-	        lifeCyclehooks.forEach(function (lifeCyclehook) { return vm.$on("hook:" + lifeCyclehook, callback); });
+	        lifeCyclehooks.forEach(function (lifeCyclehook) {
+	            return injectHookOption(currentVue, vm, lifeCyclehook, callback);
+	        });
 	    };
+	}
+	function injectHookOption(Vue, vm, hook, val) {
+	    var options = vm.$options;
+	    var mergeFn = Vue.config.optionMergeStrategies[hook];
+	    options[hook] = mergeFn(options[hook], val);
 	}
 	var onCreated = createLifeCycle('created');
 	var onBeforeMount = createLifeCycle('beforeMount');
@@ -18374,12 +18578,6 @@
 	var onErrorCaptured = createLifeCycle('errorCaptured');
 	// only one event will be fired between destroyed and deactivated when an unmount occurs
 	var onUnmounted = createLifeCycles(['destroyed', 'deactivated'], genName('unmounted'));
-
-	function createSymbol(name) {
-	    return hasSymbol ? Symbol.for(name) : name;
-	}
-	var WatcherPreFlushQueueKey = createSymbol('vfa.key.preFlushQueue');
-	var WatcherPostFlushQueueKey = createSymbol('vfa.key.postFlushQueue');
 
 	var initValue = {};
 	var fallbackVM;
@@ -18572,6 +18770,7 @@
 	    })));
 	}
 
+	var UNRESOLVED_INJECT = {};
 	function resolveInject(provideKey, vm) {
 	    var source = vm;
 	    while (source) {
@@ -18582,24 +18781,41 @@
 	        }
 	        source = source.$parent;
 	    }
-	    {
-	        getCurrentVue().util.warn("Injection \"" + String(provideKey) + "\" not found", vm);
-	    }
+	    return UNRESOLVED_INJECT;
 	}
-	function provide(provideOption) {
-	    if (!provideOption) {
-	        return;
-	    }
+	function provide(keyOrData, value) {
 	    var vm = ensureCurrentVMInFn('provide');
-	    vm._provided =
-	        typeof provideOption === 'function' ? provideOption.call(vm) : provideOption;
+	    if (!vm._provided) {
+	        vm._provided = {};
+	    }
+	    if (isObject(keyOrData)) {
+	        Object.assign(vm._provided, keyOrData);
+	    }
+	    else {
+	        vm._provided[keyOrData] = value;
+	    }
 	}
-	function inject(injectKey) {
-	    if (!injectKey) {
+	function inject(key) {
+	    if (!key) {
 	        return;
 	    }
 	    var vm = ensureCurrentVMInFn('inject');
-	    return resolveInject(injectKey, vm);
+	    var val = resolveInject(key, vm);
+	    if (val !== UNRESOLVED_INJECT) {
+	        if (isWrapper(val)) {
+	            return val;
+	        }
+	        var reactiveVal_1 = state(val);
+	        return new ComputedWrapper({
+	            read: function () { return reactiveVal_1; },
+	            write: function () {
+	                warn("The injectd value can't be re-assigned", vm);
+	            },
+	        });
+	    }
+	    else {
+	        warn("Injection \"" + String(key) + "\" not found", vm);
+	    }
 	}
 
 	var _install = function (Vue) { return install(Vue, mixin); };
@@ -18628,6 +18844,7 @@
 	exports.onUpdated = onUpdated;
 	exports.plugin = plugin;
 	exports.provide = provide;
+	exports.set = set;
 	exports.state = state;
 	exports.value = value;
 	exports.watch = watch;
@@ -18650,9 +18867,10 @@
 	var vueFunctionApi_14 = vueFunctionApi.onUpdated;
 	var vueFunctionApi_15 = vueFunctionApi.plugin;
 	var vueFunctionApi_16 = vueFunctionApi.provide;
-	var vueFunctionApi_17 = vueFunctionApi.state;
-	var vueFunctionApi_18 = vueFunctionApi.value;
-	var vueFunctionApi_19 = vueFunctionApi.watch;
+	var vueFunctionApi_17 = vueFunctionApi.set;
+	var vueFunctionApi_18 = vueFunctionApi.state;
+	var vueFunctionApi_19 = vueFunctionApi.value;
+	var vueFunctionApi_20 = vueFunctionApi.watch;
 
 	function assert$1(condition, msg) {
 	    return true;
@@ -18660,8 +18878,8 @@
 
 	var script$3 = {
 	    setup: function (props, context) {
-	        var pending = vueFunctionApi_18(true);
-	        var uid = vueFunctionApi_18(0);
+	        var pending = vueFunctionApi_19(true);
+	        var uid = vueFunctionApi_19(0);
 	        var ins;
 	        vueFunctionApi_12(function () {
 	            ins = new QSelect({
@@ -18784,7 +19002,7 @@
 	                return ins.cancelLoading();
 	            }
 	        };
-	        vueFunctionApi_19(function () { return props.visible; }, function (val) {
+	        vueFunctionApi_20(function () { return props.visible; }, function (val) {
 	            if (val) {
 	                if (pending) {
 	                    vue_runtime_common.nextTick(function () {
@@ -18801,7 +19019,7 @@
 	                }
 	            }
 	        });
-	        vueFunctionApi_19(function () { return props.loading; }, function (val) {
+	        vueFunctionApi_20(function () { return props.loading; }, function (val) {
 	            if (val) {
 	                if (pending) ;
 	                else {
@@ -18814,13 +19032,13 @@
 	                }
 	            }
 	        });
-	        vueFunctionApi_19(function () { return props.data; }, function (val) {
+	        vueFunctionApi_20(function () { return props.data; }, function (val) {
 	            setData(val);
 	        }, {
 	            lazy: true,
 	            deep: props.deep
 	        });
-	        vueFunctionApi_19(function () { return props.index; }, function (val) {
+	        vueFunctionApi_20(function () { return props.index; }, function (val) {
 	            setIndex(val);
 	        }, {
 	            lazy: true
@@ -18838,8 +19056,6 @@
 	            getIndex: getIndex,
 	            getValue: getValue,
 	            getKey: getKey,
-	            setLoading: setLoading,
-	            cancelLoading: cancelLoading,
 	            uid: uid
 	        };
 	    },

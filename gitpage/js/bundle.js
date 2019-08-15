@@ -695,7 +695,7 @@
                     }
                     return v.every(function (p) {
                         if (isPlainObj(p)) {
-                            return assert(p.value);
+                            return assert(p.value !== undefined);
                         }
                         else if (typeof p !== 'string' && typeof p !== 'number') {
                             return assert();
@@ -856,6 +856,7 @@
                         };
                     }
                 }
+                return v;
             });
         };
         Layer.prototype.prepareMount = function () {
@@ -1353,7 +1354,7 @@
                     resolve(_this.getChangeCallData());
                 }
                 else {
-                    reject();
+                    reject('wrong data or index');
                 }
             });
         };
