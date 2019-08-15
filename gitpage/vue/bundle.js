@@ -16527,11 +16527,6 @@
 	    undefined
 	  );
 
-	/**
-	 * @qymh/q-select v0.2.4
-	 * (c) 2019 Qymh
-	 * @license MIT
-	 */
 	/*! *****************************************************************************
 	Copyright (c) Microsoft Corporation. All rights reserved.
 	Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -18871,10 +18866,6 @@
 	var vueFunctionApi_19 = vueFunctionApi.value;
 	var vueFunctionApi_20 = vueFunctionApi.watch;
 
-	function assert$1(condition, msg) {
-	    return true;
-	}
-
 	var script$3 = {
 	    setup: function (props, context) {
 	        var pending = vueFunctionApi_19(true);
@@ -18918,7 +18909,7 @@
 	        });
 	        var warnIns = function () {
 	            if (!ins) {
-	                return assert$1();
+	                return assert();
 	            }
 	            else {
 	                return true;
@@ -19057,6 +19048,15 @@
 	        });
 	        vueFunctionApi_20(function () { return props.data; }, function (val) {
 	            setData(val);
+	            if (props.defaultValue && props.defaultValue.length) {
+	                setValue(props.defaultValue);
+	            }
+	            if (props.defaultKey && props.defaultKey.length) {
+	                setKey(props.defaultKey);
+	            }
+	            if (props.index && props.index.length) {
+	                setIndex(props.index);
+	            }
 	        }, {
 	            lazy: true,
 	            deep: props.deep
