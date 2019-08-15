@@ -1,5 +1,5 @@
 /**
- * @qymh/q-select v0.2.1
+ * @qymh/q-select v0.2.2
  * (c) 2019 Qymh
  * @license MIT
  */
@@ -715,10 +715,10 @@ var Layer = (function () {
                 }
                 return v.every(function (p) {
                     if (isPlainObj(p)) {
-                        return assert(p.value, 'value is required if NotGangedData is a object');
+                        return assert(p.value !== undefined, 'value is required if NotGangedData is an object');
                     }
                     else if (typeof p !== 'string' && typeof p !== 'number') {
-                        return assert(false, "value can only be number or string if NotGangedData is not a object but now get " + p + " which is " + typeof p);
+                        return assert(false, "value can only be number or string if NotGangedData is not an object but now get " + p + " which is " + typeof p);
                     }
                     return true;
                 });
@@ -876,6 +876,7 @@ var Layer = (function () {
                     };
                 }
             }
+            return v;
         });
     };
     Layer.prototype.prepareMount = function () {
@@ -1373,7 +1374,7 @@ var QSelect = (function (_super) {
                 resolve(_this.getChangeCallData());
             }
             else {
-                reject();
+                reject('wrong data or index');
             }
         });
     };

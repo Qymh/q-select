@@ -1,272 +1,307 @@
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _vue = _interopRequireDefault(require("vue"));
+
+var _qSelect = _interopRequireDefault(require("@qymh/q-select"));
+
+var _vueFunctionApi = require("vue-function-api");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 /**
- * @qymh/vue-q-select v0.2.1
+ * @qymh/vue-q-select v0.2.2
  * (c) 2019 Qymh
  * @license MIT
  */
-import Vue from 'vue';
-import QSelect$1 from '@qymh/q-select';
-import { value, onMounted, onUnmounted, watch, plugin } from 'vue-function-api';
-
 function assert(condition, msg) {
-    if (process.env.NODE_ENV === 'development') {
-        if (!condition) {
-            return Boolean(console.error("[SelectQ]: " + msg));
-        }
-        else {
-            return true;
-        }
+  if (process.env.NODE_ENV === 'development') {
+    if (!condition) {
+      return Boolean(console.error("[SelectQ]: " + msg));
+    } else {
+      return true;
     }
-    return true;
+  }
+
+  return true;
 }
 
 var script = {
-    setup: function (props, context) {
-        var pending = value(true);
-        var uid = value(0);
-        var ins;
-        onMounted(function () {
-            ins = new QSelect$1({
-                data: props.data,
-                index: props.index,
-                target: props.inline ? ".q-select-inline--" + uid.value : '',
-                count: props.count,
-                title: props.title,
-                chunkHeight: props.chunkHeight,
-                loading: props.loading,
-                disableDefaultCancel: props.disableDefaultCancel,
-                ready: function (value, key, data) {
-                    pending = false;
-                    context.emit('ready', value, key, data);
-                },
-                cancel: function () {
-                    context.emit('input', false);
-                    context.emit('cancel');
-                },
-                confirm: function (value, key, data) {
-                    context.emit('input', false);
-                    context.emit('confirm', value, key, data);
-                },
-                change: function (weight, value, key, data) {
-                    context.emit('change', weight, value, key, data);
-                },
-                show: function () {
-                    context.emit('show');
-                },
-                hide: function () {
-                    context.emit('hide');
-                }
-            });
-        });
-        onUnmounted(function () {
-            ins && ins.destroy();
-        });
-        var warnIns = function () {
-            if (!ins) {
-                return assert(false, 'You should new QSelect before you use it');
-            }
-            else {
-                return true;
-            }
-        };
-        var show = function () {
-            if (warnIns()) {
-                context.emit('input', true);
-                return ins.show();
-            }
-        };
-        var close = function () {
-            if (warnIns()) {
-                context.emit('input', false);
-                return ins.close();
-            }
-        };
-        var destroy = function () {
-            if (warnIns()) {
-                return ins.destroy();
-            }
-        };
-        var setData = function (data, index) {
-            if (warnIns()) {
-                return ins.setData(data, index);
-            }
-        };
-        var setColumnData = function (column, data) {
-            if (warnIns()) {
-                return ins.setColumnData(column, data);
-            }
-        };
-        var scrollTo = function (column, index) {
-            if (warnIns()) {
-                return ins.scrollTo(column, index);
-            }
-        };
-        var setIndex = function (index) {
-            if (warnIns()) {
-                return ins.setIndex(index);
-            }
-        };
-        var setValue = function (value) {
-            if (warnIns()) {
-                return ins.setValue(value);
-            }
-        };
-        var setKey = function (key) {
-            if (warnIns()) {
-                return ins.setKey(key);
-            }
-        };
-        var getData = function () {
-            if (warnIns()) {
-                return ins.getChangeCallData();
-            }
-        };
-        var getIndex = function () {
-            if (warnIns()) {
-                return ins.getIndex();
-            }
-        };
-        var getValue = function () {
-            if (warnIns()) {
-                return ins.getValue();
-            }
-        };
-        var getKey = function () {
-            if (warnIns()) {
-                return ins.getKey();
-            }
-        };
-        var setLoading = function () {
-            if (warnIns()) {
-                return ins.setLoading();
-            }
-        };
-        var cancelLoading = function () {
-            if (warnIns()) {
-                return ins.cancelLoading();
-            }
-        };
-        watch(function () { return props.visible; }, function (val) {
-            if (val) {
-                if (pending) {
-                    Vue.nextTick(function () {
-                        show();
-                    });
-                }
-                else {
-                    show();
-                }
-            }
-            else {
-                if (!pending) {
-                    close();
-                }
-            }
-        });
-        watch(function () { return props.loading; }, function (val) {
-            if (val) {
-                if (pending) ;
-                else {
-                    setLoading();
-                }
-            }
-            else {
-                if (!pending) {
-                    cancelLoading();
-                }
-            }
-        });
-        watch(function () { return props.data; }, function (val) {
-            setData(val);
-        }, {
-            lazy: true,
-            deep: props.deep
-        });
-        watch(function () { return props.index; }, function (val) {
-            setIndex(val);
-        }, {
-            lazy: true
-        });
-        return {
-            pending: pending,
-            ins: ins,
-            destroy: destroy,
-            setData: setData,
-            setColumnData: setColumnData,
-            scrollTo: scrollTo,
-            setValue: setValue,
-            setKey: setKey,
-            getData: getData,
-            getIndex: getIndex,
-            getValue: getValue,
-            getKey: getKey,
-            setLoading: setLoading,
-            cancelLoading: cancelLoading,
-            uid: uid
-        };
-    },
-    name: 'QSelect',
-    model: {
-        prop: 'visible'
-    },
-    props: {
-        visible: {
-            type: Boolean,
-            default: false
+  setup: function setup(props, context) {
+    var pending = (0, _vueFunctionApi.value)(true);
+    var uid = (0, _vueFunctionApi.value)(0);
+    var ins;
+    (0, _vueFunctionApi.onMounted)(function () {
+      ins = new _qSelect.default({
+        data: props.data,
+        index: props.index,
+        target: props.inline ? ".q-select-inline--" + uid.value : '',
+        count: props.count,
+        title: props.title,
+        chunkHeight: props.chunkHeight,
+        loading: props.loading,
+        disableDefaultCancel: props.disableDefaultCancel,
+        ready: function ready(value, key, data) {
+          pending = false;
+          context.emit('ready', value, key, data);
         },
-        data: {
-            type: Array,
-            default: function () { return [['']]; }
+        cancel: function cancel() {
+          context.emit('input', false);
+          context.emit('cancel');
         },
-        index: {
-            type: Array,
-            default: function () { return []; }
+        confirm: function confirm(value, key, data) {
+          context.emit('input', false);
+          context.emit('confirm', value, key, data);
         },
-        title: {
-            type: String,
-            default: '请选择'
+        change: function change(weight, value, key, data) {
+          context.emit('change', weight, value, key, data);
         },
-        count: {
-            type: Number,
-            default: 7
+        show: function show() {
+          context.emit('show');
         },
-        chunkHeight: {
-            type: Number,
-            default: 40
-        },
-        confirmBtn: {
-            type: String,
-            default: '确定'
-        },
-        cancelBtn: {
-            type: String,
-            default: '取消'
-        },
-        inline: {
-            type: Boolean,
-            default: false
-        },
-        loading: {
-            type: Boolean,
-            default: false
-        },
-        deep: {
-            type: Boolean,
-            default: false
-        },
-        disableDefaultCancel: {
-            type: Boolean,
-            default: false
+        hide: function hide() {
+          context.emit('hide');
         }
+      });
+    });
+    (0, _vueFunctionApi.onUnmounted)(function () {
+      ins && ins.destroy();
+    });
+
+    var warnIns = function warnIns() {
+      if (!ins) {
+        return assert(false, 'You should new QSelect before you use it');
+      } else {
+        return true;
+      }
+    };
+
+    var show = function show() {
+      if (warnIns()) {
+        context.emit('input', true);
+        return ins.show();
+      }
+    };
+
+    var close = function close() {
+      if (warnIns()) {
+        context.emit('input', false);
+        return ins.close();
+      }
+    };
+
+    var destroy = function destroy() {
+      if (warnIns()) {
+        return ins.destroy();
+      }
+    };
+
+    var setData = function setData(data, index) {
+      if (warnIns()) {
+        return ins.setData(data, index);
+      }
+    };
+
+    var setColumnData = function setColumnData(column, data) {
+      if (warnIns()) {
+        return ins.setColumnData(column, data);
+      }
+    };
+
+    var scrollTo = function scrollTo(column, index) {
+      if (warnIns()) {
+        return ins.scrollTo(column, index);
+      }
+    };
+
+    var setIndex = function setIndex(index) {
+      if (warnIns()) {
+        return ins.setIndex(index);
+      }
+    };
+
+    var setValue = function setValue(value) {
+      if (warnIns()) {
+        return ins.setValue(value);
+      }
+    };
+
+    var setKey = function setKey(key) {
+      if (warnIns()) {
+        return ins.setKey(key);
+      }
+    };
+
+    var getData = function getData() {
+      if (warnIns()) {
+        return ins.getChangeCallData();
+      }
+    };
+
+    var getIndex = function getIndex() {
+      if (warnIns()) {
+        return ins.getIndex();
+      }
+    };
+
+    var getValue = function getValue() {
+      if (warnIns()) {
+        return ins.getValue();
+      }
+    };
+
+    var getKey = function getKey() {
+      if (warnIns()) {
+        return ins.getKey();
+      }
+    };
+
+    var setLoading = function setLoading() {
+      if (warnIns()) {
+        return ins.setLoading();
+      }
+    };
+
+    var cancelLoading = function cancelLoading() {
+      if (warnIns()) {
+        return ins.cancelLoading();
+      }
+    };
+
+    (0, _vueFunctionApi.watch)(function () {
+      return props.visible;
+    }, function (val) {
+      if (val) {
+        if (pending) {
+          _vue.default.nextTick(function () {
+            show();
+          });
+        } else {
+          show();
+        }
+      } else {
+        if (!pending) {
+          close();
+        }
+      }
+    });
+    (0, _vueFunctionApi.watch)(function () {
+      return props.loading;
+    }, function (val) {
+      if (val) {
+        if (pending) ;else {
+          setLoading();
+        }
+      } else {
+        if (!pending) {
+          cancelLoading();
+        }
+      }
+    });
+    (0, _vueFunctionApi.watch)(function () {
+      return props.data;
+    }, function (val) {
+      setData(val);
+    }, {
+      lazy: true,
+      deep: props.deep
+    });
+    (0, _vueFunctionApi.watch)(function () {
+      return props.index;
+    }, function (val) {
+      setIndex(val);
+    }, {
+      lazy: true
+    });
+    return {
+      pending: pending,
+      ins: ins,
+      destroy: destroy,
+      setData: setData,
+      setColumnData: setColumnData,
+      scrollTo: scrollTo,
+      setValue: setValue,
+      setKey: setKey,
+      getData: getData,
+      getIndex: getIndex,
+      getValue: getValue,
+      getKey: getKey,
+      uid: uid
+    };
+  },
+  name: 'QSelect',
+  model: {
+    prop: 'visible'
+  },
+  props: {
+    visible: {
+      type: Boolean,
+      default: false
     },
-    render: function (h) {
-        this.uid = this._uid;
-        if (this.inline) {
-            return h('div', { class: "q-select-inline--" + this._uid });
-        }
-        else {
-            return h('');
-        }
+    data: {
+      type: Array,
+      default: function _default() {
+        return [['']];
+      }
+    },
+    index: {
+      type: Array,
+      default: function _default() {
+        return [];
+      }
+    },
+    title: {
+      type: String,
+      default: '请选择'
+    },
+    count: {
+      type: Number,
+      default: 7
+    },
+    chunkHeight: {
+      type: Number,
+      default: 40
+    },
+    confirmBtn: {
+      type: String,
+      default: '确定'
+    },
+    cancelBtn: {
+      type: String,
+      default: '取消'
+    },
+    inline: {
+      type: Boolean,
+      default: false
+    },
+    loading: {
+      type: Boolean,
+      default: false
+    },
+    deep: {
+      type: Boolean,
+      default: false
+    },
+    disableDefaultCancel: {
+      type: Boolean,
+      default: false
     }
+  },
+  render: function render(h) {
+    this.uid = this._uid;
+
+    if (this.inline) {
+      return h('div', {
+        class: "q-select-inline--" + this._uid
+      });
+    } else {
+      return h('');
+    }
+  }
 };
 
 function normalizeComponent(template, style, script, scopeId, isFunctionalTemplate, moduleIdentifier
@@ -353,43 +388,37 @@ function normalizeComponent(template, style, script, scopeId, isFunctionalTempla
 }
 
 var normalizeComponent_1 = normalizeComponent;
-
 /* script */
-const __vue_script__ = script;
 
+var __vue_script__ = script;
 /* template */
 
-  /* style */
-  const __vue_inject_styles__ = undefined;
-  /* scoped */
-  const __vue_scope_id__ = undefined;
-  /* module identifier */
-  const __vue_module_identifier__ = undefined;
-  /* functional template */
-  const __vue_is_functional_template__ = undefined;
-  /* style inject */
-  
-  /* style inject SSR */
-  
+/* style */
 
-  
-  var QSelect = normalizeComponent_1(
-    {},
-    __vue_inject_styles__,
-    __vue_script__,
-    __vue_scope_id__,
-    __vue_is_functional_template__,
-    __vue_module_identifier__,
-    undefined,
-    undefined
-  );
+var __vue_inject_styles__ = undefined;
+/* scoped */
 
+var __vue_scope_id__ = undefined;
+/* module identifier */
+
+var __vue_module_identifier__ = undefined;
+/* functional template */
+
+var __vue_is_functional_template__ = undefined;
+/* style inject */
+
+/* style inject SSR */
+
+var QSelect = normalizeComponent_1({}, __vue_inject_styles__, __vue_script__, __vue_scope_id__, __vue_is_functional_template__, __vue_module_identifier__, undefined, undefined);
 var index = {
-    install: function (Vue, options) {
-        if (options === void 0) { options = {}; }
-        Vue.use(plugin);
-        Vue.component(options.name || 'QSelect', QSelect);
+  install: function install(Vue, options) {
+    if (options === void 0) {
+      options = {};
     }
-};
 
-export default index;
+    Vue.use(_vueFunctionApi.plugin);
+    Vue.component(options.name || 'QSelect', QSelect);
+  }
+};
+var _default2 = index;
+exports.default = _default2;
