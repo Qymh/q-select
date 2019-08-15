@@ -1,3 +1,16 @@
+# [](https://github.com/Qymh/q-select/compare/v0.2.5...v) (2019-08-15)
+
+
+
+## [0.2.5](https://github.com/Qymh/q-select/compare/v0.2.4...v0.2.5) (2019-08-15)
+
+
+### Features
+
+* add defaultKey and defaultValue ([20a5380](https://github.com/Qymh/q-select/commit/20a5380))
+
+
+
 # [](https://github.com/Qymh/q-select/compare/v0.2.4...v) (2019-08-15)
 
 
