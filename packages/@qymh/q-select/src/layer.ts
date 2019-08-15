@@ -540,7 +540,6 @@ class Layer {
   destroySelect() {
     nextTick(() => {
       this.touchs.forEach(v => v.destroy());
-      Dom.remove(document.body, Dom.find(`q-select-bk`));
       Dom.remove(document.body, Dom.find(`q-select--${this.id}`));
       // eslint-disable-next-line
       (this as any).__proto__ = null;
