@@ -1,3 +1,17 @@
+# [](https://github.com/Qymh/q-select/compare/v0.2.7...v) (2019-08-15)
+
+
+
+## [0.2.7](https://github.com/Qymh/q-select/compare/v0.2.6...v0.2.7) (2019-08-15)
+
+
+### Bug Fixes
+
+* multiple hide events ([aad5560](https://github.com/Qymh/q-select/commit/aad5560))
+* wrong index ([54c3987](https://github.com/Qymh/q-select/commit/54c3987))
+
+
+
 # [](https://github.com/Qymh/q-select/compare/v0.2.6...v) (2019-08-15)
 
 
