@@ -23,6 +23,9 @@ git commit -m "chore: $version build packages"
 log "build demo"
 npm run build:demo
 
+log "fix const"
+npm run babel:fix
+
 git add .
 git commit -m "chore: $version demo packages"
 
