@@ -191,6 +191,11 @@ class QSelect extends Layer {
         this.realData = deepClone(this.dynamicData);
         this.callReady();
       }
+      this.touchs
+        .filter(v => !v.hidden)
+        .forEach((v, i) => {
+          v.curIndex = v.preIndex = this.realIndex[i];
+        });
     }
   }
 
