@@ -1,3 +1,16 @@
+# [](https://github.com/Qymh/q-select/compare/v0.2.9...v) (2019-08-15)
+
+
+
+## [0.2.9](https://github.com/Qymh/q-select/compare/v0.2.8...v0.2.9) (2019-08-15)
+
+
+### Bug Fixes
+
+* no microtask ([7aff281](https://github.com/Qymh/q-select/commit/7aff281))
+
+
+
 # [](https://github.com/Qymh/q-select/compare/v0.2.8...v) (2019-08-15)
 
 
