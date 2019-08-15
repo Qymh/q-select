@@ -1,13 +1,6 @@
 import Touch from './touch';
 import Dom from './dom';
-import {
-  assert,
-  isPlainObj,
-  tips,
-  nextTick,
-  isPlainNumber,
-  deepClone
-} from './uitls';
+import { assert, isPlainObj, tips, isPlainNumber, deepClone } from './uitls';
 
 let id = 0;
 
@@ -538,15 +531,14 @@ class Layer {
    * 销毁当前select
    */
   destroySelect() {
-    nextTick(() => {
-      this.touchs.forEach(v => v.destroy());
-      Dom.remove(document.body, Dom.find(`q-select--${this.id}`));
-      // eslint-disable-next-line
-      (this as any).__proto__ = null;
-      for (const key in this) {
-        (this as any)[key] = null;
-      }
-    });
+    this.touchs.forEach(v => v.destroy());
+    Dom.remove(document.body, Dom.find(`q-select-bk`));
+    Dom.remove(document.body, Dom.find(`q-select--${this.id}`));
+    // eslint-disable-next-line
+    (this as any).__proto__ = null;
+    for (const key in this) {
+      (this as any)[key] = null;
+    }
   }
 
   /**
