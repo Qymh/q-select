@@ -15697,6 +15697,8 @@
 	  },
 	  data() {
 	    return {
+	      defaultKey5: [],
+	      defaultValue5: [],
 	      title1: '',
 	      title2: '',
 	      title3: '',
@@ -16103,18 +16105,10 @@
 	          });
 	          break;
 	        case 1:
-	          this.$refs.select5
-	            .setValue(['四川省', '成都市', '武侯区'])
-	            .then(([data, key]) => {
-	              this.title5 = `数据:${data.join(',')},key:${key.join(',')}`;
-	            });
+	          this.defaultValue5 = ['四川省', '成都市', '武侯区'];
 	          break;
 	        case 2:
-	          this.$refs.select5
-	            .setKey(['32', '3201', '320104'])
-	            .then(([data, key]) => {
-	              this.title5 = `数据:${data.join(',')},key:${key.join(',')}`;
-	            });
+	          this.defaultKey5 = ['32', '3201', '320104'];
 	          break;
 	        case 3:
 	          // eslint-disable-next-line
@@ -16442,7 +16436,12 @@
 	        _vm._v(" "),
 	        _c("q-select", {
 	          ref: "select5",
-	          attrs: { title: "省市区联动实测", data: _vm.data5 },
+	          attrs: {
+	            title: "省市区联动实测",
+	            data: _vm.data5,
+	            defaultKey: _vm.defaultKey5,
+	            defaultValue: _vm.defaultValue5
+	          },
 	          on: {
 	            ready: _vm.doReady5,
 	            show: _vm.doShow5,
@@ -16529,7 +16528,7 @@
 	  );
 
 	/**
-	 * @qymh/q-select v0.2.2
+	 * @qymh/q-select v0.2.4
 	 * (c) 2019 Qymh
 	 * @license MIT
 	 */
@@ -19002,6 +19001,30 @@
 	                return ins.cancelLoading();
 	            }
 	        };
+	        vueFunctionApi_20(function () { return props.defaultKey; }, function (val) {
+	            if (val) {
+	                if (pending) {
+	                    vue_runtime_common.nextTick(function () {
+	                        ins.setKey(props.defaultKey);
+	                    });
+	                }
+	                else {
+	                    ins.setKey(props.defaultKey);
+	                }
+	            }
+	        });
+	        vueFunctionApi_20(function () { return props.defaultValue; }, function (val) {
+	            if (val) {
+	                if (pending) {
+	                    vue_runtime_common.nextTick(function () {
+	                        ins.setValue(props.defaultValue);
+	                    });
+	                }
+	                else {
+	                    ins.setValue(props.defaultValue);
+	                }
+	            }
+	        });
 	        vueFunctionApi_20(function () { return props.visible; }, function (val) {
 	            if (val) {
 	                if (pending) {
@@ -19111,6 +19134,14 @@
 	        disableDefaultCancel: {
 	            type: Boolean,
 	            default: false
+	        },
+	        defaultKey: {
+	            type: Array,
+	            default: function () { return []; }
+	        },
+	        defaultValue: {
+	            type: Array,
+	            default: function () { return []; }
 	        }
 	    },
 	    render: function (h) {
