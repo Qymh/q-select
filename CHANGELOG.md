@@ -1,3 +1,17 @@
+# [](https://github.com/Qymh/q-select/compare/v0.2.6...v) (2019-08-15)
+
+
+
+## [0.2.6](https://github.com/Qymh/q-select/compare/v0.2.5...v0.2.6) (2019-08-15)
+
+
+### Features
+
+* defaultValue readme ([bee10f1](https://github.com/Qymh/q-select/commit/bee10f1))
+* judge props when set Data ([f43d7c6](https://github.com/Qymh/q-select/commit/f43d7c6))
+
+
+
 # [](https://github.com/Qymh/q-select/compare/v0.2.5...v) (2019-08-15)
 
 
