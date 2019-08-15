@@ -59,11 +59,19 @@ async function release() {
     return;
   }
 
-  const shell = execa('bash', ['scripts/publish.sh', curVersion, npmTag]);
-  await Promise.all([
-    shell.stdout.pipe(process.stdout),
-    shell.stderr.pipe(process.stderr)
-  ]);
+  const promise = execa('bash', ['scripts/publish.sh', curVersion, npmTag]);
+  promise.stdout.pipe(process.stdout);
+  promise.stderr.pipe(process.stderr);
+  // eslint-disable-next-line
+  (async () => {
+    try {
+      const { stdout, stderr } = await promise;
+      stdout && redTips(stdout);
+      stderr && redTips(stderr);
+    } catch (error) {
+      redTips(error.stderr);
+    }
+  })();
 }
 
 release();

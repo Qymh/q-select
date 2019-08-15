@@ -15,7 +15,6 @@ module.exports = {
         'test',
         'revert'
       ]
-    ],
-    'header-min-length': [2, 'always', 15]
+    ]
   }
 };
