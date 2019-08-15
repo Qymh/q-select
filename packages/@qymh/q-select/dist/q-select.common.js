@@ -1,5 +1,5 @@
 /**
- * @qymh/q-select v0.2.7
+ * @qymh/q-select v0.2.8
  * (c) 2019 Qymh
  * @license MIT
  */
@@ -270,18 +270,6 @@ function tips(condition, msg) {
         }
     }
     return true;
-}
-function nextTick(fn) {
-    try {
-        Promise.resolve().then(function () {
-            fn();
-        });
-    }
-    catch (error) {
-        setTimeout(function () {
-            fn();
-        });
-    }
 }
 function deepClone(val) {
     if (Array.isArray(val)) {
@@ -960,15 +948,13 @@ var Layer = (function () {
         });
     };
     Layer.prototype.destroySelect = function () {
-        var _this = this;
-        nextTick(function () {
-            _this.touchs.forEach(function (v) { return v.destroy(); });
-            Dom.remove(document.body, Dom.find("q-select--" + _this.id));
-            _this.__proto__ = null;
-            for (var key in _this) {
-                _this[key] = null;
-            }
-        });
+        this.touchs.forEach(function (v) { return v.destroy(); });
+        Dom.remove(document.body, Dom.find("q-select-bk"));
+        Dom.remove(document.body, Dom.find("q-select--" + this.id));
+        this.__proto__ = null;
+        for (var key in this) {
+            this[key] = null;
+        }
     };
     Layer.prototype.showSelect = function () {
         var _this = this;
