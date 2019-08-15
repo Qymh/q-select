@@ -14,7 +14,7 @@ var _vueFunctionApi = require("vue-function-api");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
- * @qymh/vue-q-select v0.2.2
+ * @qymh/vue-q-select v0.2.4
  * (c) 2019 Qymh
  * @license MIT
  */
@@ -173,6 +173,32 @@ var script = {
     };
 
     (0, _vueFunctionApi.watch)(function () {
+      return props.defaultKey;
+    }, function (val) {
+      if (val) {
+        if (pending) {
+          _vue.default.nextTick(function () {
+            ins.setKey(props.defaultKey);
+          });
+        } else {
+          ins.setKey(props.defaultKey);
+        }
+      }
+    });
+    (0, _vueFunctionApi.watch)(function () {
+      return props.defaultValue;
+    }, function (val) {
+      if (val) {
+        if (pending) {
+          _vue.default.nextTick(function () {
+            ins.setValue(props.defaultValue);
+          });
+        } else {
+          ins.setValue(props.defaultValue);
+        }
+      }
+    });
+    (0, _vueFunctionApi.watch)(function () {
       return props.visible;
     }, function (val) {
       if (val) {
@@ -289,6 +315,18 @@ var script = {
     disableDefaultCancel: {
       type: Boolean,
       default: false
+    },
+    defaultKey: {
+      type: Array,
+      default: function _default() {
+        return [];
+      }
+    },
+    defaultValue: {
+      type: Array,
+      default: function _default() {
+        return [];
+      }
     }
   },
   render: function render(h) {

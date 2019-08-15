@@ -1,5 +1,5 @@
 /**
- * @qymh/vue-q-select v0.2.2
+ * @qymh/vue-q-select v0.2.4
  * (c) 2019 Qymh
  * @license MIT
  */
@@ -172,6 +172,32 @@ var script = {
     };
 
     vueFunctionApi.watch(function () {
+      return props.defaultKey;
+    }, function (val) {
+      if (val) {
+        if (pending) {
+          Vue.nextTick(function () {
+            ins.setKey(props.defaultKey);
+          });
+        } else {
+          ins.setKey(props.defaultKey);
+        }
+      }
+    });
+    vueFunctionApi.watch(function () {
+      return props.defaultValue;
+    }, function (val) {
+      if (val) {
+        if (pending) {
+          Vue.nextTick(function () {
+            ins.setValue(props.defaultValue);
+          });
+        } else {
+          ins.setValue(props.defaultValue);
+        }
+      }
+    });
+    vueFunctionApi.watch(function () {
       return props.visible;
     }, function (val) {
       if (val) {
@@ -288,6 +314,18 @@ var script = {
     disableDefaultCancel: {
       type: Boolean,
       default: false
+    },
+    defaultKey: {
+      type: Array,
+      default: function _default() {
+        return [];
+      }
+    },
+    defaultValue: {
+      type: Array,
+      default: function _default() {
+        return [];
+      }
     }
   },
   render: function render(h) {
