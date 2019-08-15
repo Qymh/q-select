@@ -1,5 +1,5 @@
 /**
- * @qymh/q-select v0.2.4
+ * @qymh/q-select v0.2.5
  * (c) 2019 Qymh
  * @license MIT
  */
