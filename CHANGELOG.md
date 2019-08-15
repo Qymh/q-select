@@ -1,3 +1,25 @@
+# [](https://github.com/Qymh/q-select/compare/v0.2.4...v) (2019-08-15)
+
+
+
+## [0.2.4](https://github.com/Qymh/q-select/compare/v0.2.2...v0.2.4) (2019-08-15)
+
+
+### Bug Fixes
+
+* const did not change ([31031fe](https://github.com/Qymh/q-select/commit/31031fe))
+* const did not change ([922e105](https://github.com/Qymh/q-select/commit/922e105))
+
+
+### Features
+
+* optimize publish ([27b7f98](https://github.com/Qymh/q-select/commit/27b7f98))
+* optimize publish ([adcf810](https://github.com/Qymh/q-select/commit/adcf810))
+* some unit test ([f8a3d42](https://github.com/Qymh/q-select/commit/f8a3d42))
+* some unit test ([bc5d544](https://github.com/Qymh/q-select/commit/bc5d544))
+
+
+
 # [](https://github.com/Qymh/q-select/compare/v0.2.2...v) (2019-08-02)
 
 
