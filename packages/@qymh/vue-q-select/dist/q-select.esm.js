@@ -1119,7 +1119,6 @@ var Layer = function () {
         return v.destroy();
       });
 
-      Dom.remove(document.body, Dom.find("q-select-bk"));
       Dom.remove(document.body, Dom.find("q-select--" + _this.id));
       _this.__proto__ = null;
 

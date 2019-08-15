@@ -1,5 +1,5 @@
 /**
- * @qymh/q-select v0.2.6
+ * @qymh/q-select v0.2.7
  * (c) 2019 Qymh
  * @license MIT
  */
@@ -961,7 +961,6 @@ var Layer = (function () {
         var _this = this;
         nextTick(function () {
             _this.touchs.forEach(function (v) { return v.destroy(); });
-            Dom.remove(document.body, Dom.find("q-select-bk"));
             Dom.remove(document.body, Dom.find("q-select--" + _this.id));
             _this.__proto__ = null;
             for (var key in _this) {

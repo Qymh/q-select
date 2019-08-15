@@ -1,5 +1,5 @@
 /**
- * @qymh/vue-q-select v0.2.6
+ * @qymh/vue-q-select v0.2.7
  * (c) 2019 Qymh
  * @license MIT
  */
@@ -1122,7 +1122,6 @@ var Layer = function () {
         return v.destroy();
       });
 
-      Dom.remove(document.body, Dom.find("q-select-bk"));
       Dom.remove(document.body, Dom.find("q-select--" + _this.id));
       _this.__proto__ = null;
 
