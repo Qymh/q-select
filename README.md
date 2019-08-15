@@ -779,22 +779,24 @@ Vue.use(QSelect, { name: 'QPicker' });
 
 ### props
 
-| prop                 |  类型   | 是否必填 | 默认值 |       描述       |                                         数据格式 |
-| -------------------- | :-----: | :------: | :----: | :--------------: | -----------------------------------------------: |
-| v-model              | Boolean |   true   | false  | 是否显示下拉组件 |                                                  |
-| data                 |  Array  |   true   |  [[]]  |    下拉数据值    |                                 [同 data](#data) |
-| index                |  Array  |  false   |  [0]   |      索引值      |                               [同 index](#index) |
-| count                | Number  |  false   |   7    |   栏目展示数目   |                               [同 count](#count) |
-| chunkHeight          | Number  |  false   |   40   |   栏目块的高度   |                   [同 chunkHeight](#chunkHeight) |
-| bkIndex              | Number  |  false   |  500   |  背景的 z-index  |                            [同 bkIndex](#bkIndx) |
-| selectIndex          | Number  |  false   |  600   | 选择栏的 z-index |                    [同 selectIndex](#selectIndx) |
-| title                | String  |  false   | 请选择 |   选择栏的标题   |                               [同 title](#title) |
-| confirmBtn           | String  |  false   |  确定  | 选择栏的确认文案 |                     [同 confirmBtn](#confirmBtn) |
-| cancelBtn            | String  |  fales   |  取消  | 选择栏的取消文案 |                       [同 cancelBtn](#cancelBtn) |
-| disableDefaultCancel | Boolean |  false   | false  | 禁止默认取消事件 | [同 disableDefaultCancel](#disableDefaultCancel) |
-| target               | String  |  false   |   ''   |   内联挂载元素   |                             [同 target](#target) |
-| loading              | Boolean |  false   | false  |  是否启用加载图  |                           [同 loading](#loading) |
-| deep                 | Boolean |  false   | false  |                  |                                是否深度观察 data |
+| prop                 |  类型   | 是否必填 | 默认值 |        描述         |                                         数据格式 |
+| -------------------- | :-----: | :------: | :----: | :-----------------: | -----------------------------------------------: |
+| v-model              | Boolean |   true   | false  |  是否显示下拉组件   |                                                  |
+| data                 |  Array  |   true   |  [[]]  |     下拉数据值      |                                 [同 data](#data) |
+| index                |  Array  |  false   |  [0]   |       索引值        |                               [同 index](#index) |
+| count                | Number  |  false   |   7    |    栏目展示数目     |                               [同 count](#count) |
+| chunkHeight          | Number  |  false   |   40   |    栏目块的高度     |                   [同 chunkHeight](#chunkHeight) |
+| bkIndex              | Number  |  false   |  500   |   背景的 z-index    |                            [同 bkIndex](#bkIndx) |
+| selectIndex          | Number  |  false   |  600   |  选择栏的 z-index   |                    [同 selectIndex](#selectIndx) |
+| title                | String  |  false   | 请选择 |    选择栏的标题     |                               [同 title](#title) |
+| confirmBtn           | String  |  false   |  确定  |  选择栏的确认文案   |                     [同 confirmBtn](#confirmBtn) |
+| cancelBtn            | String  |  fales   |  取消  |  选择栏的取消文案   |                       [同 cancelBtn](#cancelBtn) |
+| disableDefaultCancel | Boolean |  false   | false  |  禁止默认取消事件   | [同 disableDefaultCancel](#disableDefaultCancel) |
+| target               | String  |  false   |   ''   |    内联挂载元素     |                             [同 target](#target) |
+| loading              | Boolean |  false   | false  |   是否启用加载图    |                           [同 loading](#loading) |
+| deep                 | Boolean |  false   | false  |                     |                                是否深度观察 data |
+| defaultKey           |  Array  |  false   |   []   |  默认选中的 key 值  |                       同 ref 中的设置 defaultKey |
+| defaultValue         |  Array  |  false   |   []   | 默认选中的 value 值 |                     同 ref 中的设置 defaultValue |
 
 #### 注意事项
 
@@ -815,6 +817,10 @@ vue 下`q-select`的使用和在 js 下不同,我们运用了`vue`响应式的�
 - 设置是否有 loading
 
   通过改变 props 下 loading 的布尔值 将会设置是否显示 loading
+
+- 设置默认 defaultKey 默认 defaultValue
+
+  通过改变 props 下 defaultKey defaultValue 进行设置,这里要注意的是设置默认值得前提条件是 data 必须的初始化完成,不然无法设置默认值,换句话来说,如果 data 是异步获取的,那么设置默认值得放在 data 成功异步获取之后
 
 ### refs
 
@@ -840,6 +846,7 @@ this.$refs.select.setData([[4, 5, 6], [2]]);
 - setValue
 
   - 解释 在当前选择栏下设定选择的值,选择栏会自动聚焦到当前值,如果没有这个值,则会聚焦到当前栏目第一项
+  - 也可以直接改变 props 下的 defaultValue
   - 参数
     - value(必填)
       - 数据格式 数组 直接指定要聚焦到的值如 [1,2,3]
@@ -851,6 +858,7 @@ this.$refs.select.setValue([3]);
 - setKey
 
   - 解释 在当前选择栏下设定选择的 key 值,选择栏会自动聚焦到当前值,如果没有这个值,则会聚焦到当前栏目第一项
+  - 也可以直接改变 props 下的 defaultKey
   - 参数
   - key(必填)
     - 数据格式 数组 直接指定要聚焦到的 key 值如 ['1k','2k','3k']
