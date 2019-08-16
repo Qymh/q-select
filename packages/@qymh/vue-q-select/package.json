@@ -1,6 +1,6 @@
 {
   "name": "@qymh/vue-q-select",
-  "version": "0.2.9",
+  "version": "0.3.0",
   "description": "一个高性能的vue移动端下拉选择插件",
   "main": "dist/q-select.esm.js",
   "keywords": [
@@ -19,7 +19,7 @@
     "node": ">=8.6"
   },
   "dependencies": {
-    "@qymh/q-select": "^0.2.9",
+    "@qymh/q-select": "^0.3.0",
     "vue": "^2.6.10",
     "vue-function-api": "^2.0.6"
   }
