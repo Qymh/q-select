@@ -261,6 +261,18 @@ class Touch {
     const { timeStamp: time } = e;
     this.touchDiff =
       this.getTouchCenter(e.touches) - this.touchStart + this.preTrans;
+    if (
+      this.touchDiff >
+      this.maxScrollTop + this.pre.$options.chunkHeight * 0.4
+    ) {
+      this.touchDiff = this.maxScrollTop + this.pre.$options.chunkHeight * 0.4;
+    }
+    if (
+      this.touchDiff <
+      this.minScrollTop - this.pre.$options.chunkHeight * 0.4
+    ) {
+      this.touchDiff = this.minScrollTop - this.pre.$options.chunkHeight * 0.4;
+    }
     if (this.positions.length > 60) {
       this.positions.splice(0, 30);
     }
@@ -301,6 +313,7 @@ class Touch {
     let decelerationTrans;
     decelerationTrans = (movedTop / timeOffset) * (1000 / 60);
     let featureScrollTop = this.touchDiff;
+    let debounceScrollTop;
     let duration = 0;
     let isFrezzed = false;
     this.positions.length = 0;
@@ -312,11 +325,15 @@ class Touch {
       if (featureScrollTop >= this.maxScrollTop) {
         isFrezzed = true;
         featureScrollTop = this.maxScrollTop;
+        debounceScrollTop =
+          this.maxScrollTop + this.pre.$options.chunkHeight * 0.4;
         break;
       }
       if (featureScrollTop <= this.minScrollTop) {
         isFrezzed = true;
         featureScrollTop = this.minScrollTop;
+        debounceScrollTop =
+          this.minScrollTop - this.pre.$options.chunkHeight * 0.4;
         break;
       }
     }
@@ -328,9 +345,13 @@ class Touch {
       ? featureScrollTop
       : this.getFeatureScrollTop(featureIndex);
     if (Math.abs(movedTop) <= 10 || duration <= 250) {
-      this.shrinkAnimateToEnd(realFeatureScrollTop);
+      this.shrinkAnimateToEnd(
+        realFeatureScrollTop,
+        undefined,
+        debounceScrollTop
+      );
     } else {
-      this.slideAnimateToEnd(realFeatureScrollTop, duration);
+      this.slideAnimateToEnd(realFeatureScrollTop, duration, debounceScrollTop);
     }
   }
 
@@ -355,17 +376,25 @@ class Touch {
    * @param realFeatureScrollTop 最终滚动位置
    * @param duration 动画时长
    */
-  slideAnimateToEnd(realFeatureScrollTop: number, duration?: number) {
+  slideAnimateToEnd(
+    realFeatureScrollTop: number,
+    duration?: number,
+    debounce?: number
+  ) {
     this.animateSlide.run(
       this.touchDiff,
-      realFeatureScrollTop,
+      debounce || realFeatureScrollTop,
       (res: number) => {
         this.touchDiff = res;
         this.preTrans = res;
         this.setTrans(res);
       },
       (end: number) => {
-        this.animateFinishedCall(end);
+        if (debounce) {
+          this.shrinkAnimateToEnd(realFeatureScrollTop);
+        } else {
+          this.animateFinishedCall(end);
+        }
       },
       duration
     );
@@ -376,19 +405,27 @@ class Touch {
    * @param featureScrollTop 最终滚动位置
    * @param fast 是否是快速收缩
    */
-  shrinkAnimateToEnd(featureScrollTop: number, fast?: boolean) {
+  shrinkAnimateToEnd(
+    featureScrollTop: number,
+    fast?: boolean,
+    debounce?: number
+  ) {
     const index = this.getFeatureIndex(featureScrollTop);
     featureScrollTop = this.getFeatureScrollTop(index);
     this.animateShrink.run(
       this.touchDiff,
-      featureScrollTop,
+      debounce || featureScrollTop,
       (res: number) => {
         this.setTrans(res);
         this.preTrans = res;
         this.touchDiff = res;
       },
       (end: number) => {
-        this.animateFinishedCall(end, fast);
+        if (debounce) {
+          this.shrinkAnimateToEnd(featureScrollTop);
+        } else {
+          this.animateFinishedCall(end, fast);
+        }
       },
       fast ? 0 : 250
     );
