@@ -4,6 +4,8 @@
 
 [Vue 文档](#Vue)
 
+[版本更新日志](https://github.com/Qymh/q-select/blob/master/CHANGELOG.md)
+
 ## JavaScript
 
 ### 在线体验
