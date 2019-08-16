@@ -1,5 +1,5 @@
 /**
- * @qymh/q-select v0.2.8
+ * @qymh/q-select v0.2.9
  * (c) 2019 Qymh
  * @license MIT
  */
@@ -472,6 +472,14 @@ var Touch = (function () {
         var time = e.timeStamp;
         this.touchDiff =
             this.getTouchCenter(e.touches) - this.touchStart + this.preTrans;
+        if (this.touchDiff >
+            this.maxScrollTop + this.pre.$options.chunkHeight * 0.4) {
+            this.touchDiff = this.maxScrollTop + this.pre.$options.chunkHeight * 0.4;
+        }
+        if (this.touchDiff <
+            this.minScrollTop - this.pre.$options.chunkHeight * 0.4) {
+            this.touchDiff = this.minScrollTop - this.pre.$options.chunkHeight * 0.4;
+        }
         if (this.positions.length > 60) {
             this.positions.splice(0, 30);
         }
@@ -503,6 +511,7 @@ var Touch = (function () {
         var decelerationTrans;
         decelerationTrans = (movedTop / timeOffset) * (1000 / 60);
         var featureScrollTop = this.touchDiff;
+        var debounceScrollTop;
         var duration = 0;
         var isFrezzed = false;
         this.positions.length = 0;
@@ -513,11 +522,15 @@ var Touch = (function () {
             if (featureScrollTop >= this.maxScrollTop) {
                 isFrezzed = true;
                 featureScrollTop = this.maxScrollTop;
+                debounceScrollTop =
+                    this.maxScrollTop + this.pre.$options.chunkHeight * 0.4;
                 break;
             }
             if (featureScrollTop <= this.minScrollTop) {
                 isFrezzed = true;
                 featureScrollTop = this.minScrollTop;
+                debounceScrollTop =
+                    this.minScrollTop - this.pre.$options.chunkHeight * 0.4;
                 break;
             }
         }
@@ -527,10 +540,10 @@ var Touch = (function () {
             ? featureScrollTop
             : this.getFeatureScrollTop(featureIndex);
         if (Math.abs(movedTop) <= 10 || duration <= 250) {
-            this.shrinkAnimateToEnd(realFeatureScrollTop);
+            this.shrinkAnimateToEnd(realFeatureScrollTop, undefined, debounceScrollTop);
         }
         else {
-            this.slideAnimateToEnd(realFeatureScrollTop, duration);
+            this.slideAnimateToEnd(realFeatureScrollTop, duration, debounceScrollTop);
         }
     };
     Touch.prototype.doShrinkAnimate = function () {
@@ -540,26 +553,36 @@ var Touch = (function () {
         var featureScrollTop = this.getFeatureScrollTop(index);
         this.shrinkAnimateToEnd(featureScrollTop, true);
     };
-    Touch.prototype.slideAnimateToEnd = function (realFeatureScrollTop, duration) {
+    Touch.prototype.slideAnimateToEnd = function (realFeatureScrollTop, duration, debounce) {
         var _this = this;
-        this.animateSlide.run(this.touchDiff, realFeatureScrollTop, function (res) {
+        this.animateSlide.run(this.touchDiff, debounce || realFeatureScrollTop, function (res) {
             _this.touchDiff = res;
             _this.preTrans = res;
             _this.setTrans(res);
         }, function (end) {
-            _this.animateFinishedCall(end);
+            if (debounce) {
+                _this.shrinkAnimateToEnd(realFeatureScrollTop);
+            }
+            else {
+                _this.animateFinishedCall(end);
+            }
         }, duration);
     };
-    Touch.prototype.shrinkAnimateToEnd = function (featureScrollTop, fast) {
+    Touch.prototype.shrinkAnimateToEnd = function (featureScrollTop, fast, debounce) {
         var _this = this;
         var index = this.getFeatureIndex(featureScrollTop);
         featureScrollTop = this.getFeatureScrollTop(index);
-        this.animateShrink.run(this.touchDiff, featureScrollTop, function (res) {
+        this.animateShrink.run(this.touchDiff, debounce || featureScrollTop, function (res) {
             _this.setTrans(res);
             _this.preTrans = res;
             _this.touchDiff = res;
         }, function (end) {
-            _this.animateFinishedCall(end, fast);
+            if (debounce) {
+                _this.shrinkAnimateToEnd(featureScrollTop);
+            }
+            else {
+                _this.animateFinishedCall(end, fast);
+            }
         }, fast ? 0 : 250);
     };
     Touch.prototype.animateFinishedCall = function (end, fast) {
