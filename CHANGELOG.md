@@ -1,3 +1,16 @@
+# [](https://github.com/Qymh/q-select/compare/v0.3.0...v) (2019-08-16)
+
+
+
+# [0.3.0](https://github.com/Qymh/q-select/compare/v0.2.9...v0.3.0) (2019-08-16)
+
+
+### Features
+
+* add debounce animating ([bd5bf7f](https://github.com/Qymh/q-select/commit/bd5bf7f))
+
+
+
 # [](https://github.com/Qymh/q-select/compare/v0.2.9...v) (2019-08-15)
 
 
