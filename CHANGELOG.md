@@ -1,3 +1,16 @@
+# [](https://github.com/Qymh/q-select/compare/v0.3.3...v) (2019-08-19)
+
+
+
+## [0.3.3](https://github.com/Qymh/q-select/compare/v0.3.2...v0.3.3) (2019-08-19)
+
+
+### Bug Fixes
+
+* index格式化 ([b2d5e2e](https://github.com/Qymh/q-select/commit/b2d5e2e))
+
+
+
 # [](https://github.com/Qymh/q-select/compare/v0.3.2...v) (2019-08-19)
 
 
