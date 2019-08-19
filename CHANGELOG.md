@@ -1,3 +1,16 @@
+# [](https://github.com/Qymh/q-select/compare/v0.3.2...v) (2019-08-19)
+
+
+
+## [0.3.2](https://github.com/Qymh/q-select/compare/v0.3.1...v0.3.2) (2019-08-19)
+
+
+### Bug Fixes
+
+* index设置长度不够时候无法滚动的bug ([dbf7076](https://github.com/Qymh/q-select/commit/dbf7076))
+
+
+
 # [](https://github.com/Qymh/q-select/compare/v0.3.1...v) (2019-08-19)
 
 
