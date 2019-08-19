@@ -1,3 +1,16 @@
+# [](https://github.com/Qymh/q-select/compare/v0.3.1...v) (2019-08-19)
+
+
+
+## [0.3.1](https://github.com/Qymh/q-select/compare/v0.3.0...v0.3.1) (2019-08-19)
+
+
+### Bug Fixes
+
+* unmounted生命周期转为destroyed ([e5ceb61](https://github.com/Qymh/q-select/commit/e5ceb61))
+
+
+
 # [](https://github.com/Qymh/q-select/compare/v0.3.0...v) (2019-08-16)
 
 
