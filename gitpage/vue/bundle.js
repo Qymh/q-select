@@ -17993,6 +17993,9 @@
 	function isPlainObject(x) {
 	    return toString(x) === '[object Object]';
 	}
+	function isFunction(x) {
+	    return typeof x === 'function';
+	}
 	function warn(msg, vm) {
 	    Vue.util.warn(msg, vm);
 	}
@@ -18022,8 +18025,8 @@
 	function getCurrentVM() {
 	    return currentVM;
 	}
-	function setCurrentVM(vue) {
-	    currentVM = vue;
+	function setCurrentVM(vm) {
+	    currentVM = vm;
 	}
 
 	var AbstractWrapper = /** @class */ (function () {
@@ -18245,6 +18248,25 @@
 	    _install(Vue);
 	}
 
+	function ensureCurrentVMInFn(hook) {
+	    var vm = getCurrentVM();
+	    {
+	        assert(vm, "\"" + hook + "\" get called outside of \"setup()\"");
+	    }
+	    return vm;
+	}
+	function createComponentInstance(Ctor, options) {
+	    if (options === void 0) { options = {}; }
+	    var silent = Ctor.config.silent;
+	    Ctor.config.silent = true;
+	    var vm = new Ctor(options);
+	    Ctor.config.silent = silent;
+	    return vm;
+	}
+	function isComponentInstance(obj) {
+	    return currentVue && obj instanceof currentVue;
+	}
+
 	function createSymbol(name) {
 	    return hasSymbol ? Symbol.for(name) : name;
 	}
@@ -18260,7 +18282,10 @@
 	 * We can do unwrapping and other things here.
 	 */
 	function setupAccessControl(target) {
-	    if (!isObject(target) || Array.isArray(target) || isWrapper(target)) {
+	    if (!isObject(target) ||
+	        Array.isArray(target) ||
+	        isWrapper(target) ||
+	        isComponentInstance(target)) {
 	        return;
 	    }
 	    if (hasOwn(target, AccessControIdentifierlKey) &&
@@ -18345,14 +18370,11 @@
 	        observed = Vue.observable(obj);
 	    }
 	    else {
-	        var silent = Vue.config.silent;
-	        Vue.config.silent = true;
-	        var vm = new Vue({
+	        var vm = createComponentInstance(Vue, {
 	            data: {
 	                $$state: obj,
 	            },
 	        });
-	        Vue.config.silent = silent;
 	        observed = vm._data.$$state;
 	    }
 	    if (Object.isExtensible(observed)) {
@@ -18465,23 +18487,27 @@
 	        }
 	        if (!binding)
 	            return;
-	        if (!isPlainObject(binding)) {
-	            {
-	                assert(false, "\"setup\" must return a \"Object\", get \"" + Object.prototype.toString
-	                    .call(binding)
-	                    .slice(8, -1) + "\"");
-	            }
+	        if (isFunction(binding)) {
+	            vm.$options.render = function () { return binding(vm.$props, ctx); };
 	            return;
 	        }
-	        Object.keys(binding).forEach(function (name) {
-	            var bindingValue = binding[name];
-	            // make plain value reactive
-	            if (!isWrapper(bindingValue)) {
-	                bindingValue = value(bindingValue);
-	            }
-	            // bind to vm
-	            bindingValue.setVmProperty(vm, name);
-	        });
+	        if (isPlainObject(binding)) {
+	            Object.keys(binding).forEach(function (name) {
+	                var bindingValue = binding[name];
+	                // make plain value reactive
+	                if (!isWrapper(bindingValue)) {
+	                    bindingValue = value(bindingValue);
+	                }
+	                // bind to vm
+	                bindingValue.setVmProperty(vm, name);
+	            });
+	            return;
+	        }
+	        {
+	            assert(false, "\"setup\" must return a \"Object\" or a \"Function\", get \"" + Object.prototype.toString
+	                .call(binding)
+	                .slice(8, -1) + "\"");
+	        }
 	    }
 	    function createSetupContext(vm) {
 	        var ctx = {};
@@ -18530,26 +18556,24 @@
 	    }
 	}
 
-	function createComponent(compOpions) {
-	    return compOpions;
-	}
-
-	function ensureCurrentVMInFn(hook) {
-	    var vm = getCurrentVM();
-	    {
-	        assert(vm, "\"" + hook + "\" get called outside of \"setup()\"");
+	var fallbackCreateElement;
+	var createElement = function createElement() {
+	    var args = [];
+	    for (var _i = 0; _i < arguments.length; _i++) {
+	        args[_i] = arguments[_i];
 	    }
-	    return vm;
-	}
-	function compoundComputed(computed) {
-	    var Vue = getCurrentVue();
-	    var silent = Vue.config.silent;
-	    Vue.config.silent = true;
-	    var reactive = new Vue({
-	        computed: computed,
-	    });
-	    Vue.config.silent = silent;
-	    return reactive;
+	    if (!currentVM) {
+	        if (!fallbackCreateElement) {
+	            fallbackCreateElement = createComponentInstance(getCurrentVue()).$createElement;
+	        }
+	        return fallbackCreateElement.apply(null, args);
+	    }
+	    return currentVM.$createElement.apply(null, args);
+	};
+
+	// implementation, close to no-op
+	function createComponent(options) {
+	    return options;
 	}
 
 	var genName = function (name) { return "on" + (name[0].toUpperCase() + name.slice(1)); };
@@ -18586,21 +18610,22 @@
 	// only one event will be fired between destroyed and deactivated when an unmount occurs
 	var onUnmounted = createLifeCycles(['destroyed', 'deactivated'], genName('unmounted'));
 
-	var initValue = {};
+	var INIT_VALUE = {};
 	var fallbackVM;
+	function flushPreQueue() {
+	    flushQueue(this, WatcherPreFlushQueueKey);
+	}
+	function flushPostQueue() {
+	    flushQueue(this, WatcherPostFlushQueueKey);
+	}
 	function hasWatchEnv(vm) {
 	    return vm[WatcherPreFlushQueueKey] !== undefined;
 	}
 	function installWatchEnv(vm) {
 	    vm[WatcherPreFlushQueueKey] = [];
 	    vm[WatcherPostFlushQueueKey] = [];
-	    vm.$on('hook:beforeUpdate', createFlusher(WatcherPreFlushQueueKey));
-	    vm.$on('hook:updated', createFlusher(WatcherPostFlushQueueKey));
-	}
-	function createFlusher(key) {
-	    return function () {
-	        flushQueue(this, key);
-	    };
+	    vm.$on('hook:beforeUpdate', flushPreQueue);
+	    vm.$on('hook:updated', flushPostQueue);
 	}
 	function flushQueue(vm, key) {
 	    var queue = vm[key];
@@ -18609,33 +18634,36 @@
 	    }
 	    queue.length = 0;
 	}
-	function flushWatcherCallback(vm, fn, mode) {
-	    // flush all when beforeUpdate and updated are not fired
-	    function fallbackFlush() {
-	        vm.$nextTick(function () {
-	            if (vm[WatcherPreFlushQueueKey].length) {
-	                flushQueue(vm, WatcherPreFlushQueueKey);
-	            }
-	            if (vm[WatcherPostFlushQueueKey].length) {
-	                flushQueue(vm, WatcherPostFlushQueueKey);
-	            }
-	        });
+	function scheduleFlush(vm, fn, mode) {
+	    if (vm === fallbackVM) {
+	        // no render pipeline, ignore flush mode
+	        fn();
 	    }
-	    switch (mode) {
-	        case 'pre':
-	            fallbackFlush();
-	            vm[WatcherPreFlushQueueKey].push(fn);
-	            break;
-	        case 'post':
-	            fallbackFlush();
-	            vm[WatcherPostFlushQueueKey].push(fn);
-	            break;
-	        case 'sync':
-	            fn();
-	            break;
-	        default:
-	            assert(false, "flush must be one of [\"post\", \"pre\", \"sync\"], but got " + mode);
-	            break;
+	    else {
+	        // flush all when beforeUpdate and updated are not fired
+	        var fallbackFlush = function () {
+	            vm.$nextTick(function () {
+	                if (vm[WatcherPreFlushQueueKey].length) {
+	                    flushQueue(vm, WatcherPreFlushQueueKey);
+	                }
+	                if (vm[WatcherPostFlushQueueKey].length) {
+	                    flushQueue(vm, WatcherPostFlushQueueKey);
+	                }
+	            });
+	        };
+	        switch (mode) {
+	            case 'pre':
+	                fallbackFlush();
+	                vm[WatcherPreFlushQueueKey].push(fn);
+	                break;
+	            case 'post':
+	                fallbackFlush();
+	                vm[WatcherPostFlushQueueKey].push(fn);
+	                break;
+	            default:
+	                assert(false, "flush must be one of [\"post\", \"pre\", \"sync\"], but got " + mode);
+	                break;
+	        }
 	    }
 	}
 	function createSingleSourceWatcher(vm, source, cb, options) {
@@ -18646,6 +18674,8 @@
 	    else {
 	        getter = source;
 	    }
+	    // `callbackRef` is used to handle firty sync callbck.
+	    // The subsequent callbcks will redirect to `flush`.
 	    var callbackRef = function (n, o) {
 	        callbackRef = flush;
 	        if (!options.lazy) {
@@ -18655,34 +18685,41 @@
 	            flush(n, o);
 	        }
 	    };
-	    var flush = function (n, o) {
-	        flushWatcherCallback(vm, function () {
-	            cb(n, o);
-	        }, options.flush);
-	    };
+	    var flushMode = options.flush;
+	    var flush = flushMode === 'sync'
+	        ? function (n, o) { return cb(n, o); }
+	        : function (n, o) {
+	            scheduleFlush(vm, function () {
+	                cb(n, o);
+	            }, flushMode);
+	        };
 	    return vm.$watch(getter, function (n, o) {
 	        callbackRef(n, o);
 	    }, {
 	        immediate: !options.lazy,
 	        deep: options.deep,
 	        // @ts-ignore
-	        sync: options.flush === 'sync',
+	        sync: flushMode === 'sync',
 	    });
 	}
 	function createMuiltSourceWatcher(vm, sources, cb, options) {
-	    var execCallbackAfterNumRun = options.lazy ? false : sources.length;
-	    var pendingCallback = false;
 	    var watcherContext = [];
-	    function execCallback() {
+	    var execCallback = function () {
 	        cb.apply(vm, watcherContext.reduce(function (acc, ctx) {
-	            acc[0].push((ctx.value === initValue ? ctx.getter() : ctx.value));
-	            acc[1].push((ctx.oldValue === initValue ? undefined : ctx.oldValue));
+	            var newVal = (ctx.value = (ctx.value === INIT_VALUE
+	                ? ctx.getter()
+	                : ctx.value));
+	            var oldVal = (ctx.oldValue === INIT_VALUE ? newVal : ctx.oldValue);
+	            ctx.oldValue = newVal;
+	            acc[0].push(newVal);
+	            acc[1].push(oldVal);
 	            return acc;
 	        }, [[], []]));
-	    }
-	    function stop() {
-	        watcherContext.forEach(function (ctx) { return ctx.watcherStopHandle(); });
-	    }
+	    };
+	    var stop = function () { return watcherContext.forEach(function (ctx) { return ctx.watcherStopHandle(); }); };
+	    var execCallbackAfterNumRun = options.lazy ? false : sources.length;
+	    // `callbackRef` is used to handle firty sync callbck.
+	    // The subsequent callbcks will redirect to `flush`.
 	    var callbackRef = function () {
 	        if (execCallbackAfterNumRun !== false) {
 	            if (--execCallbackAfterNumRun === 0) {
@@ -18696,17 +18733,21 @@
 	            flush();
 	        }
 	    };
-	    var flush = function () {
-	        if (!pendingCallback) {
-	            pendingCallback = true;
-	            vm.$nextTick(function () {
-	                flushWatcherCallback(vm, function () {
-	                    pendingCallback = false;
-	                    execCallback();
-	                }, options.flush);
-	            });
-	        }
-	    };
+	    var pendingCallback = false;
+	    var flushMode = options.flush;
+	    var flush = flushMode === 'sync'
+	        ? execCallback
+	        : function () {
+	            if (!pendingCallback) {
+	                pendingCallback = true;
+	                vm.$nextTick(function () {
+	                    scheduleFlush(vm, function () {
+	                        pendingCallback = false;
+	                        execCallback();
+	                    }, flushMode);
+	                });
+	            }
+	        };
 	    sources.forEach(function (source) {
 	        var getter;
 	        if (isWrapper(source)) {
@@ -18717,14 +18758,17 @@
 	        }
 	        var watcherCtx = {
 	            getter: getter,
-	            value: initValue,
-	            oldValue: initValue,
+	            value: INIT_VALUE,
+	            oldValue: INIT_VALUE,
 	        };
 	        // must push watcherCtx before create watcherStopHandle
 	        watcherContext.push(watcherCtx);
 	        watcherCtx.watcherStopHandle = vm.$watch(getter, function (n, o) {
 	            watcherCtx.value = n;
-	            watcherCtx.oldValue = o;
+	            // only update oldValue at frist, susquent updates at execCallback
+	            if (watcherCtx.oldValue === INIT_VALUE) {
+	                watcherCtx.oldValue = o;
+	            }
 	            callbackRef();
 	        }, {
 	            immediate: !options.lazy,
@@ -18746,17 +18790,13 @@
 	    var vm = getCurrentVM();
 	    if (!vm) {
 	        if (!fallbackVM) {
-	            var Vue_1 = getCurrentVue();
-	            var silent = Vue_1.config.silent;
-	            Vue_1.config.silent = true;
-	            fallbackVM = new Vue_1();
-	            Vue_1.config.silent = silent;
+	            fallbackVM = createComponentInstance(getCurrentVue());
 	        }
 	        vm = fallbackVM;
-	        opts.flush = 'sync';
 	    }
-	    if (!hasWatchEnv(vm))
+	    else if (!hasWatchEnv(vm)) {
 	        installWatchEnv(vm);
+	    }
 	    if (isArray(source)) {
 	        return createMuiltSourceWatcher(vm, source, cb, opts);
 	    }
@@ -18764,10 +18804,12 @@
 	}
 
 	function computed(getter, setter) {
-	    var computedHost = compoundComputed({
-	        $$state: {
-	            get: getter,
-	            set: setter,
+	    var computedHost = createComponentInstance(getCurrentVue(), {
+	        computed: {
+	            $$state: {
+	                get: getter,
+	                set: setter,
+	            },
 	        },
 	    });
 	    return new ComputedWrapper(__assign({ read: function () { return computedHost.$$state; } }, (setter && {
@@ -18812,9 +18854,8 @@
 	        if (isWrapper(val)) {
 	            return val;
 	        }
-	        var reactiveVal_1 = state(val);
 	        return new ComputedWrapper({
-	            read: function () { return reactiveVal_1; },
+	            read: function () { return val; },
 	            write: function () {
 	                warn("The injectd value can't be re-assigned", vm);
 	            },
@@ -18837,6 +18878,7 @@
 
 	exports.computed = computed;
 	exports.createComponent = createComponent;
+	exports.createElement = createElement;
 	exports.inject = inject;
 	exports.onActivated = onActivated;
 	exports.onBeforeDestroy = onBeforeDestroy;
@@ -18860,31 +18902,32 @@
 	unwrapExports(vueFunctionApi);
 	var vueFunctionApi_1 = vueFunctionApi.computed;
 	var vueFunctionApi_2 = vueFunctionApi.createComponent;
-	var vueFunctionApi_3 = vueFunctionApi.inject;
-	var vueFunctionApi_4 = vueFunctionApi.onActivated;
-	var vueFunctionApi_5 = vueFunctionApi.onBeforeDestroy;
-	var vueFunctionApi_6 = vueFunctionApi.onBeforeMount;
-	var vueFunctionApi_7 = vueFunctionApi.onBeforeUpdate;
-	var vueFunctionApi_8 = vueFunctionApi.onCreated;
-	var vueFunctionApi_9 = vueFunctionApi.onDeactivated;
-	var vueFunctionApi_10 = vueFunctionApi.onDestroyed;
-	var vueFunctionApi_11 = vueFunctionApi.onErrorCaptured;
-	var vueFunctionApi_12 = vueFunctionApi.onMounted;
-	var vueFunctionApi_13 = vueFunctionApi.onUnmounted;
-	var vueFunctionApi_14 = vueFunctionApi.onUpdated;
-	var vueFunctionApi_15 = vueFunctionApi.plugin;
-	var vueFunctionApi_16 = vueFunctionApi.provide;
-	var vueFunctionApi_17 = vueFunctionApi.set;
-	var vueFunctionApi_18 = vueFunctionApi.state;
-	var vueFunctionApi_19 = vueFunctionApi.value;
-	var vueFunctionApi_20 = vueFunctionApi.watch;
+	var vueFunctionApi_3 = vueFunctionApi.createElement;
+	var vueFunctionApi_4 = vueFunctionApi.inject;
+	var vueFunctionApi_5 = vueFunctionApi.onActivated;
+	var vueFunctionApi_6 = vueFunctionApi.onBeforeDestroy;
+	var vueFunctionApi_7 = vueFunctionApi.onBeforeMount;
+	var vueFunctionApi_8 = vueFunctionApi.onBeforeUpdate;
+	var vueFunctionApi_9 = vueFunctionApi.onCreated;
+	var vueFunctionApi_10 = vueFunctionApi.onDeactivated;
+	var vueFunctionApi_11 = vueFunctionApi.onDestroyed;
+	var vueFunctionApi_12 = vueFunctionApi.onErrorCaptured;
+	var vueFunctionApi_13 = vueFunctionApi.onMounted;
+	var vueFunctionApi_14 = vueFunctionApi.onUnmounted;
+	var vueFunctionApi_15 = vueFunctionApi.onUpdated;
+	var vueFunctionApi_16 = vueFunctionApi.plugin;
+	var vueFunctionApi_17 = vueFunctionApi.provide;
+	var vueFunctionApi_18 = vueFunctionApi.set;
+	var vueFunctionApi_19 = vueFunctionApi.state;
+	var vueFunctionApi_20 = vueFunctionApi.value;
+	var vueFunctionApi_21 = vueFunctionApi.watch;
 
 	var script$3 = {
 	    setup: function (props, context) {
-	        var pending = vueFunctionApi_19(true);
-	        var uid = vueFunctionApi_19(0);
+	        var pending = vueFunctionApi_20(true);
+	        var uid = vueFunctionApi_20(0);
 	        var ins;
-	        vueFunctionApi_12(function () {
+	        vueFunctionApi_13(function () {
 	            ins = new QSelect({
 	                data: props.data,
 	                index: props.index,
@@ -18914,7 +18957,7 @@
 	                }
 	            });
 	        });
-	        vueFunctionApi_13(function () {
+	        vueFunctionApi_11(function () {
 	            ins && ins.destroy();
 	        });
 	        var warnIns = function () {
@@ -19002,7 +19045,7 @@
 	                return ins.cancelLoading();
 	            }
 	        };
-	        vueFunctionApi_20(function () { return props.defaultKey; }, function (val) {
+	        vueFunctionApi_21(function () { return props.defaultKey; }, function (val) {
 	            if (val && val.length) {
 	                if (pending) {
 	                    vue_runtime_common.nextTick(function () {
@@ -19014,7 +19057,7 @@
 	                }
 	            }
 	        });
-	        vueFunctionApi_20(function () { return props.defaultValue; }, function (val) {
+	        vueFunctionApi_21(function () { return props.defaultValue; }, function (val) {
 	            if (val && val.length) {
 	                if (pending) {
 	                    vue_runtime_common.nextTick(function () {
@@ -19026,7 +19069,7 @@
 	                }
 	            }
 	        });
-	        vueFunctionApi_20(function () { return props.visible; }, function (val) {
+	        vueFunctionApi_21(function () { return props.visible; }, function (val) {
 	            if (val) {
 	                if (pending) {
 	                    vue_runtime_common.nextTick(function () {
@@ -19044,7 +19087,7 @@
 	                }
 	            }
 	        });
-	        vueFunctionApi_20(function () { return props.loading; }, function (val) {
+	        vueFunctionApi_21(function () { return props.loading; }, function (val) {
 	            if (val) {
 	                if (pending) ;
 	                else {
@@ -19057,7 +19100,7 @@
 	                }
 	            }
 	        });
-	        vueFunctionApi_20(function () { return props.data; }, function (val) {
+	        vueFunctionApi_21(function () { return props.data; }, function (val) {
 	            setData(val);
 	            if (props.defaultValue && props.defaultValue.length) {
 	                setValue(props.defaultValue);
@@ -19072,7 +19115,7 @@
 	            lazy: true,
 	            deep: props.deep
 	        });
-	        vueFunctionApi_20(function () { return props.index; }, function (val) {
+	        vueFunctionApi_21(function () { return props.index; }, function (val) {
 	            setIndex(val);
 	        }, {
 	            lazy: true
@@ -19200,7 +19243,7 @@
 	var QSelect$2 = {
 	    install: function (Vue, options) {
 	        if (options === void 0) { options = {}; }
-	        Vue.use(vueFunctionApi_15);
+	        Vue.use(vueFunctionApi_16);
 	        Vue.component(options.name || 'QSelect', QSelect$1);
 	    }
 	};
