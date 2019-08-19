@@ -1553,6 +1553,8 @@ var QSelect = function (_super) {
 
     if (!sameIndex(preIndex, index) || diff) {
       if (!this.isGanged) {
+        this.normalizeIndex(this.dataTrans, index);
+
         if (diff) {
           this.diff(preDataTrans, this.dataTrans, 0, true, true, true);
         }

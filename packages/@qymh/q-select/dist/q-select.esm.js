@@ -1,5 +1,5 @@
 /**
- * @qymh/q-select v0.3.1
+ * @qymh/q-select v0.3.2
  * (c) 2019 Qymh
  * @license MIT
  */
@@ -1291,6 +1291,7 @@ var QSelect = (function (_super) {
         this.realIndex = index.slice();
         if (!sameIndex(preIndex, index) || diff) {
             if (!this.isGanged) {
+                this.normalizeIndex(this.dataTrans, index);
                 if (diff) {
                     this.diff(preDataTrans, this.dataTrans, 0, true, true, true);
                 }
