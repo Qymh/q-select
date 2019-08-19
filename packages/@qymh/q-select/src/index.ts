@@ -158,7 +158,7 @@ class QSelect extends Layer {
         this.setIndexAndData(this.dataTrans);
         this.touchs
           .filter(v => !v.hidden)
-          .forEach((v, i) => v.scrollTo(this.realIndex[i]));
+          .forEach((v, i) => v.scrollTo(this.realIndex[i] || 0));
         this.callReady();
       } else {
         const dataTransLater = this.genGangedData(
@@ -194,7 +194,7 @@ class QSelect extends Layer {
       this.touchs
         .filter(v => !v.hidden)
         .forEach((v, i) => {
-          v.curIndex = v.preIndex = this.realIndex[i];
+          v.curIndex = v.preIndex = this.realIndex[i] || 0;
         });
     }
   }

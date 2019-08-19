@@ -367,7 +367,7 @@ class Touch {
    * @param index 移动到的索引
    */
   scrollTo(index: number) {
-    const featureScrollTop = this.getFeatureScrollTop(index);
+    const featureScrollTop = this.getFeatureScrollTop(index || 0);
     this.shrinkAnimateToEnd(featureScrollTop, true);
   }
 
