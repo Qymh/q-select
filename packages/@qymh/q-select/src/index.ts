@@ -143,6 +143,7 @@ class QSelect extends Layer {
     this.realIndex = [...index];
     if (!sameIndex(preIndex, index) || diff) {
       if (!this.isGanged) {
+        this.normalizeIndex(this.dataTrans, index);
         if (diff) {
           this.diff(
             preDataTrans as DataTrans[][],
