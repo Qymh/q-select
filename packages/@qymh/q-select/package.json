@@ -1,6 +1,6 @@
 {
   "name": "@qymh/q-select",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "一个高性能的移动端下拉选择插件",
   "main": "dist/q-select.esm.js",
   "keywords": [
