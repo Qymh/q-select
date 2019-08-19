@@ -1,5 +1,5 @@
 /**
- * @qymh/vue-q-select v0.2.9
+ * @qymh/vue-q-select v0.3.0
  * (c) 2019 Qymh
  * @license MIT
  */
@@ -1776,7 +1776,7 @@ var script = {
         }
       });
     });
-    vueFunctionApi.onUnmounted(function () {
+    vueFunctionApi.onDestroyed(function () {
       ins && ins.destroy();
     });
 

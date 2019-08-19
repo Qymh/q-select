@@ -1773,7 +1773,7 @@ var script = {
         }
       });
     });
-    (0, _vueFunctionApi.onUnmounted)(function () {
+    (0, _vueFunctionApi.onDestroyed)(function () {
       ins && ins.destroy();
     });
 
