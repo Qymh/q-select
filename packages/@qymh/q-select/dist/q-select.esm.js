@@ -1,5 +1,5 @@
 /**
- * @qymh/q-select v0.3.0
+ * @qymh/q-select v0.3.1
  * (c) 2019 Qymh
  * @license MIT
  */
@@ -550,7 +550,7 @@ var Touch = (function () {
         this.shrinkAnimateToEnd(this.touchDiff);
     };
     Touch.prototype.scrollTo = function (index) {
-        var featureScrollTop = this.getFeatureScrollTop(index);
+        var featureScrollTop = this.getFeatureScrollTop(index || 0);
         this.shrinkAnimateToEnd(featureScrollTop, true);
     };
     Touch.prototype.slideAnimateToEnd = function (realFeatureScrollTop, duration, debounce) {
@@ -1299,7 +1299,7 @@ var QSelect = (function (_super) {
                 this.setIndexAndData(this.dataTrans);
                 this.touchs
                     .filter(function (v) { return !v.hidden; })
-                    .forEach(function (v, i) { return v.scrollTo(_this.realIndex[i]); });
+                    .forEach(function (v, i) { return v.scrollTo(_this.realIndex[i] || 0); });
                 this.callReady();
             }
             else {
@@ -1324,7 +1324,7 @@ var QSelect = (function (_super) {
             this.touchs
                 .filter(function (v) { return !v.hidden; })
                 .forEach(function (v, i) {
-                v.curIndex = v.preIndex = _this.realIndex[i];
+                v.curIndex = v.preIndex = _this.realIndex[i] || 0;
             });
         }
     };
