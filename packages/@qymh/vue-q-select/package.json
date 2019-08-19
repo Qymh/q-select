@@ -21,6 +21,6 @@
   "dependencies": {
     "@qymh/q-select": "^0.3.0",
     "vue": "^2.6.10",
-    "vue-function-api": "^2.0.6"
+    "vue-function-api": "^2.2.0"
   }
 }

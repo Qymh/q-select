@@ -1,7 +1,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import QSelect from '@qymh/q-select/src/index';
-import { value, onMounted, onUnmounted, watch } from 'vue-function-api';
+import { value, onMounted, onDestroyed, watch } from 'vue-function-api';
 import { assert } from '@qymh/q-select/src/uitls';
 export default {
   setup(props, context) {
@@ -40,7 +40,7 @@ export default {
       });
     });
 
-    onUnmounted(() => {
+    onDestroyed(() => {
       ins && ins.destroy();
     });
 
