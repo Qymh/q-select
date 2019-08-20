@@ -1,5 +1,5 @@
 /**
- * @qymh/vue-q-select v0.3.2
+ * @qymh/vue-q-select v0.3.3
  * (c) 2019 Qymh
  * @license MIT
  */
@@ -1562,8 +1562,6 @@ var QSelect = function (_super) {
           this.diff(preDataTrans, this.dataTrans, 0, true, true, true);
         }
 
-        this.dynamicIndex = index.slice();
-        this.realIndex = index.slice();
         this.setIndexAndData(this.dataTrans);
         this.touchs.filter(function (v) {
           return !v.hidden;
