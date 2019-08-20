@@ -1277,8 +1277,6 @@
                     if (diff) {
                         this.diff(preDataTrans, this.dataTrans, 0, true, true, true);
                     }
-                    this.dynamicIndex = index.slice();
-                    this.realIndex = index.slice();
                     this.setIndexAndData(this.dataTrans);
                     this.touchs
                         .filter(function (v) { return !v.hidden; })
