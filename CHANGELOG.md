@@ -1,3 +1,16 @@
+# [](https://github.com/Qymh/q-select/compare/v0.3.4...v) (2019-08-20)
+
+
+
+## [0.3.4](https://github.com/Qymh/q-select/compare/v0.3.3...v0.3.4) (2019-08-20)
+
+
+### Bug Fixes
+
+* 多余的index设置 ([39b2f20](https://github.com/Qymh/q-select/commit/39b2f20))
+
+
+
 # [](https://github.com/Qymh/q-select/compare/v0.3.3...v) (2019-08-19)
 
 
