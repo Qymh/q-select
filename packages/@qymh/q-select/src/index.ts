@@ -154,8 +154,6 @@ class QSelect extends Layer {
             true
           );
         }
-        this.dynamicIndex = [...index];
-        this.realIndex = [...index];
         this.setIndexAndData(this.dataTrans);
         this.touchs
           .filter(v => !v.hidden)
