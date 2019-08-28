@@ -21,7 +21,7 @@ function argumentsAssert(
     if (
       !assert(
         isDefined(v),
-        `${argumentsStr[i]} is required as the first argument of ${functionName}`
+        `${argumentsStr[i]} is required as the ${i} argument of ${functionName}`
       )
     ) {
       if (!bool) {
@@ -150,7 +150,7 @@ class QSelect extends Layer {
             this.dataTrans,
             0,
             true,
-            true,
+            !(index && index.length),
             true
           );
         }

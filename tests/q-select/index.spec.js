@@ -422,6 +422,7 @@ describe('instance', () => {
       });
       s.setIndex([1, 1]);
       expect(s.getIndex()).toStrictEqual([1, 1]);
+      expect(s.getKey()).toStrictEqual([2, 2]);
       expect(s.getValue()).toStrictEqual([2, 2]);
       expect(s.getData()).toStrictEqual([
         [2, 2],
@@ -429,5 +430,152 @@ describe('instance', () => {
         [{ key: 2, value: 2, index: 1 }, { key: 2, value: 2, index: 1 }]
       ]);
     });
+
+    it('gangedData', () => {
+      const s = new QSelect({
+        data: [{ value: 1, children: [1, 2] }, { value: 2, children: [3, 4] }]
+      });
+      s.setIndex([1, 1]);
+      expect(s.getIndex()).toStrictEqual([1, 1]);
+      expect(s.getKey()).toStrictEqual([2, 4]);
+      expect(s.getValue()).toStrictEqual([2, 4]);
+      expect(s.getData()).toStrictEqual([
+        [2, 4],
+        [2, 4],
+        [{ key: 2, value: 2, index: 1 }, { key: 4, value: 4, index: 1 }]
+      ]);
+    });
+
+    it('error', () => {
+      const s = new QSelect({
+        data: [[1, 2, 3, 4, 5], [1, 2, 3, 4, 5]]
+      });
+      expect(s.setIndex([null, null])).rejects.toBe(undefined);
+    });
+
+    it('no param', () => {
+      const s = new QSelect({
+        data: [[1, 2, 3, 4, 5], [1, 2, 3, 4, 5]]
+      });
+      expect(s.setIndex()).rejects.toBe(undefined);
+    });
+  });
+
+  describe('setValue', () => {
+    it('notGangedData', () => {
+      const s = new QSelect({
+        data: [[1, 2, 3, 4, 5], [1, 2, 3, 4, 5]]
+      });
+      s.setValue([5, 3]);
+      expect(s.getIndex()).toStrictEqual([4, 2]);
+      expect(s.getKey()).toStrictEqual([5, 3]);
+      expect(s.getValue()).toStrictEqual([5, 3]);
+      expect(s.getData()).toStrictEqual([
+        [5, 3],
+        [5, 3],
+        [{ key: 5, value: 5, index: 4 }, { key: 3, value: 3, index: 2 }]
+      ]);
+    });
+
+    it('gangedData', () => {
+      const s = new QSelect({
+        data: [{ value: 1, children: [1, 2] }, { value: 2, children: [3, 4] }]
+      });
+      s.setValue([2, 3]);
+      expect(s.getIndex()).toStrictEqual([1, 0]);
+      expect(s.getKey()).toStrictEqual([2, 3]);
+      expect(s.getValue()).toStrictEqual([2, 3]);
+      expect(s.getData()).toStrictEqual([
+        [2, 3],
+        [2, 3],
+        [{ key: 2, value: 2, index: 1 }, { key: 3, value: 3, index: 0 }]
+      ]);
+    });
+
+    it('no params', () => {
+      const s = new QSelect({
+        data: [{ value: 1, children: [1, 2] }, { value: 2, children: [3, 4] }]
+      });
+      expect(s.setValue()).rejects.toBe(undefined);
+    });
+  });
+
+  describe('setKey', () => {
+    it('notGangedData', () => {
+      const s = new QSelect({
+        data: [
+          [1, 2, 3, 4, { value: 5, key: '5k' }],
+          [1, 2, { value: 3, key: '3k' }, 4, 5]
+        ]
+      });
+      s.setKey(['5k', '3k']);
+      expect(s.getIndex()).toStrictEqual([4, 2]);
+      expect(s.getKey()).toStrictEqual(['5k', '3k']);
+      expect(s.getValue()).toStrictEqual([5, 3]);
+      expect(s.getData()).toStrictEqual([
+        [5, 3],
+        ['5k', '3k'],
+        [{ key: '5k', value: 5, index: 4 }, { key: '3k', value: 3, index: 2 }]
+      ]);
+    });
+
+    it('gangedData', () => {
+      const s = new QSelect({
+        data: [
+          { value: 1, children: [1, 2] },
+          {
+            value: 2,
+            key: '2k',
+            children: [{ value: 3, key: '3k' }, 4]
+          }
+        ]
+      });
+      s.setKey(['2k', '3k']);
+      expect(s.getIndex()).toStrictEqual([1, 0]);
+      expect(s.getKey()).toStrictEqual(['2k', '3k']);
+      expect(s.getValue()).toStrictEqual([2, 3]);
+      expect(s.getData()).toStrictEqual([
+        [2, 3],
+        ['2k', '3k'],
+        [{ key: '2k', value: 2, index: 1 }, { key: '3k', value: 3, index: 0 }]
+      ]);
+    });
+
+    it('no params', () => {
+      const s = new QSelect({
+        data: [{ value: 1, children: [1, 2] }, { value: 2, children: [3, 4] }]
+      });
+      expect(s.setKey()).rejects.toBe(undefined);
+    });
+  });
+
+  it('show and close', done => {
+    const s = new QSelect({
+      data: [[1, 2, 3]]
+    });
+    s.show();
+    expect(document.querySelector('.q-select-bk').style.display).toBe('block');
+    setTimeout(() => {
+      s.close();
+      expect(document.querySelector('.q-select-bk').style.display).toBe('none');
+      done();
+    }, 300);
+  });
+
+  it('setLoading and cancelLoading ', done => {
+    const s = new QSelect({
+      data: [[1, 2, 3]]
+    });
+    s.setLoading();
+    expect(
+      document.querySelector(`.q-select-loading--${s.id}`).style.display
+    ).toBe('flex');
+    setTimeout(() => {
+      s.cancelLoading();
+      expect(
+        document.querySelector(`.q-select-loading--${s.id}`).style.display
+      ).toBe('none');
+      done();
+    }, 300);
   });
 });
