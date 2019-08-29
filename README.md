@@ -84,9 +84,9 @@ new Qselect({});
 
 - 省市区联动实测 [沙盒演示](https://codesandbox.io/s/shengshiquliandongshice-ubxqx?fontsize=14)
 
-- 省市区非联动异步实测
+> 异步加载的难度会大于简单联动,且部分api(getData getIndex getKey)不可用,如果不是格外追求加载性能,建议使用非异步联动,如果要使用请参考下面的列子
 
-占位
+- 省市区非联动异步实测 [沙盒演示](https://codesandbox.io/s/shengshiqufeiliandongyibushice-c3ozk?fontsize=14)
 
 ### options
 
@@ -775,9 +775,9 @@ Vue.use(QSelect, { name: 'QPicker' });
 
 - 省市区联动实测 [沙盒演示](https://codesandbox.io/s/shengshiquliandongshice-zq7v6?fontsize=14)
 
-- 省市区非联动异步实测
+> 异步加载的难度会大于简单联动,且部分api(getData getIndex getKey)不可用,如果不是格外追求加载性能,建议使用非异步联动,如果要使用请参考下面的列子
 
-占位
+- 省市区非联动异步实测 [沙盒演示](https://codesandbox.io/s/shengshiquliandongshice-7tgd4?fontsize=14)
 
 ### props
 
@@ -1147,7 +1147,7 @@ export default {
 
 ## 项目即将支持
 
-- [] 沙盒演示
+- [*] 沙盒演示
 - [] 单元测试
 
 ## 项目延后支持
