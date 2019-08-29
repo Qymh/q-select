@@ -451,7 +451,7 @@ ax.get('https://g46tw.sse.codesandbox.io/init').then(res => {
   const baseData = res.data;
   qSelect7 = new QSelect({
     title: '省市区非联动异步实测',
-    data: deepClone(baseData),
+    data: baseData,
     cancelBtn: '重置',
     ready(data, key) {
       $show7.textContent = `数据:${data.join(',')},key:${key.join(',')}`;
@@ -510,7 +510,7 @@ ax.get('https://g46tw.sse.codesandbox.io/init').then(res => {
       $show7.textContent = `数据:${data.join(',')},key:${key.join(',')}`;
     },
     cancel() {
-      qSelect7.setData(deepClone(baseData)).then(([data, key]) => {
+      qSelect7.setData(baseData).then(([data, key]) => {
         $show7.textContent = `数据:${data.join(',')},key:${key.join(',')}`;
         qSelect7.cancelLoading();
       });
