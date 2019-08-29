@@ -80,6 +80,7 @@ class QSelect extends Layer {
         if (this.validateData(validateData as any, false)) {
           this.normalizeData(realData as NotGangedData, column);
           this.dataTrans = this.dataTrans.slice(0, max).filter(v => v.length);
+          this.normalizeIndex(this.dataTrans, this.dynamicIndex);
           this.realIndex = [...this.dynamicIndex];
           this.diff(preTrans, this.dataTrans, min, true, true, true);
           this.realData = deepClone(this.dynamicData);
