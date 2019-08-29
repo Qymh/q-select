@@ -257,13 +257,16 @@
         if (Array.isArray(val)) {
             return val.map(function (v) { return deepClone(v); });
         }
-        else {
+        else if (isPlainObj(val)) {
             var res = {};
             for (var key in val) {
                 var item = val[key];
                 res[key] = isPlainObj(item) ? deepClone(item) : item;
             }
             return res;
+        }
+        else {
+            return val;
         }
     }
     function isDefined(val) {
@@ -627,7 +630,7 @@
             this.chunkHeight = options.chunkHeight = isPlainNumber(+options.chunkHeight)
                 ? +options.chunkHeight
                 : 40;
-            this.data = options.data;
+            this.data = deepClone(options.data);
             this.dataTrans = [];
             this.index = options.index;
             this.dynamicIndex = [];
@@ -667,14 +670,17 @@
             }
             return true;
         };
-        Layer.prototype.validateData = function (forceData) {
+        Layer.prototype.validateData = function (forceData, forceType) {
             var data = forceData || this.$options.data;
             if (!data ||
                 !Array.isArray(data) ||
                 (Array.isArray(data) && data.length === 0)) {
                 this.data = data = [['']];
             }
-            this.isGanged = data.every(function (v) { return isPlainObj(v); });
+            this.isGanged =
+                forceType !== undefined
+                    ? forceType
+                    : data.every(function (v) { return isPlainObj(v); });
             function validateGangedData(data, firstLevel) {
                 return data.every(function (v) {
                     if (isPlainObj(v)) {
@@ -706,7 +712,12 @@
                     }
                     return v.every(function (p) {
                         if (isPlainObj(p)) {
-                            return assert(p.value !== undefined);
+                            if (p.children && p.children.length) {
+                                return assert();
+                            }
+                            else {
+                                return assert(p.value !== undefined);
+                            }
                         }
                         else if (typeof p !== 'string' && typeof p !== 'number') {
                             return assert();
@@ -1159,18 +1170,32 @@
                 }
                 var curIndex = (preciseIndex || [])[index] || 0;
                 index++;
-                if (child[curIndex] && child[curIndex].children.length) {
-                    genGangedDataChildren(child[curIndex].children);
+                if (child[curIndex]) {
+                    if (child[curIndex].children.length) {
+                        genGangedDataChildren.call(this, child[curIndex].children);
+                    }
+                }
+                else if (child[0] && child[0].children.length) {
+                    genGangedDataChildren.call(this, child[0].children);
                 }
             }
-            genGangedDataChildren(data);
+            genGangedDataChildren.call(this, data);
             this.completeDynamicIndex(dataTrans);
             return dataTrans;
         };
         Layer.prototype.completeDynamicIndex = function (data) {
+            for (var i = 0; i < this.dynamicIndex.length; i++) {
+                if (data[i] && this.dynamicIndex[i] > data[i].length - 1) {
+                    this.dynamicIndex[i] = data[i].length - 1;
+                }
+                if (this.dynamicIndex[i] < 0) {
+                    this.dynamicIndex[i] = 0;
+                }
+            }
             for (var i = this.dynamicIndex.length; i < data.length; i++) {
                 this.dynamicIndex[i] = 0;
             }
+            this.dynamicIndex = this.dynamicIndex.slice(0, data.length);
         };
         Layer.prototype.callReady = function () {
             var _a;
@@ -1182,7 +1207,7 @@
     function argumentsAssert(argumentsVar, argumentsStr, functionName, reject) {
         var bool = false;
         argumentsVar.forEach(function (v, i) {
-            if (!assert(isDefined(v), argumentsStr[i] + " is required as the first argument of " + functionName)) {
+            if (!assert(isDefined(v), argumentsStr[i] + " is required as the " + i + " argument of " + functionName)) {
                 if (!bool) {
                     bool = true;
                 }
@@ -1224,12 +1249,18 @@
                         ? column[column.length - 1] + 1
                         : column + 1;
                     var min = Array.isArray(column) ? column[0] : column;
-                    _this.normalizeData(realData, column);
-                    _this.dataTrans = _this.dataTrans.slice(0, max).filter(function (v) { return v.length; });
-                    _this.dynamicIndex = _this.dynamicIndex.slice(0, max);
-                    _this.diff(preTrans, _this.dataTrans, min, true, true, true);
-                    _this.realData = deepClone(_this.dynamicData);
-                    resolve(_this.getChangeCallData());
+                    var validateData = Array.isArray(column) ? realData : [realData];
+                    if (_this.validateData(validateData, false)) {
+                        _this.normalizeData(realData, column);
+                        _this.dataTrans = _this.dataTrans.slice(0, max).filter(function (v) { return v.length; });
+                        _this.realIndex = _this.dynamicIndex.slice();
+                        _this.diff(preTrans, _this.dataTrans, min, true, true, true);
+                        _this.realData = deepClone(_this.dynamicData);
+                        resolve(_this.getChangeCallData());
+                    }
+                    else {
+                        reject();
+                    }
                 }
                 catch (error) {
                     reject(error);
@@ -1275,7 +1306,7 @@
                 if (!this.isGanged) {
                     this.normalizeIndex(this.dataTrans, index);
                     if (diff) {
-                        this.diff(preDataTrans, this.dataTrans, 0, true, true, true);
+                        this.diff(preDataTrans, this.dataTrans, 0, true, !(index && index.length), true);
                     }
                     this.setIndexAndData(this.dataTrans);
                     this.touchs
@@ -1284,20 +1315,8 @@
                     this.callReady();
                 }
                 else {
-                    var dataTransLater_1 = this.genGangedData(this.data, index);
-                    this.dynamicIndex.map(function (v, i) {
-                        if (v < 0) {
-                            _this.dynamicIndex[i] = 0;
-                            _this.realIndex[i] = 0;
-                        }
-                        var len = (dataTransLater_1[i] || dataTransLater_1[dataTransLater_1.length - 1]).length;
-                        if (v > len - 1) {
-                            _this.dynamicIndex[i] = len - 1;
-                            _this.realIndex[i] = len - 1;
-                        }
-                        return v;
-                    });
-                    this.diff(preDataTrans || this.dataTrans, dataTransLater_1, 0, true, false, true);
+                    var dataTransLater = this.genGangedData(this.data, this.dynamicIndex);
+                    this.diff(preDataTrans || this.dataTrans, dataTransLater, 0, true, false, true);
                     this.realIndex = this.dynamicIndex.slice();
                     this.realData = deepClone(this.dynamicData);
                     this.callReady();
@@ -1359,7 +1378,7 @@
                 if (_this.validateData(data) &&
                     (index ? _this.validateIndex(index) : true)) {
                     var preDataTrans = deepClone(_this.dataTrans);
-                    _this.data = data;
+                    _this.data = deepClone(data);
                     _this.normalizeData();
                     _this._setIndex(index ||
                         Array.from({ length: _this.dataTrans.length }).fill(0), reject, preDataTrans, true);
@@ -8792,84 +8811,99 @@
 
     // 省市区非联动异步实测
     const $show7 = document.querySelector('.cell__title--7');
-    let province = [];
-    let city = [];
-    let area = [];
+    const $click7 = document.querySelector('.cell__details--7');
     const ax = axios.create();
     async function get(code) {
       if (!code) {
         return [];
       }
-      const data = await ax.get('https://restapi.amap.com/v3/config/district', {
+      const data = await ax.get('https://g46tw.sse.codesandbox.io/area', {
         params: {
-          key: '7c4c08ad5e1dcbca9601f09fab939f68',
-          keywords: code || '',
-          extensions: 'base'
+          key: code
         }
       });
-      return data.data.districts[0].districts.map(v => ({
-        key: v.adcode,
-        value: v.name
-      }));
+      return data.data;
     }
-    Promise.all([get('100000'), get('410000'), get('410300')]).then(values => {
-      province = values[0];
-      city = values[1];
-      area = values[2];
 
-      const base = [province, city, area];
+    let qSelect7;
 
-      const qSelect7 = new QSelect({
+    $click7.addEventListener('click', () => {
+      qSelect7.show();
+    });
+
+    ax.get('https://g46tw.sse.codesandbox.io/init').then(res => {
+      const baseData = res.data;
+      qSelect7 = new QSelect({
         title: '省市区非联动异步实测',
-        data: base,
-        target: '.inline7',
+        data: baseData,
+        cancelBtn: '重置',
         ready(data, key) {
           $show7.textContent = `数据:${data.join(',')},key:${key.join(',')}`;
         },
-        change(weight, data, key) {
+        async change(weight, data, key) {
           const curKey = key[weight];
-          switch (weight) {
-            case 0:
-              qSelect7.setLoading();
-              get(curKey).then(res => {
+          let res;
+          try {
+            switch (weight) {
+              case 0:
+                qSelect7.setLoading();
+                res = await get(curKey);
                 if (res.length) {
-                  get(res[0].key).then(inner => {
-                    qSelect7
-                      .setColumnData([1, 2], [res, inner])
-                      .then(([data, key]) => {
-                        $show7.textContent = `数据:${data.join(',')},key:${key.join(
-                      ','
-                    )}`;
-                        qSelect7.cancelLoading();
-                      });
-                  });
+                  const inner = await get(res[0].key);
+                  qSelect7
+                    .setColumnData([1, 2], [res, inner])
+                    .then(([data, key]) => {
+                      qSelect7.cancelLoading();
+                    });
                 } else {
                   qSelect7.setColumnData(1, res).then(([data, key]) => {
-                    $show7.textContent = `数据:${data.join(',')},key:${key.join(
-                  ','
-                )}`;
                     qSelect7.cancelLoading();
                   });
                 }
-              });
-              break;
-            case 1:
-              qSelect7.setLoading();
-              get(curKey).then(res => {
+                break;
+              case 1:
+                qSelect7.setLoading();
+                res = await get(curKey);
                 qSelect7.setColumnData(2, res).then(([data, key]) => {
-                  $show7.textContent = `数据:${data.join(',')},key:${key.join(
-                ','
-              )}`;
                   qSelect7.cancelLoading();
                 });
-              });
-              break;
-            case 2:
+                break;
+              case 2:
+                break;
+            }
+          } catch (error) {
+            qSelect7.setData(deepClone(baseData)).then(([data, key]) => {
               $show7.textContent = `数据:${data.join(',')},key:${key.join(',')}`;
+              qSelect7.cancelLoading();
+              // eslint-disable-next-line
+              alert('接口出错,重新选择');
+            });
           }
         },
         confirm(data, key) {
           $show7.textContent = `数据:${data.join(',')},key:${key.join(',')}`;
+        },
+        cancel() {
+          qSelect7.setData(baseData).then(([data, key]) => {
+            $show7.textContent = `数据:${data.join(',')},key:${key.join(',')}`;
+            qSelect7.cancelLoading();
+          });
+        }
+      });
+    });
+
+    const $setBtn7 = document.querySelectorAll('.settings__btn--7');
+    $setBtn7.forEach((v, i) => {
+      v.addEventListener('click', () => {
+        switch (i) {
+          case 0:
+            // eslint-disable-next-line
+            console.log(qSelect7.getData());
+            break;
+          case 1:
+            // eslint-disable-next-line
+            console.log(qSelect7.getIndex());
+            break;
         }
       });
     });

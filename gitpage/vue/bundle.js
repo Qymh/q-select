@@ -15845,7 +15845,7 @@
 	        '获取当前data(console查看)',
 	        '获取当前index(console查看)'
 	      ],
-	      btn6: [],
+	      btn6: ['获取当前data(console查看)', '获取当前index(console查看)'],
 	      btn7: [],
 	      newData1: [
 	        {
@@ -15871,18 +15871,8 @@
 	    this.data1 = [baseArr1];
 	    this.baseArr2 = [baseArr2];
 	    this.data3 = [baseArr2, baseArr2, baseArr2, baseArr2, baseArr2];
-	    let province = [];
-	    let city = [];
-	    let area = [];
-	    Promise.all([
-	      this.get('100000'),
-	      this.get('410000'),
-	      this.get('410300')
-	    ]).then(values => {
-	      province = values[0];
-	      city = values[1];
-	      area = values[2];
-	      this.$refs.select6.setData([province, city, area]);
+	    ax.get('https://g46tw.sse.codesandbox.io/init').then(res => {
+	      this.data6 = res.data;
 	      this.loading6 = false;
 	    });
 	  },
@@ -16132,17 +16122,12 @@
 	      if (!code) {
 	        return [];
 	      }
-	      const data = await ax.get('https://restapi.amap.com/v3/config/district', {
+	      const data = await ax.get('https://g46tw.sse.codesandbox.io/area', {
 	        params: {
-	          key: '7c4c08ad5e1dcbca9601f09fab939f68',
-	          keywords: code || '',
-	          extensions: 'base'
+	          key: code
 	        }
 	      });
-	      return data.data.districts[0].districts.map(v => ({
-	        key: v.adcode,
-	        value: v.name
-	      }));
+	      return data.data;
 	    },
 	    doConfirm5(data, key) {
 	      this.title5 = `数据:${data.join(',')},key:${key.join(',')}`;
@@ -16168,41 +16153,63 @@
 	    doConfirm6(data, key) {
 	      this.title6 = `数据:${data.join(',')},key:${key.join(',')}`;
 	    },
-	    doChange6(weight, data, key) {
+	    async doChange6(weight, data, key) {
 	      const curKey = key[weight];
-	      switch (weight) {
-	        case 0:
-	          this.loading6 = true;
-	          this.get(curKey).then(res => {
+	      let res;
+	      try {
+	        this.loading6 = true;
+	        switch (weight) {
+	          case 0:
+	            res = await this.get(curKey);
 	            if (res.length) {
-	              this.get(res[0].key).then(inner => {
-	                this.$refs.select6
-	                  .setColumnData([1, 2], [res, inner])
-	                  .then(([data, key]) => {
-	                    this.title6 = `数据:${data.join(',')},key:${key.join(',')}`;
-	                    this.loading6 = false;
-	                  });
-	              });
+	              const inner = await this.get(res[0].key);
+	              this.$refs.select6
+	                .setColumnData([1, 2], [res, inner])
+	                .then(([data, key]) => {
+	                  this.loading6 = false;
+	                });
 	            } else {
 	              this.$refs.select6.setColumnData(1, res).then(([data, key]) => {
-	                this.title6 = `数据:${data.join(',')},key:${key.join(',')}`;
 	                this.loading6 = false;
 	              });
 	            }
-	          });
-	          break;
-	        case 1:
-	          this.loading6 = true;
-	          this.get(curKey).then(res => {
+	            break;
+	          case 1:
+	            res = await this.get(curKey);
 	            this.$refs.select6.setColumnData(2, res).then(([data, key]) => {
-	              this.title6 = `数据:${data.join(',')},key:${key.join(',')}`;
 	              this.loading6 = false;
 	            });
-	          });
-	          break;
-	        case 2:
+	            break;
+	          case 2:
+	            this.loading6 = false;
+	            break;
+	        }
+	      } catch (error) {
+	        this.$refs.select6.setData(this.data6).then(([data, key]) => {
 	          this.title6 = `数据:${data.join(',')},key:${key.join(',')}`;
+	          this.loading6 = false;
+	          // eslint-disable-next-line
+	          alert('接口出错,重新选择');
+	        });
 	      }
+	    },
+	    doSet6(i) {
+	      switch (i) {
+	        case 0:
+	          // eslint-disable-next-line
+	          console.log(this.$refs.select6.getData());
+	          break;
+	        case 1:
+	          // eslint-disable-next-line
+	          console.log(this.$refs.select6.getIndex());
+	          break;
+	      }
+	    },
+	    doCancel6() {
+	      this.$refs.select6.setData(this.data6).then(([data, key]) => {
+	        this.title6 = `数据:${data.join(',')},key:${key.join(',')}`;
+	        this.loading6 = false;
+	      });
 	    }
 	  }
 	};
@@ -16467,7 +16474,7 @@
 	        _c("cell", { attrs: { force: "", title: "省市区非联动异步实测" } }),
 	        _vm._v(" "),
 	        _c("cell", {
-	          attrs: { hideDetails: "", title: _vm.title6 },
+	          attrs: { title: _vm.title6 },
 	          on: { click: _vm.doClick6 }
 	        }),
 	        _vm._v(" "),
@@ -16475,8 +16482,8 @@
 	          ref: "select6",
 	          attrs: {
 	            title: "省市区非联动异步实测",
+	            cancelBtn: "重置",
 	            data: _vm.data6,
-	            inline: "",
 	            loading: _vm.loading6
 	          },
 	          on: {
@@ -16484,7 +16491,8 @@
 	            show: _vm.doShow6,
 	            hide: _vm.doHide6,
 	            change: _vm.doChange6,
-	            confirm: _vm.doConfirm6
+	            confirm: _vm.doConfirm6,
+	            cancel: _vm.doCancel6
 	          },
 	          model: {
 	            value: _vm.show6,
@@ -16493,9 +16501,24 @@
 	            },
 	            expression: "show6"
 	          }
+	        }),
+	        _vm._v(" "),
+	        _vm._l(_vm.btn6, function(item, index) {
+	          return _c(
+	            "btn",
+	            {
+	              key: index,
+	              on: {
+	                click: function($event) {
+	                  return _vm.doSet6(index)
+	                }
+	              }
+	            },
+	            [_vm._v("\n      " + _vm._s(item) + "\n    ")]
+	          )
 	        })
 	      ],
-	      1
+	      2
 	    )
 	  ])
 	};
@@ -16781,13 +16804,16 @@
 	    if (Array.isArray(val)) {
 	        return val.map(function (v) { return deepClone(v); });
 	    }
-	    else {
+	    else if (isPlainObj(val)) {
 	        var res = {};
 	        for (var key in val) {
 	            var item = val[key];
 	            res[key] = isPlainObj(item) ? deepClone(item) : item;
 	        }
 	        return res;
+	    }
+	    else {
+	        return val;
 	    }
 	}
 	function isDefined(val) {
@@ -17151,7 +17177,7 @@
 	        this.chunkHeight = options.chunkHeight = isPlainNumber(+options.chunkHeight)
 	            ? +options.chunkHeight
 	            : 40;
-	        this.data = options.data;
+	        this.data = deepClone(options.data);
 	        this.dataTrans = [];
 	        this.index = options.index;
 	        this.dynamicIndex = [];
@@ -17191,14 +17217,17 @@
 	        }
 	        return true;
 	    };
-	    Layer.prototype.validateData = function (forceData) {
+	    Layer.prototype.validateData = function (forceData, forceType) {
 	        var data = forceData || this.$options.data;
 	        if (!data ||
 	            !Array.isArray(data) ||
 	            (Array.isArray(data) && data.length === 0)) {
 	            this.data = data = [['']];
 	        }
-	        this.isGanged = data.every(function (v) { return isPlainObj(v); });
+	        this.isGanged =
+	            forceType !== undefined
+	                ? forceType
+	                : data.every(function (v) { return isPlainObj(v); });
 	        function validateGangedData(data, firstLevel) {
 	            return data.every(function (v) {
 	                if (isPlainObj(v)) {
@@ -17230,7 +17259,12 @@
 	                }
 	                return v.every(function (p) {
 	                    if (isPlainObj(p)) {
-	                        return assert(p.value !== undefined);
+	                        if (p.children && p.children.length) {
+	                            return assert();
+	                        }
+	                        else {
+	                            return assert(p.value !== undefined);
+	                        }
 	                    }
 	                    else if (typeof p !== 'string' && typeof p !== 'number') {
 	                        return assert();
@@ -17683,18 +17717,32 @@
 	            }
 	            var curIndex = (preciseIndex || [])[index] || 0;
 	            index++;
-	            if (child[curIndex] && child[curIndex].children.length) {
-	                genGangedDataChildren(child[curIndex].children);
+	            if (child[curIndex]) {
+	                if (child[curIndex].children.length) {
+	                    genGangedDataChildren.call(this, child[curIndex].children);
+	                }
+	            }
+	            else if (child[0] && child[0].children.length) {
+	                genGangedDataChildren.call(this, child[0].children);
 	            }
 	        }
-	        genGangedDataChildren(data);
+	        genGangedDataChildren.call(this, data);
 	        this.completeDynamicIndex(dataTrans);
 	        return dataTrans;
 	    };
 	    Layer.prototype.completeDynamicIndex = function (data) {
+	        for (var i = 0; i < this.dynamicIndex.length; i++) {
+	            if (data[i] && this.dynamicIndex[i] > data[i].length - 1) {
+	                this.dynamicIndex[i] = data[i].length - 1;
+	            }
+	            if (this.dynamicIndex[i] < 0) {
+	                this.dynamicIndex[i] = 0;
+	            }
+	        }
 	        for (var i = this.dynamicIndex.length; i < data.length; i++) {
 	            this.dynamicIndex[i] = 0;
 	        }
+	        this.dynamicIndex = this.dynamicIndex.slice(0, data.length);
 	    };
 	    Layer.prototype.callReady = function () {
 	        var _a;
@@ -17706,7 +17754,7 @@
 	function argumentsAssert(argumentsVar, argumentsStr, functionName, reject) {
 	    var bool = false;
 	    argumentsVar.forEach(function (v, i) {
-	        if (!assert(isDefined(v), argumentsStr[i] + " is required as the first argument of " + functionName)) {
+	        if (!assert(isDefined(v), argumentsStr[i] + " is required as the " + i + " argument of " + functionName)) {
 	            if (!bool) {
 	                bool = true;
 	            }
@@ -17748,12 +17796,18 @@
 	                    ? column[column.length - 1] + 1
 	                    : column + 1;
 	                var min = Array.isArray(column) ? column[0] : column;
-	                _this.normalizeData(realData, column);
-	                _this.dataTrans = _this.dataTrans.slice(0, max).filter(function (v) { return v.length; });
-	                _this.dynamicIndex = _this.dynamicIndex.slice(0, max);
-	                _this.diff(preTrans, _this.dataTrans, min, true, true, true);
-	                _this.realData = deepClone(_this.dynamicData);
-	                resolve(_this.getChangeCallData());
+	                var validateData = Array.isArray(column) ? realData : [realData];
+	                if (_this.validateData(validateData, false)) {
+	                    _this.normalizeData(realData, column);
+	                    _this.dataTrans = _this.dataTrans.slice(0, max).filter(function (v) { return v.length; });
+	                    _this.realIndex = _this.dynamicIndex.slice();
+	                    _this.diff(preTrans, _this.dataTrans, min, true, true, true);
+	                    _this.realData = deepClone(_this.dynamicData);
+	                    resolve(_this.getChangeCallData());
+	                }
+	                else {
+	                    reject();
+	                }
 	            }
 	            catch (error) {
 	                reject(error);
@@ -17799,7 +17853,7 @@
 	            if (!this.isGanged) {
 	                this.normalizeIndex(this.dataTrans, index);
 	                if (diff) {
-	                    this.diff(preDataTrans, this.dataTrans, 0, true, true, true);
+	                    this.diff(preDataTrans, this.dataTrans, 0, true, !(index && index.length), true);
 	                }
 	                this.setIndexAndData(this.dataTrans);
 	                this.touchs
@@ -17808,20 +17862,8 @@
 	                this.callReady();
 	            }
 	            else {
-	                var dataTransLater_1 = this.genGangedData(this.data, index);
-	                this.dynamicIndex.map(function (v, i) {
-	                    if (v < 0) {
-	                        _this.dynamicIndex[i] = 0;
-	                        _this.realIndex[i] = 0;
-	                    }
-	                    var len = (dataTransLater_1[i] || dataTransLater_1[dataTransLater_1.length - 1]).length;
-	                    if (v > len - 1) {
-	                        _this.dynamicIndex[i] = len - 1;
-	                        _this.realIndex[i] = len - 1;
-	                    }
-	                    return v;
-	                });
-	                this.diff(preDataTrans || this.dataTrans, dataTransLater_1, 0, true, false, true);
+	                var dataTransLater = this.genGangedData(this.data, this.dynamicIndex);
+	                this.diff(preDataTrans || this.dataTrans, dataTransLater, 0, true, false, true);
 	                this.realIndex = this.dynamicIndex.slice();
 	                this.realData = deepClone(this.dynamicData);
 	                this.callReady();
@@ -17883,7 +17925,7 @@
 	            if (_this.validateData(data) &&
 	                (index ? _this.validateIndex(index) : true)) {
 	                var preDataTrans = deepClone(_this.dataTrans);
-	                _this.data = data;
+	                _this.data = deepClone(data);
 	                _this.normalizeData();
 	                _this._setIndex(index ||
 	                    Array.from({ length: _this.dataTrans.length }).fill(0), reject, preDataTrans, true);
@@ -18934,6 +18976,8 @@
 	                count: props.count,
 	                title: props.title,
 	                chunkHeight: props.chunkHeight,
+	                cancelBtn: props.cancelBtn,
+	                confirmBtn: props.confirmBtn,
 	                loading: props.loading,
 	                disableDefaultCancel: props.disableDefaultCancel,
 	                ready: function (value, key, data) {
