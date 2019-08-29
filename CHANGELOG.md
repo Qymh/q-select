@@ -1,3 +1,16 @@
+# [](https://github.com/Qymh/q-select/compare/v0.3.6...v) (2019-08-29)
+
+
+
+## [0.3.6](https://github.com/Qymh/q-select/compare/v0.3.5...v0.3.6) (2019-08-29)
+
+
+### Bug Fixes
+
+* 没有格式化Index ([fe35dfa](https://github.com/Qymh/q-select/commit/fe35dfa))
+
+
+
 # [](https://github.com/Qymh/q-select/compare/v0.3.5...v) (2019-08-29)
 
 
