@@ -469,16 +469,10 @@ ax.get('https://g46tw.sse.codesandbox.io/init').then(res => {
               qSelect7
                 .setColumnData([1, 2], [res, inner])
                 .then(([data, key]) => {
-                  $show7.textContent = `数据:${data.join(',')},key:${key.join(
-                    ','
-                  )}`;
                   qSelect7.cancelLoading();
                 });
             } else {
               qSelect7.setColumnData(1, res).then(([data, key]) => {
-                $show7.textContent = `数据:${data.join(',')},key:${key.join(
-                  ','
-                )}`;
                 qSelect7.cancelLoading();
               });
             }
@@ -487,14 +481,10 @@ ax.get('https://g46tw.sse.codesandbox.io/init').then(res => {
             qSelect7.setLoading();
             res = await get(curKey);
             qSelect7.setColumnData(2, res).then(([data, key]) => {
-              $show7.textContent = `数据:${data.join(',')},key:${key.join(
-                ','
-              )}`;
               qSelect7.cancelLoading();
             });
             break;
           case 2:
-            $show7.textContent = `数据:${data.join(',')},key:${key.join(',')}`;
             break;
         }
       } catch (error) {

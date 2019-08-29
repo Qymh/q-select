@@ -615,12 +615,10 @@ export default {
               this.$refs.select6
                 .setColumnData([1, 2], [res, inner])
                 .then(([data, key]) => {
-                  this.title6 = `数据:${data.join(',')},key:${key.join(',')}`;
                   this.loading6 = false;
                 });
             } else {
               this.$refs.select6.setColumnData(1, res).then(([data, key]) => {
-                this.title6 = `数据:${data.join(',')},key:${key.join(',')}`;
                 this.loading6 = false;
               });
             }
@@ -628,12 +626,10 @@ export default {
           case 1:
             res = await this.get(curKey);
             this.$refs.select6.setColumnData(2, res).then(([data, key]) => {
-              this.title6 = `数据:${data.join(',')},key:${key.join(',')}`;
               this.loading6 = false;
             });
             break;
           case 2:
-            this.title6 = `数据:${data.join(',')},key:${key.join(',')}`;
             this.loading6 = false;
             break;
         }
