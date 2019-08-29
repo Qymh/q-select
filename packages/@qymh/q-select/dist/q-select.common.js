@@ -1,5 +1,5 @@
 /**
- * @qymh/q-select v0.3.4
+ * @qymh/q-select v0.3.5
  * (c) 2019 Qymh
  * @license MIT
  */
@@ -1273,6 +1273,7 @@ var QSelect = (function (_super) {
                 if (_this.validateData(validateData, false)) {
                     _this.normalizeData(realData, column);
                     _this.dataTrans = _this.dataTrans.slice(0, max).filter(function (v) { return v.length; });
+                    _this.normalizeIndex(_this.dataTrans, _this.dynamicIndex);
                     _this.realIndex = _this.dynamicIndex.slice();
                     _this.diff(preTrans, _this.dataTrans, min, true, true, true);
                     _this.realData = deepClone(_this.dynamicData);
