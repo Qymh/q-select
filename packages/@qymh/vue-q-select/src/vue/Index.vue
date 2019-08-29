@@ -17,6 +17,8 @@ export default {
         count: props.count,
         title: props.title,
         chunkHeight: props.chunkHeight,
+        cancelBtn: props.cancelBtn,
+        confirmBtn: props.confirmBtn,
         loading: props.loading,
         disableDefaultCancel: props.disableDefaultCancel,
         ready(value, key, data) {

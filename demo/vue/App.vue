@@ -102,6 +102,7 @@
         ref="select6"
         v-model="show6"
         title="省市区非联动异步实测"
+        cancelBtn="重置"
         :data="data6"
         :loading="loading6"
         @ready="doReady6"
@@ -109,6 +110,7 @@
         @hide="doHide6"
         @change="doChange6"
         @confirm="doConfirm6"
+        @cancel="doCancel6"
       />
       <btn v-for="(item, index) in btn6" :key="index" @click="doSet6(index)">
         {{ item }}
@@ -655,6 +657,12 @@ export default {
           console.log(this.$refs.select6.getIndex());
           break;
       }
+    },
+    doCancel6() {
+      this.$refs.select6.setData(this.data6).then(([data, key]) => {
+        this.title6 = `数据:${data.join(',')},key:${key.join(',')}`;
+        this.loading6 = false;
+      });
     }
   }
 };
