@@ -139,7 +139,7 @@ class Layer {
    * 验证data规范
    * @param forceData 需要覆盖验证的data
    */
-  validateData(forceData?: Data): boolean {
+  validateData(forceData?: Data, forceType?: boolean): boolean {
     let data = forceData || this.$options.data;
     if (
       !data ||
@@ -150,7 +150,10 @@ class Layer {
       this.data = data = [['']];
     }
 
-    this.isGanged = data.every((v: any) => isPlainObj(v));
+    this.isGanged =
+      forceType !== undefined
+        ? forceType
+        : data.every((v: any) => isPlainObj(v));
 
     /**
      * 递归验证联动下的data
@@ -202,10 +205,17 @@ class Layer {
         }
         return v.every((p: NotGangedDataObj | string | number) => {
           if (isPlainObj(p)) {
-            return assert(
-              (p as NotGangedDataObj).value !== undefined,
-              'value is required if NotGangedData is an object'
-            );
+            if ((p as any).children && (p as any).children.length) {
+              return assert(
+                false,
+                'notGangedData can not has prop which is children'
+              );
+            } else {
+              return assert(
+                (p as NotGangedDataObj).value !== undefined,
+                'value is required if NotGangedData is an object'
+              );
+            }
           } else if (typeof p !== 'string' && typeof p !== 'number') {
             return assert(
               false,
@@ -863,7 +873,7 @@ class Layer {
   genGangedData(data: GangedData[], preciseIndex?: number[]): DataTrans[][] {
     let index = 0;
     const dataTrans: DataTrans[][] = [];
-    function genGangedDataChildren(child: GangedData[]) {
+    function genGangedDataChildren(this: Layer, child: GangedData[]) {
       dataTrans[index] = [];
       for (const item of child) {
         dataTrans[index].push({
@@ -873,11 +883,15 @@ class Layer {
       }
       const curIndex = (preciseIndex || [])[index] || 0;
       index++;
-      if (child[curIndex] && child[curIndex].children.length) {
-        genGangedDataChildren(child[curIndex].children);
+      if (child[curIndex]) {
+        if (child[curIndex].children.length) {
+          genGangedDataChildren.call(this, child[curIndex].children);
+        }
+      } else if (child[0] && child[0].children.length) {
+        genGangedDataChildren.call(this, child[0].children);
       }
     }
-    genGangedDataChildren(data);
+    genGangedDataChildren.call(this, data);
     this.completeDynamicIndex(dataTrans);
     return dataTrans;
   }
@@ -887,9 +901,18 @@ class Layer {
    * @param data data优化值
    */
   completeDynamicIndex(data: DataTrans[][]) {
+    for (let i = 0; i < this.dynamicIndex.length; i++) {
+      if (data[i] && this.dynamicIndex[i] > data[i].length - 1) {
+        this.dynamicIndex[i] = data[i].length - 1;
+      }
+      if (this.dynamicIndex[i] < 0) {
+        this.dynamicIndex[i] = 0;
+      }
+    }
     for (let i = this.dynamicIndex.length; i < data.length; i++) {
       this.dynamicIndex[i] = 0;
     }
+    this.dynamicIndex = this.dynamicIndex.slice(0, data.length);
   }
 
   /**

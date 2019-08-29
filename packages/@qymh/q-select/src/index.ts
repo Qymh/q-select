@@ -76,12 +76,17 @@ class QSelect extends Layer {
           ? column[column.length - 1] + 1
           : column + 1;
         const min = Array.isArray(column) ? column[0] : column;
-        this.normalizeData(realData as NotGangedData, column);
-        this.dataTrans = this.dataTrans.slice(0, max).filter(v => v.length);
-        this.dynamicIndex = this.dynamicIndex.slice(0, max);
-        this.diff(preTrans, this.dataTrans, min, true, true, true);
-        this.realData = deepClone(this.dynamicData);
-        resolve(this.getChangeCallData());
+        const validateData = Array.isArray(column) ? realData : [realData];
+        if (this.validateData(validateData as any, false)) {
+          this.normalizeData(realData as NotGangedData, column);
+          this.dataTrans = this.dataTrans.slice(0, max).filter(v => v.length);
+          this.normalizeIndex(this.dataTrans);
+          this.diff(preTrans, this.dataTrans, min, true, true, true);
+          this.realData = deepClone(this.dynamicData);
+          resolve(this.getChangeCallData());
+        } else {
+          reject();
+        }
       } catch (error) {
         reject(error);
       }
@@ -162,22 +167,8 @@ class QSelect extends Layer {
       } else {
         const dataTransLater = this.genGangedData(
           this.data as GangedData[],
-          index
+          this.dynamicIndex
         );
-        this.dynamicIndex.map((v, i) => {
-          if (v < 0) {
-            this.dynamicIndex[i] = 0;
-            this.realIndex[i] = 0;
-          }
-          const len = (
-            dataTransLater[i] || dataTransLater[dataTransLater.length - 1]
-          ).length;
-          if (v > len - 1) {
-            this.dynamicIndex[i] = len - 1;
-            this.realIndex[i] = len - 1;
-          }
-          return v;
-        });
         this.diff(
           preDataTrans || this.dataTrans,
           dataTransLater,
