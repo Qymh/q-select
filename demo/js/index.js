@@ -2,6 +2,7 @@ import QSelect from '@qymh/q-select/src/index';
 import City from './lib/city';
 import './style/demo.css';
 import axios from 'axios/dist/axios';
+import { deepClone } from '@qymh/q-select/src/uitls';
 
 function normalizeCity(data) {
   data.map(v => {
@@ -426,57 +427,53 @@ $setBtn6.forEach((v, i) => {
 
 // 省市区非联动异步实测
 const $show7 = document.querySelector('.cell__title--7');
-let province = [];
-let city = [];
-let area = [];
+const $click7 = document.querySelector('.cell__details--7');
 const ax = axios.create();
 async function get(code) {
   if (!code) {
     return [];
   }
-  const data = await ax.get('https://restapi.amap.com/v3/config/district', {
+  const data = await ax.get('https://g46tw.sse.codesandbox.io/area', {
     params: {
-      key: '7c4c08ad5e1dcbca9601f09fab939f68',
-      keywords: code || '',
-      extensions: 'base'
+      key: code
     }
   });
-  return data.data.districts[0].districts.map(v => ({
-    key: v.adcode,
-    value: v.name
-  }));
+  return data.data;
 }
-Promise.all([get('100000'), get('410000'), get('410300')]).then(values => {
-  province = values[0];
-  city = values[1];
-  area = values[2];
 
-  const base = [province, city, area];
+let qSelect7;
 
-  const qSelect7 = new QSelect({
+$click7.addEventListener('click', () => {
+  qSelect7.show();
+});
+
+ax.get('https://g46tw.sse.codesandbox.io/init').then(res => {
+  const baseData = res.data;
+  qSelect7 = new QSelect({
     title: '省市区非联动异步实测',
-    data: base,
-    target: '.inline7',
+    data: deepClone(baseData),
+    cancelBtn: '重置',
     ready(data, key) {
       $show7.textContent = `数据:${data.join(',')},key:${key.join(',')}`;
     },
-    change(weight, data, key) {
+    async change(weight, data, key) {
       const curKey = key[weight];
-      switch (weight) {
-        case 0:
-          qSelect7.setLoading();
-          get(curKey).then(res => {
+      let res;
+      try {
+        switch (weight) {
+          case 0:
+            qSelect7.setLoading();
+            res = await get(curKey);
             if (res.length) {
-              get(res[0].key).then(inner => {
-                qSelect7
-                  .setColumnData([1, 2], [res, inner])
-                  .then(([data, key]) => {
-                    $show7.textContent = `数据:${data.join(',')},key:${key.join(
-                      ','
-                    )}`;
-                    qSelect7.cancelLoading();
-                  });
-              });
+              const inner = await get(res[0].key);
+              qSelect7
+                .setColumnData([1, 2], [res, inner])
+                .then(([data, key]) => {
+                  $show7.textContent = `数据:${data.join(',')},key:${key.join(
+                    ','
+                  )}`;
+                  qSelect7.cancelLoading();
+                });
             } else {
               qSelect7.setColumnData(1, res).then(([data, key]) => {
                 $show7.textContent = `数据:${data.join(',')},key:${key.join(
@@ -485,25 +482,54 @@ Promise.all([get('100000'), get('410000'), get('410300')]).then(values => {
                 qSelect7.cancelLoading();
               });
             }
-          });
-          break;
-        case 1:
-          qSelect7.setLoading();
-          get(curKey).then(res => {
+            break;
+          case 1:
+            qSelect7.setLoading();
+            res = await get(curKey);
             qSelect7.setColumnData(2, res).then(([data, key]) => {
               $show7.textContent = `数据:${data.join(',')},key:${key.join(
                 ','
               )}`;
               qSelect7.cancelLoading();
             });
-          });
-          break;
-        case 2:
+            break;
+          case 2:
+            $show7.textContent = `数据:${data.join(',')},key:${key.join(',')}`;
+            break;
+        }
+      } catch (error) {
+        qSelect7.setData(deepClone(baseData)).then(([data, key]) => {
           $show7.textContent = `数据:${data.join(',')},key:${key.join(',')}`;
+          qSelect7.cancelLoading();
+          // eslint-disable-next-line
+          alert('接口出错,重新选择');
+        });
       }
     },
     confirm(data, key) {
       $show7.textContent = `数据:${data.join(',')},key:${key.join(',')}`;
+    },
+    cancel() {
+      qSelect7.setData(deepClone(baseData)).then(([data, key]) => {
+        $show7.textContent = `数据:${data.join(',')},key:${key.join(',')}`;
+        qSelect7.cancelLoading();
+      });
+    }
+  });
+});
+
+const $setBtn7 = document.querySelectorAll('.settings__btn--7');
+$setBtn7.forEach((v, i) => {
+  v.addEventListener('click', () => {
+    switch (i) {
+      case 0:
+        // eslint-disable-next-line
+        console.log(qSelect7.getData());
+        break;
+      case 1:
+        // eslint-disable-next-line
+        console.log(qSelect7.getIndex());
+        break;
     }
   });
 });

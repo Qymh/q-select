@@ -85,7 +85,7 @@ class Layer {
     this.chunkHeight = options.chunkHeight = isPlainNumber(+options.chunkHeight)
       ? +options.chunkHeight
       : 40;
-    this.data = options.data;
+    this.data = deepClone(options.data);
     this.dataTrans = [];
     this.index = options.index;
     this.dynamicIndex = [];

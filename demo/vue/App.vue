@@ -97,13 +97,12 @@
     </div>
     <div>
       <cell force title="省市区非联动异步实测" />
-      <cell hideDetails :title="title6" @click="doClick6" />
+      <cell :title="title6" @click="doClick6" />
       <q-select
         ref="select6"
         v-model="show6"
         title="省市区非联动异步实测"
         :data="data6"
-        inline
         :loading="loading6"
         @ready="doReady6"
         @show="doShow6"
@@ -111,6 +110,9 @@
         @change="doChange6"
         @confirm="doConfirm6"
       />
+      <btn v-for="(item, index) in btn6" :key="index" @click="doSet6(index)">
+        {{ item }}
+      </btn>
     </div>
   </div>
 </template>
@@ -290,7 +292,7 @@ export default {
         '获取当前data(console查看)',
         '获取当前index(console查看)'
       ],
-      btn6: [],
+      btn6: ['获取当前data(console查看)', '获取当前index(console查看)'],
       btn7: [],
       newData1: [
         {
@@ -316,18 +318,8 @@ export default {
     this.data1 = [baseArr1];
     this.baseArr2 = [baseArr2];
     this.data3 = [baseArr2, baseArr2, baseArr2, baseArr2, baseArr2];
-    let province = [];
-    let city = [];
-    let area = [];
-    Promise.all([
-      this.get('100000'),
-      this.get('410000'),
-      this.get('410300')
-    ]).then(values => {
-      province = values[0];
-      city = values[1];
-      area = values[2];
-      this.$refs.select6.setData([province, city, area]);
+    ax.get('https://g46tw.sse.codesandbox.io/init').then(res => {
+      this.data6 = res.data;
       this.loading6 = false;
     });
   },
@@ -577,17 +569,12 @@ export default {
       if (!code) {
         return [];
       }
-      const data = await ax.get('https://restapi.amap.com/v3/config/district', {
+      const data = await ax.get('https://g46tw.sse.codesandbox.io/area', {
         params: {
-          key: '7c4c08ad5e1dcbca9601f09fab939f68',
-          keywords: code || '',
-          extensions: 'base'
+          key: code
         }
       });
-      return data.data.districts[0].districts.map(v => ({
-        key: v.adcode,
-        value: v.name
-      }));
+      return data.data;
     },
     doConfirm5(data, key) {
       this.title5 = `数据:${data.join(',')},key:${key.join(',')}`;
@@ -613,40 +600,60 @@ export default {
     doConfirm6(data, key) {
       this.title6 = `数据:${data.join(',')},key:${key.join(',')}`;
     },
-    doChange6(weight, data, key) {
+    async doChange6(weight, data, key) {
       const curKey = key[weight];
-      switch (weight) {
-        case 0:
-          this.loading6 = true;
-          this.get(curKey).then(res => {
+      let res;
+      try {
+        this.loading6 = true;
+        switch (weight) {
+          case 0:
+            res = await this.get(curKey);
             if (res.length) {
-              this.get(res[0].key).then(inner => {
-                this.$refs.select6
-                  .setColumnData([1, 2], [res, inner])
-                  .then(([data, key]) => {
-                    this.title6 = `数据:${data.join(',')},key:${key.join(',')}`;
-                    this.loading6 = false;
-                  });
-              });
+              const inner = await this.get(res[0].key);
+              this.$refs.select6
+                .setColumnData([1, 2], [res, inner])
+                .then(([data, key]) => {
+                  this.title6 = `数据:${data.join(',')},key:${key.join(',')}`;
+                  this.loading6 = false;
+                });
             } else {
               this.$refs.select6.setColumnData(1, res).then(([data, key]) => {
                 this.title6 = `数据:${data.join(',')},key:${key.join(',')}`;
                 this.loading6 = false;
               });
             }
-          });
-          break;
-        case 1:
-          this.loading6 = true;
-          this.get(curKey).then(res => {
+            break;
+          case 1:
+            res = await this.get(curKey);
             this.$refs.select6.setColumnData(2, res).then(([data, key]) => {
               this.title6 = `数据:${data.join(',')},key:${key.join(',')}`;
               this.loading6 = false;
             });
-          });
-          break;
-        case 2:
+            break;
+          case 2:
+            this.title6 = `数据:${data.join(',')},key:${key.join(',')}`;
+            this.loading6 = false;
+            break;
+        }
+      } catch (error) {
+        this.$refs.select6.setData(this.data6).then(([data, key]) => {
           this.title6 = `数据:${data.join(',')},key:${key.join(',')}`;
+          this.loading6 = false;
+          // eslint-disable-next-line
+          alert('接口出错,重新选择');
+        });
+      }
+    },
+    doSet6(i) {
+      switch (i) {
+        case 0:
+          // eslint-disable-next-line
+          console.log(this.$refs.select6.getData());
+          break;
+        case 1:
+          // eslint-disable-next-line
+          console.log(this.$refs.select6.getIndex());
+          break;
       }
     }
   }

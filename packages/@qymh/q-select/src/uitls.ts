@@ -57,13 +57,15 @@ export function nextTick(fn: Function): void {
 export function deepClone(val: any[] | obj): any {
   if (Array.isArray(val)) {
     return val.map(v => deepClone(v));
-  } else {
+  } else if (isPlainObj(val)) {
     const res: obj = {};
     for (const key in val) {
       const item = val[key];
       res[key] = isPlainObj(item) ? deepClone(item) : item;
     }
     return res;
+  } else {
+    return val;
   }
 }
 
