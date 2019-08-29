@@ -3,3 +3,4 @@ demo/js/dist/*
 demo/vue/dist/*
 .DS_Store
 coverage/*
+.vscode
