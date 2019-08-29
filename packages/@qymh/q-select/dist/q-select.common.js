@@ -1,5 +1,5 @@
 /**
- * @qymh/q-select v0.3.3
+ * @qymh/q-select v0.3.4
  * (c) 2019 Qymh
  * @license MIT
  */
@@ -275,13 +275,16 @@ function deepClone(val) {
     if (Array.isArray(val)) {
         return val.map(function (v) { return deepClone(v); });
     }
-    else {
+    else if (isPlainObj(val)) {
         var res = {};
         for (var key in val) {
             var item = val[key];
             res[key] = isPlainObj(item) ? deepClone(item) : item;
         }
         return res;
+    }
+    else {
+        return val;
     }
 }
 function isDefined(val) {
@@ -645,7 +648,7 @@ var Layer = (function () {
         this.chunkHeight = options.chunkHeight = isPlainNumber(+options.chunkHeight)
             ? +options.chunkHeight
             : 40;
-        this.data = options.data;
+        this.data = deepClone(options.data);
         this.dataTrans = [];
         this.index = options.index;
         this.dynamicIndex = [];
@@ -685,7 +688,7 @@ var Layer = (function () {
         }
         return true;
     };
-    Layer.prototype.validateData = function (forceData) {
+    Layer.prototype.validateData = function (forceData, forceType) {
         var data = forceData || this.$options.data;
         if (!data ||
             !Array.isArray(data) ||
@@ -693,7 +696,10 @@ var Layer = (function () {
             tips(false, 'data can only be an array');
             this.data = data = [['']];
         }
-        this.isGanged = data.every(function (v) { return isPlainObj(v); });
+        this.isGanged =
+            forceType !== undefined
+                ? forceType
+                : data.every(function (v) { return isPlainObj(v); });
         function validateGangedData(data, firstLevel) {
             return data.every(function (v) {
                 if (isPlainObj(v)) {
@@ -726,7 +732,12 @@ var Layer = (function () {
                 }
                 return v.every(function (p) {
                     if (isPlainObj(p)) {
-                        return assert(p.value !== undefined, 'value is required if NotGangedData is an object');
+                        if (p.children && p.children.length) {
+                            return assert(false, 'notGangedData can not has prop which is children');
+                        }
+                        else {
+                            return assert(p.value !== undefined, 'value is required if NotGangedData is an object');
+                        }
                     }
                     else if (typeof p !== 'string' && typeof p !== 'number') {
                         return assert(false, "value can only be number or string if NotGangedData is not an object but now get " + p + " which is " + typeof p);
@@ -1179,18 +1190,32 @@ var Layer = (function () {
             }
             var curIndex = (preciseIndex || [])[index] || 0;
             index++;
-            if (child[curIndex] && child[curIndex].children.length) {
-                genGangedDataChildren(child[curIndex].children);
+            if (child[curIndex]) {
+                if (child[curIndex].children.length) {
+                    genGangedDataChildren.call(this, child[curIndex].children);
+                }
+            }
+            else if (child[0] && child[0].children.length) {
+                genGangedDataChildren.call(this, child[0].children);
             }
         }
-        genGangedDataChildren(data);
+        genGangedDataChildren.call(this, data);
         this.completeDynamicIndex(dataTrans);
         return dataTrans;
     };
     Layer.prototype.completeDynamicIndex = function (data) {
+        for (var i = 0; i < this.dynamicIndex.length; i++) {
+            if (data[i] && this.dynamicIndex[i] > data[i].length - 1) {
+                this.dynamicIndex[i] = data[i].length - 1;
+            }
+            if (this.dynamicIndex[i] < 0) {
+                this.dynamicIndex[i] = 0;
+            }
+        }
         for (var i = this.dynamicIndex.length; i < data.length; i++) {
             this.dynamicIndex[i] = 0;
         }
+        this.dynamicIndex = this.dynamicIndex.slice(0, data.length);
     };
     Layer.prototype.callReady = function () {
         var _a;
@@ -1202,7 +1227,7 @@ var Layer = (function () {
 function argumentsAssert(argumentsVar, argumentsStr, functionName, reject) {
     var bool = false;
     argumentsVar.forEach(function (v, i) {
-        if (!assert(isDefined(v), argumentsStr[i] + " is required as the first argument of " + functionName)) {
+        if (!assert(isDefined(v), argumentsStr[i] + " is required as the " + i + " argument of " + functionName)) {
             if (!bool) {
                 bool = true;
             }
@@ -1244,12 +1269,18 @@ var QSelect = (function (_super) {
                     ? column[column.length - 1] + 1
                     : column + 1;
                 var min = Array.isArray(column) ? column[0] : column;
-                _this.normalizeData(realData, column);
-                _this.dataTrans = _this.dataTrans.slice(0, max).filter(function (v) { return v.length; });
-                _this.dynamicIndex = _this.dynamicIndex.slice(0, max);
-                _this.diff(preTrans, _this.dataTrans, min, true, true, true);
-                _this.realData = deepClone(_this.dynamicData);
-                resolve(_this.getChangeCallData());
+                var validateData = Array.isArray(column) ? realData : [realData];
+                if (_this.validateData(validateData, false)) {
+                    _this.normalizeData(realData, column);
+                    _this.dataTrans = _this.dataTrans.slice(0, max).filter(function (v) { return v.length; });
+                    _this.realIndex = _this.dynamicIndex.slice();
+                    _this.diff(preTrans, _this.dataTrans, min, true, true, true);
+                    _this.realData = deepClone(_this.dynamicData);
+                    resolve(_this.getChangeCallData());
+                }
+                else {
+                    reject();
+                }
             }
             catch (error) {
                 reject(error);
@@ -1295,7 +1326,7 @@ var QSelect = (function (_super) {
             if (!this.isGanged) {
                 this.normalizeIndex(this.dataTrans, index);
                 if (diff) {
-                    this.diff(preDataTrans, this.dataTrans, 0, true, true, true);
+                    this.diff(preDataTrans, this.dataTrans, 0, true, !(index && index.length), true);
                 }
                 this.setIndexAndData(this.dataTrans);
                 this.touchs
@@ -1304,20 +1335,8 @@ var QSelect = (function (_super) {
                 this.callReady();
             }
             else {
-                var dataTransLater_1 = this.genGangedData(this.data, index);
-                this.dynamicIndex.map(function (v, i) {
-                    if (v < 0) {
-                        _this.dynamicIndex[i] = 0;
-                        _this.realIndex[i] = 0;
-                    }
-                    var len = (dataTransLater_1[i] || dataTransLater_1[dataTransLater_1.length - 1]).length;
-                    if (v > len - 1) {
-                        _this.dynamicIndex[i] = len - 1;
-                        _this.realIndex[i] = len - 1;
-                    }
-                    return v;
-                });
-                this.diff(preDataTrans || this.dataTrans, dataTransLater_1, 0, true, false, true);
+                var dataTransLater = this.genGangedData(this.data, this.dynamicIndex);
+                this.diff(preDataTrans || this.dataTrans, dataTransLater, 0, true, false, true);
                 this.realIndex = this.dynamicIndex.slice();
                 this.realData = deepClone(this.dynamicData);
                 this.callReady();
@@ -1379,7 +1398,7 @@ var QSelect = (function (_super) {
             if (_this.validateData(data) &&
                 (index ? _this.validateIndex(index) : true)) {
                 var preDataTrans = deepClone(_this.dataTrans);
-                _this.data = data;
+                _this.data = deepClone(data);
                 _this.normalizeData();
                 _this._setIndex(index ||
                     Array.from({ length: _this.dataTrans.length }).fill(0), reject, preDataTrans, true);
