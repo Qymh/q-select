@@ -1,3 +1,18 @@
+# [](https://github.com/Qymh/q-select/compare/v0.3.7...v) (2019-08-30)
+
+
+
+## [0.3.7](https://github.com/Qymh/q-select/compare/v0.3.6...v0.3.7) (2019-08-30)
+
+
+### Features
+
+* 动图演示 ([bb64aba](https://github.com/Qymh/q-select/commit/bb64aba))
+* **core:** 新增添加标题 ([e027a38](https://github.com/Qymh/q-select/commit/e027a38))
+* **readme:** 文档新增gif演示 ([e258db5](https://github.com/Qymh/q-select/commit/e258db5))
+
+
+
 # [](https://github.com/Qymh/q-select/compare/v0.3.6...v) (2019-08-29)
 
 
