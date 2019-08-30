@@ -473,6 +473,22 @@ new QSelect({
 
 ### 实例上的方法
 
+#### setTitle
+
+- 解释 设置标题
+- 参数
+  - title 标题
+
+```javascript
+const s1 = new QSelect({
+  data: [[1, 2, 3]]
+});
+
+setTimeout(() => {
+  s1.setTitle('新的标题')
+}, 1000);
+```
+
 #### setData
 
 - 解释 重新渲染选择栏的数据
@@ -872,6 +888,10 @@ vue 下`q-select`的使用和在 js 下不同,我们运用了`vue`响应式的�
 - 设置默认 defaultKey 默认 defaultValue
 
   通过改变 props 下 defaultKey defaultValue 进行设置,这里要注意的是设置默认值得前提条件是 data 必须的初始化完成,不然无法设置默认值,换句话来说,如果 data 是异步获取的,那么设置默认值得放在 data 成功异步获取之后
+
+- 设置 title
+
+  通过改变props下title的值直接改变title的值
 
 ### refs
 
