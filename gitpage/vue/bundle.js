@@ -17984,6 +17984,12 @@
 	            v.setSize();
 	        });
 	    };
+	    QSelect.prototype.setTitle = function (title) {
+	        if (!argumentsAssert([title], ['title'], 'setTitle')) {
+	            var $title = Dom.find("q-select-header-title__value--" + this.id);
+	            $title.innerHTML = title;
+	        }
+	    };
 	    return QSelect;
 	}(Layer));
 
@@ -19049,6 +19055,11 @@
 	                return ins.setIndex(index);
 	            }
 	        };
+	        var setTitle = function (title) {
+	            if (warnIns()) {
+	                return ins.setTitle(title);
+	            }
+	        };
 	        var setValue = function (value) {
 	            if (warnIns()) {
 	                return ins.setValue(value);
@@ -19164,6 +19175,11 @@
 	        }, {
 	            lazy: true
 	        });
+	        vueFunctionApi_21(function () { return props.title; }, function (val) {
+	            setTitle(val);
+	        }, {
+	            lazy: true
+	        });
 	        return {
 	            pending: pending,
 	            ins: ins,
@@ -19174,6 +19190,7 @@
 	            scrollTo: scrollTo,
 	            setValue: setValue,
 	            setKey: setKey,
+	            setTitle: setTitle,
 	            getData: getData,
 	            getIndex: getIndex,
 	            getValue: getValue,

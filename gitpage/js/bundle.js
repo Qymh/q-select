@@ -1437,6 +1437,12 @@
                 v.setSize();
             });
         };
+        QSelect.prototype.setTitle = function (title) {
+            if (!argumentsAssert([title], ['title'], 'setTitle')) {
+                var $title = Dom.find("q-select-header-title__value--" + this.id);
+                $title.innerHTML = title;
+            }
+        };
         return QSelect;
     }(Layer));
 
@@ -8481,6 +8487,7 @@
     $click1.addEventListener('click', () => {
       qSelect1.show();
     });
+
     // 非联动内联展示异步设置值
     const data2 = [];
     const $show2 = document.querySelector('.cell__title--2');
@@ -8873,7 +8880,7 @@
                 break;
             }
           } catch (error) {
-            qSelect7.setData(deepClone(baseData)).then(([data, key]) => {
+            qSelect7.setData(baseData).then(([data, key]) => {
               $show7.textContent = `数据:${data.join(',')},key:${key.join(',')}`;
               qSelect7.cancelLoading();
               // eslint-disable-next-line
