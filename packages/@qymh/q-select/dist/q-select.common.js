@@ -1,5 +1,5 @@
 /**
- * @qymh/q-select v0.3.5
+ * @qymh/q-select v0.3.6
  * (c) 2019 Qymh
  * @license MIT
  */
@@ -1456,6 +1456,12 @@ var QSelect = (function (_super) {
             .forEach(function (v) {
             v.setSize();
         });
+    };
+    QSelect.prototype.setTitle = function (title) {
+        if (!argumentsAssert([title], ['title'], 'setTitle')) {
+            var $title = Dom.find("q-select-header-title__value--" + this.id);
+            $title.innerHTML = title;
+        }
     };
     return QSelect;
 }(Layer));

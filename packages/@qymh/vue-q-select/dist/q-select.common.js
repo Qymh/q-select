@@ -1,5 +1,5 @@
 /**
- * @qymh/vue-q-select v0.3.5
+ * @qymh/vue-q-select v0.3.6
  * (c) 2019 Qymh
  * @license MIT
  */
@@ -1753,6 +1753,13 @@ var QSelect = function (_super) {
     });
   };
 
+  QSelect.prototype.setTitle = function (title) {
+    if (!argumentsAssert([title], ['title'], 'setTitle')) {
+      var $title = Dom.find("q-select-header-title__value--" + this.id);
+      $title.innerHTML = title;
+    }
+  };
+
   return QSelect;
 }(Layer);
 
@@ -1846,6 +1853,12 @@ var script = {
     var setIndex = function setIndex(index) {
       if (warnIns()) {
         return ins.setIndex(index);
+      }
+    };
+
+    var setTitle = function setTitle(title) {
+      if (warnIns()) {
+        return ins.setTitle(title);
       }
     };
 
@@ -1981,6 +1994,13 @@ var script = {
     }, {
       lazy: true
     });
+    vueFunctionApi.watch(function () {
+      return props.title;
+    }, function (val) {
+      setTitle(val);
+    }, {
+      lazy: true
+    });
     return {
       pending: pending,
       ins: ins,
@@ -1991,6 +2011,7 @@ var script = {
       scrollTo: scrollTo,
       setValue: setValue,
       setKey: setKey,
+      setTitle: setTitle,
       getData: getData,
       getIndex: getIndex,
       getValue: getValue,
