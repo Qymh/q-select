@@ -98,6 +98,12 @@ export default {
       }
     };
 
+    const setTitle = title => {
+      if (warnIns()) {
+        return ins.setTitle(title);
+      }
+    };
+
     const setValue = value => {
       if (warnIns()) {
         return ins.setValue(value);
@@ -242,6 +248,16 @@ export default {
       }
     );
 
+    watch(
+      () => props.title,
+      val => {
+        setTitle(val);
+      },
+      {
+        lazy: true
+      }
+    );
+
     return {
       pending,
       ins,
@@ -252,6 +268,7 @@ export default {
       scrollTo,
       setValue,
       setKey,
+      setTitle,
       getData,
       getIndex,
       getValue,

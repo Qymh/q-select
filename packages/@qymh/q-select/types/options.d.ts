@@ -71,6 +71,7 @@ export interface QSelect {
   setIndex<K, V>(index: number): PromiseCall<K, V>;
   setKey<K, V>(index: number): PromiseCall<K, V>;
   setData<K, V>(data: Data<K, V>, index?: number[]): PromiseCall<K, V>;
+  setTitle<K>(title: K): void;
 
   getIndex: () => number[];
   getKey: <T>() => T[];

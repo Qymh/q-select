@@ -679,6 +679,21 @@ describe('instance', () => {
     });
   });
 
+  describe('setTitle', () => {
+    const s = new QSelect({
+      data: [[1, 2, 3]],
+      title: '测试'
+    });
+    expect(
+      document.querySelector(`.q-select-header-title__value--${s.id}`).innerHTML
+    ).toBe('测试');
+
+    s.setTitle('测试另外');
+    expect(
+      document.querySelector(`.q-select-header-title__value--${s.id}`).innerHTML
+    ).toBe('测试另外');
+  });
+
   describe('destroy', () => {
     it('destroy', () => {
       const s = new QSelect({

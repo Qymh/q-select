@@ -2,7 +2,6 @@ import QSelect from '@qymh/q-select/src/index';
 import City from './lib/city';
 import './style/demo.css';
 import axios from 'axios/dist/axios';
-import { deepClone } from '@qymh/q-select/src/uitls';
 
 function normalizeCity(data) {
   data.map(v => {
@@ -96,6 +95,7 @@ const $click1 = document.querySelector('.cell__details--1');
 $click1.addEventListener('click', () => {
   qSelect1.show();
 });
+
 // 非联动内联展示异步设置值
 const data2 = [];
 const $show2 = document.querySelector('.cell__title--2');
@@ -488,7 +488,7 @@ ax.get('https://g46tw.sse.codesandbox.io/init').then(res => {
             break;
         }
       } catch (error) {
-        qSelect7.setData(deepClone(baseData)).then(([data, key]) => {
+        qSelect7.setData(baseData).then(([data, key]) => {
           $show7.textContent = `数据:${data.join(',')},key:${key.join(',')}`;
           qSelect7.cancelLoading();
           // eslint-disable-next-line

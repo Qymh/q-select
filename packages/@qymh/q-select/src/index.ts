@@ -360,6 +360,17 @@ class QSelect extends Layer {
         v.setSize();
       });
   }
+
+  /**
+   * 设置标题
+   * @param title 标题
+   */
+  setTitle(title: string) {
+    if (!argumentsAssert([title], ['title'], 'setTitle')) {
+      const $title = Dom.find(`q-select-header-title__value--${this.id}`);
+      $title.innerHTML = title;
+    }
+  }
 }
 
 export default QSelect;
