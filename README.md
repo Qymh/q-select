@@ -767,29 +767,29 @@ Vue.use(QSelect, { name: 'QPicker' });
 
 - 一层非联动 [沙盒演示](https://codesandbox.io/s/yicengfeiliandong-7xzsj?fontsize=14)
 
-![](https://github.com/Qymh/q-select/blob/master/docs/gif/one.GIF)
+![](https://github.com/Qymh/q-select/blob/master/docs/gif/one.gif)
 
 - 非联动内联展示异步设置值 [沙盒演示](https://codesandbox.io/s/yicengfeiliandongyibu-llfi8?fontsize=14)
 
-![](https://github.com/Qymh/q-select/blob/master/docs/gif/two.GIF)
+![](https://github.com/Qymh/q-select/blob/master/docs/gif/two.gif)
 
 - 多层非联动实测 [沙盒演示](https://codesandbox.io/s/duocengfeiliandongshice-k5o0i?fontsize=14)
 
-![](https://github.com/Qymh/q-select/blob/master/docs/gif/three.GIF)
+![](https://github.com/Qymh/q-select/blob/master/docs/gif/three.gif)
 
 - 简单联动 [沙盒演示](https://codesandbox.io/s/jiandanliandong-lc3fd?fontsize=14)
 
-![](https://github.com/Qymh/q-select/blob/master/docs/gif/four.GIF)
+![](https://github.com/Qymh/q-select/blob/master/docs/gif/four.gif)
 
 - 省市区联动实测 [沙盒演示](https://codesandbox.io/s/shengshiquliandongshice-zq7v6?fontsize=14)
 
-![](https://github.com/Qymh/q-select/blob/master/docs/gif/five.GIF)
+![](https://github.com/Qymh/q-select/blob/master/docs/gif/five.gif)
 
 > 异步加载的难度会大于简单联动,如果不是格外追求加载性能,建议使用非异步联动,如果要使用请参考下面的列子
 
 - 省市区非联动异步实测 [沙盒演示](https://codesandbox.io/s/shengshiquliandongshice-7tgd4?fontsize=14)
 
-![](https://github.com/Qymh/q-select/blob/master/docs/gif/six.GIF)
+![](https://github.com/Qymh/q-select/blob/master/docs/gif/six.gif)
 
 ### props
 
