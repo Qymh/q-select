@@ -74,19 +74,44 @@ new Qselect({});
 
 > 沙盒演示中无法触发`touchmove`事件,点击沙盒右侧网址的右边的`新窗口打开`,在新窗口中查看演示,在当前页面查看代码
 
-- 一层非联动 [沙盒演示](https://codesandbox.io/s/yicengfeiliandong-7x0zy?fontsize=14)
+- 一层非联动
+  - [沙盒演示](https://codesandbox.io/s/yicengfeiliandong-7x0zy?fontsize=14)
+  - 图片演示
 
-- 非联动内联展示异步设置值 [沙盒演示](https://codesandbox.io/s/feiliandongneilianzhanshiyibushezhizhi-4wtvb?fontsize=14)
+    ![演示图片](docs/gif/one.gif)
 
-- 多层非联动实测 [沙盒演示](https://codesandbox.io/s/duocengfeiliandongshice-8hf8n?fontsize=14)
+- 非联动内联展示异步设置值
+  - [沙盒演示](https://codesandbox.io/s/feiliandongneilianzhanshiyibushezhizhi-4wtvb?fontsize=14)
+  - 图片演示
 
-- 简单联动 [沙盒演示](https://codesandbox.io/s/jiandanliandong-bhyxr?fontsize=14)
+    ![演示图片](docs/gif/two.gif)
 
-- 省市区联动实测 [沙盒演示](https://codesandbox.io/s/shengshiquliandongshice-ubxqx?fontsize=14)
+- 多层非联动实测
+  - [沙盒演示](https://codesandbox.io/s/duocengfeiliandongshice-8hf8n?fontsize=14)
+
+  - 图片演示
+
+    ![演示图片](docs/gif/three.gif)
+
+- 简单联动
+  - [沙盒演示](https://codesandbox.io/s/jiandanliandong-bhyxr?fontsize=14)
+  - 图片演示
+
+    ![演示图片](docs/gif/four.gif)
+
+- 省市区联动实测
+  - [沙盒演示](https://codesandbox.io/s/shengshiquliandongshice-ubxqx?fontsize=14)
+  - 图片演示
+
+    ![演示图片](docs/gif/five.gif)
 
 > 异步加载的难度会大于简单联动,如果不是格外追求加载性能,建议使用非异步联动,如果要使用请参考下面的列子
 
-- 省市区非联动异步实测 [沙盒演示](https://codesandbox.io/s/shengshiqufeiliandongyibushice-c3ozk?fontsize=14)
+- 省市区非联动异步实测
+  - [沙盒演示](https://codesandbox.io/s/shengshiqufeiliandongyibushice-c3ozk?fontsize=14)
+  - 图片演示
+
+    ![演示图片](docs/gif/six.gif)
 
 ### options
 
@@ -421,7 +446,7 @@ new QSelect({
 
 - 解释 选择栏数据更改且**全部动画结束后**触发
 - 数据格式 function
-- **在调用`setData` `setIndex` `setKey` `setValue`后不会触发`change`只会触发`readt`**
+- **在调用`setData` `setIndex` `setKey` `setValue`后不会触发`change`只会触发`ready`**
 - 回调参数
 
   - weight 当前更改的最高权值的栏目索引 比如第一栏和第二栏同时滚动 这个值就是 第一栏的索引 0
@@ -765,31 +790,43 @@ Vue.use(QSelect, { name: 'QPicker' });
 
 > 沙盒演示中无法触发`touchmove`事件,点击沙盒右侧网址的右边的`新窗口打开`,在新窗口中查看演示,在当前页面查看代码
 
-- 一层非联动 [沙盒演示](https://codesandbox.io/s/yicengfeiliandong-7xzsj?fontsize=14)
+- 一层非联动
+  - [沙盒演示](https://codesandbox.io/s/yicengfeiliandong-7xzsj?fontsize=14)
+  - 图片演示
 
-![](https://github.com/Qymh/q-select/blob/master/docs/gif/one.gif)
+    ![演示图片](docs/gif/one.gif)
 
-- 非联动内联展示异步设置值 [沙盒演示](https://codesandbox.io/s/yicengfeiliandongyibu-llfi8?fontsize=14)
+- 非联动内联展示异步设置值
+  - [沙盒演示](https://codesandbox.io/s/yicengfeiliandongyibu-llfi8?fontsize=14)
+  - 图片演示
 
-![](https://github.com/Qymh/q-select/blob/master/docs/gif/two.gif)
+    ![演示图片](docs/gif/two.gif)
 
-- 多层非联动实测 [沙盒演示](https://codesandbox.io/s/duocengfeiliandongshice-k5o0i?fontsize=14)
+- 多层非联动实测
+  - [沙盒演示](https://codesandbox.io/s/duocengfeiliandongshice-k5o0i?fontsize=14)
+  - 图片演示
+  
+    ![演示图片](docs/gif/three.gif)
 
-![](https://github.com/Qymh/q-select/blob/master/docs/gif/three.gif)
+- 简单联动
+  - [沙盒演示](https://codesandbox.io/s/jiandanliandong-lc3fd?fontsize=14)
+  - 图片演示
 
-- 简单联动 [沙盒演示](https://codesandbox.io/s/jiandanliandong-lc3fd?fontsize=14)
+    ![演示图片](docs/gif/four.gif)
 
-![](https://github.com/Qymh/q-select/blob/master/docs/gif/four.gif)
+- 省市区联动实测
+  - [沙盒演示](https://codesandbox.io/s/shengshiquliandongshice-zq7v6?fontsize=14)
+  - 图片演示
 
-- 省市区联动实测 [沙盒演示](https://codesandbox.io/s/shengshiquliandongshice-zq7v6?fontsize=14)
-
-![](https://github.com/Qymh/q-select/blob/master/docs/gif/five.gif)
+    ![演示图片](docs/gif/five.gif)
 
 > 异步加载的难度会大于简单联动,如果不是格外追求加载性能,建议使用非异步联动,如果要使用请参考下面的列子
 
-- 省市区非联动异步实测 [沙盒演示](https://codesandbox.io/s/shengshiquliandongshice-7tgd4?fontsize=14)
+- 省市区非联动异步实测
+  - [沙盒演示](https://codesandbox.io/s/shengshiquliandongshice-7tgd4?fontsize=14)
+  - 图片演示
 
-![](https://github.com/Qymh/q-select/blob/master/docs/gif/six.gif)
+    ![演示图片](docs/gif/six.gif)
 
 ### props
 
