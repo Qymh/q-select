@@ -2144,6 +2144,13 @@
     sass "^1.18.0"
     stylus "^0.54.5"
 
+"@vue/composition-api@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@vue/composition-api/-/composition-api-0.2.1.tgz#d6b4327b308ac474982536f86bf44dd00271742d"
+  integrity sha512-eRmvToKbNjFXYyuFZ8e9KUcBXwDj0PQR1ngZP4u3R2jR9yjIbvgEsj7IKoddSKYiEkMttn+JiaSKX7n+REQBBw==
+  dependencies:
+    tslib "^1.9.3"
+
 "@zkochan/cmd-shim@^3.1.0":
   version "3.1.0"
   resolved "https://registry.npm.taobao.org/@zkochan/cmd-shim/download/@zkochan/cmd-shim-3.1.0.tgz#2ab8ed81f5bb5452a85f25758eb9b8681982fd2e"

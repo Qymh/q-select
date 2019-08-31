@@ -27,7 +27,7 @@ declare type Data = GangedData[] | NotGangedData[];
 declare type FunctionKeys = 'ready' | 'cancel' | 'confirm' | 'hide' | 'show';
 
 declare type QOptions = {
-  id: number;
+  id?: number;
   target: string;
   loading: boolean;
   data: Data;

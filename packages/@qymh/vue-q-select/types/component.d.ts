@@ -47,4 +47,8 @@ export class VueQSelect extends Vue {
   deep?: boolean;
 
   disableDefaultCancel?: boolean;
+
+  bkIndex: number;
+
+  selectIndex: number;
 }

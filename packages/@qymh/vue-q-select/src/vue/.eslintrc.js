@@ -1,3 +1,3 @@
 module.exports = {
-  extends: ['qymh/vue']
+  extends: ['qymh/typescript']
 };

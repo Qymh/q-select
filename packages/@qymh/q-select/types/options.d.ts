@@ -68,8 +68,9 @@ export interface QSelect {
   ): PromiseCall<K, V>;
   scrollTo<K, V>(column: number, index: number): PromiseCall<K, V>;
 
-  setIndex<K, V>(index: number): PromiseCall<K, V>;
-  setKey<K, V>(index: number): PromiseCall<K, V>;
+  setIndex<K, V>(index: number[]): PromiseCall<K, V>;
+  setKey<K, V>(key: any[]): PromiseCall<K, V>;
+  setValue<K, V>(value: any[]): PromiseCall<K, V>;
   setData<K, V>(data: Data<K, V>, index?: number[]): PromiseCall<K, V>;
   setTitle<K>(title: K): void;
 

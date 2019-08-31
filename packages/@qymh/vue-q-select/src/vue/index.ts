@@ -1,12 +1,38 @@
-<script lang="ts">
+import {
+  ref,
+  onMounted,
+  onBeforeUnmount,
+  watch,
+  createComponent
+} from '@vue/composition-api';
 import Vue from 'vue';
-import QSelect from '@qymh/q-select/src/index';
-import { value, onMounted, onDestroyed, watch } from 'vue-function-api';
+import QSelect from '@qymh/q-select';
+
 import { assert } from '@qymh/q-select/src/uitls';
-export default {
-  setup(props, context) {
-    let pending = value(true);
-    const uid = value(0);
+
+interface IProps {
+  visible: boolean;
+  data: Data;
+  index: number[];
+  title: string;
+  count: number;
+  chunkHeight: number;
+  confirmBtn: string;
+  cancelBtn: string;
+  inline: boolean;
+  loading: boolean;
+  deep: boolean;
+  disableDefaultCancel: boolean;
+  defaultKey: any[];
+  defaultValue: any[];
+  bkIndex: number;
+  selectIndex: number;
+}
+
+const Component = createComponent({
+  setup(props: IProps, context) {
+    const pending = ref(true);
+    const uid = ref(0);
     let ins: QSelect;
 
     onMounted(() => {
@@ -21,8 +47,10 @@ export default {
         confirmBtn: props.confirmBtn,
         loading: props.loading,
         disableDefaultCancel: props.disableDefaultCancel,
+        bkIndex: props.bkIndex,
+        selectIndex: props.selectIndex,
         ready(value, key, data) {
-          pending = false;
+          pending.value = false;
           context.emit('ready', value, key, data);
         },
         cancel() {
@@ -38,11 +66,14 @@ export default {
         },
         show() {
           context.emit('show');
+        },
+        hide() {
+          context.emit('hide');
         }
       });
     });
 
-    onDestroyed(() => {
+    onBeforeUnmount(() => {
       ins && ins.destroy();
     });
 
@@ -74,70 +105,83 @@ export default {
       }
     };
 
-    const setData = (data, index) => {
+    const setData = (data: Data, index?: number[]) => {
       if (warnIns()) {
         return ins.setData(data, index);
       }
+      return '';
     };
 
-    const setColumnData = (column, data) => {
+    const setColumnData = (
+      column: number | number[],
+      data: NotGangedData | NotGangedData[]
+    ) => {
       if (warnIns()) {
         return ins.setColumnData(column, data);
       }
+      return '';
     };
 
     const scrollTo = (column: number, index: number) => {
       if (warnIns()) {
         return ins.scrollTo(column, index);
       }
+      return '';
     };
 
-    const setIndex = index => {
+    const setIndex = (index: number[]) => {
       if (warnIns()) {
         return ins.setIndex(index);
       }
+      return '';
     };
 
-    const setTitle = title => {
+    const setTitle = (title: string) => {
       if (warnIns()) {
         return ins.setTitle(title);
       }
     };
 
-    const setValue = value => {
+    const setValue = (value: any[]) => {
       if (warnIns()) {
         return ins.setValue(value);
       }
+      return '';
     };
 
-    const setKey = key => {
+    const setKey = (key: any[]) => {
       if (warnIns()) {
         return ins.setKey(key);
       }
+      return '';
     };
 
     const getData = () => {
       if (warnIns()) {
-        return ins.getChangeCallData();
+        return ins.getData();
       }
+      return [];
     };
 
     const getIndex = () => {
       if (warnIns()) {
         return ins.getIndex();
       }
+      return [];
     };
 
     const getValue = () => {
       if (warnIns()) {
         return ins.getValue();
       }
+      return [];
     };
 
     const getKey = () => {
       if (warnIns()) {
         return ins.getKey();
       }
+      return [];
     };
 
     const setLoading = () => {
@@ -156,7 +200,7 @@ export default {
       () => props.defaultKey,
       val => {
         if (val && val.length) {
-          if (pending) {
+          if (pending.value) {
             Vue.nextTick(() => {
               ins.setKey(props.defaultKey);
             });
@@ -171,7 +215,7 @@ export default {
       () => props.defaultValue,
       val => {
         if (val && val.length) {
-          if (pending) {
+          if (pending.value) {
             Vue.nextTick(() => {
               ins.setValue(props.defaultValue);
             });
@@ -186,7 +230,7 @@ export default {
       () => props.visible,
       val => {
         if (val) {
-          if (pending) {
+          if (pending.value) {
             Vue.nextTick(() => {
               show();
             });
@@ -194,7 +238,7 @@ export default {
             show();
           }
         } else {
-          if (!pending) {
+          if (!pending.value) {
             context.emit('hide');
             close();
           }
@@ -206,12 +250,12 @@ export default {
       () => props.loading,
       val => {
         if (val) {
-          if (pending) {
+          if (pending.value) {
           } else {
             setLoading();
           }
         } else {
-          if (!pending) {
+          if (!pending.value) {
             cancelLoading();
           }
         }
@@ -220,7 +264,7 @@ export default {
 
     watch(
       () => props.data,
-      val => {
+      (val: Data) => {
         setData(val);
         if (props.defaultValue && props.defaultValue.length) {
           setValue(props.defaultValue);
@@ -259,8 +303,7 @@ export default {
     );
 
     return {
-      pending,
-      ins,
+      uid,
       destroy,
       setIndex,
       setData,
@@ -272,8 +315,7 @@ export default {
       getData,
       getIndex,
       getValue,
-      getKey,
-      uid
+      getKey
     };
   },
   name: 'QSelect',
@@ -350,9 +392,19 @@ export default {
     defaultValue: {
       type: Array,
       default: () => []
+    },
+    // 背景index
+    bkIndex: {
+      type: Number,
+      default: 500
+    },
+    // select index
+    selectIndex: {
+      type: Number,
+      default: 600
     }
   },
-  render(h) {
+  render(this: any, h) {
     this.uid = this._uid;
     if (this.inline) {
       return h('div', { class: `q-select-inline--${this._uid}` });
@@ -360,5 +412,6 @@ export default {
       return h('');
     }
   }
-};
-</script>
+});
+
+export default Component;
