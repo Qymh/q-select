@@ -67,9 +67,7 @@ const Component = createComponent({
         show() {
           context.emit('show');
         },
-        hide() {
-          context.emit('hide');
-        }
+        hide() {}
       });
     });
 
