@@ -16550,6 +16550,1014 @@
 	    undefined
 	  );
 
+	var vueCompositionApi = createCommonjsModule(function (module, exports) {
+
+	Object.defineProperty(exports, '__esModule', { value: true });
+
+	function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
+
+	var Vue = _interopDefault(vue_runtime_common);
+
+	var toString = function (x) { return Object.prototype.toString.call(x); };
+	var hasSymbol = typeof Symbol === 'function' && Symbol.for;
+	var noopFn = function (_) { return _; };
+	var sharedPropertyDefinition = {
+	    enumerable: true,
+	    configurable: true,
+	    get: noopFn,
+	    set: noopFn,
+	};
+	function proxy(target, key, _a) {
+	    var get = _a.get, set = _a.set;
+	    sharedPropertyDefinition.get = get || noopFn;
+	    sharedPropertyDefinition.set = set || noopFn;
+	    Object.defineProperty(target, key, sharedPropertyDefinition);
+	}
+	function def(obj, key, val, enumerable) {
+	    Object.defineProperty(obj, key, {
+	        value: val,
+	        enumerable: !!enumerable,
+	        writable: true,
+	        configurable: true,
+	    });
+	}
+	var hasOwnProperty = Object.prototype.hasOwnProperty;
+	function hasOwn(obj, key) {
+	    return hasOwnProperty.call(obj, key);
+	}
+	function assert(condition, msg) {
+	    if (!condition)
+	        throw new Error("[vue-composition-api] " + msg);
+	}
+	function isArray(x) {
+	    return Array.isArray(x);
+	}
+	function isPlainObject(x) {
+	    return toString(x) === '[object Object]';
+	}
+	function isFunction(x) {
+	    return typeof x === 'function';
+	}
+	function warn(msg, vm) {
+	    Vue.util.warn(msg, vm);
+	}
+	function logError(err, vm, info) {
+	    {
+	        warn("Error in " + info + ": \"" + err.toString() + "\"", vm);
+	    }
+	    if (typeof window !== 'undefined' && typeof console !== 'undefined') {
+	        console.error(err);
+	    }
+	    else {
+	        throw err;
+	    }
+	}
+
+	var currentVue = null;
+	var currentVM = null;
+	function getCurrentVue() {
+	    {
+	        assert(currentVue, "must call Vue.use(plugin) before using any function.");
+	    }
+	    return currentVue;
+	}
+	function setCurrentVue(vue) {
+	    currentVue = vue;
+	}
+	function getCurrentVM() {
+	    return currentVM;
+	}
+	function setCurrentVM(vm) {
+	    currentVM = vm;
+	}
+
+	function ensureCurrentVMInFn(hook) {
+	    var vm = getCurrentVM();
+	    {
+	        assert(vm, "\"" + hook + "\" get called outside of \"setup()\"");
+	    }
+	    return vm;
+	}
+	function createComponentInstance(Ctor, options) {
+	    if (options === void 0) { options = {}; }
+	    var silent = Ctor.config.silent;
+	    Ctor.config.silent = true;
+	    var vm = new Ctor(options);
+	    Ctor.config.silent = silent;
+	    return vm;
+	}
+	function isComponentInstance(obj) {
+	    return currentVue && obj instanceof currentVue;
+	}
+
+	function createSymbol(name) {
+	    return hasSymbol ? Symbol.for(name) : name;
+	}
+	var WatcherPreFlushQueueKey = createSymbol('vfa.key.preFlushQueue');
+	var WatcherPostFlushQueueKey = createSymbol('vfa.key.postFlushQueue');
+	var AccessControlIdentifierKey = createSymbol('vfa.key.accessControlIdentifier');
+	var ReactiveIdentifierKey = createSymbol('vfa.key.reactiveIdentifier');
+	var NonReactiveIdentifierKey = createSymbol('vfa.key.nonReactiveIdentifier');
+	// must be a string, symbol key is ignored in reactive
+	var RefKey = 'vfa.key.refKey';
+
+	var RefImpl = /** @class */ (function () {
+	    function RefImpl(_a) {
+	        var get = _a.get, set = _a.set;
+	        proxy(this, 'value', {
+	            get: get,
+	            set: set,
+	        });
+	    }
+	    return RefImpl;
+	}());
+	function createRef(options) {
+	    // seal the ref, this could prevent ref from being observed
+	    // It's safe to seal the ref, since we really shoulnd't extend it.
+	    // related issues: #79
+	    return Object.seal(new RefImpl(options));
+	}
+	// implementation
+	function ref(raw) {
+	    // if (isRef(raw)) {
+	    //   return {} as any;
+	    // }
+	    var _a;
+	    var value = reactive((_a = {}, _a[RefKey] = raw, _a));
+	    return createRef({
+	        get: function () { return value[RefKey]; },
+	        set: function (v) { return (value[RefKey] = v); },
+	    });
+	}
+	function isRef(value) {
+	    return value instanceof RefImpl;
+	}
+	function toRefs(obj) {
+	    if (!isPlainObject(obj))
+	        return obj;
+	    var res = {};
+	    Object.keys(obj).forEach(function (key) {
+	        var val = obj[key];
+	        // use ref to proxy the property
+	        if (!isRef(val)) {
+	            val = createRef({
+	                get: function () { return obj[key]; },
+	                set: function (v) { return (obj[key] = v); },
+	            });
+	        }
+	        // todo
+	        res[key] = val;
+	    });
+	    return res;
+	}
+
+	var AccessControlIdentifier = {};
+	var ReactiveIdentifier = {};
+	var NonReactiveIdentifier = {};
+	function isNonReactive(obj) {
+	    return (hasOwn(obj, NonReactiveIdentifierKey) && obj[NonReactiveIdentifierKey] === NonReactiveIdentifier);
+	}
+	function isReactive(obj) {
+	    return hasOwn(obj, ReactiveIdentifierKey) && obj[ReactiveIdentifierKey] === ReactiveIdentifier;
+	}
+	/**
+	 * Proxing property access of target.
+	 * We can do unwrapping and other things here.
+	 */
+	function setupAccessControl(target) {
+	    if (!isPlainObject(target) ||
+	        isNonReactive(target) ||
+	        Array.isArray(target) ||
+	        isRef(target) ||
+	        isComponentInstance(target)) {
+	        return;
+	    }
+	    if (hasOwn(target, AccessControlIdentifierKey) &&
+	        target[AccessControlIdentifierKey] === AccessControlIdentifier) {
+	        return;
+	    }
+	    if (Object.isExtensible(target)) {
+	        def(target, AccessControlIdentifierKey, AccessControlIdentifier);
+	    }
+	    var keys = Object.keys(target);
+	    for (var i = 0; i < keys.length; i++) {
+	        defineAccessControl(target, keys[i]);
+	    }
+	}
+	/**
+	 * Auto unwrapping when access property
+	 */
+	function defineAccessControl(target, key, val) {
+	    if (key === '__ob__')
+	        return;
+	    var getter;
+	    var setter;
+	    var property = Object.getOwnPropertyDescriptor(target, key);
+	    if (property) {
+	        if (property.configurable === false) {
+	            return;
+	        }
+	        getter = property.get;
+	        setter = property.set;
+	        if ((!getter || setter) /* not only have getter */ && arguments.length === 2) {
+	            val = target[key];
+	        }
+	    }
+	    setupAccessControl(val);
+	    Object.defineProperty(target, key, {
+	        enumerable: true,
+	        configurable: true,
+	        get: function getterHandler() {
+	            var value = getter ? getter.call(target) : val;
+	            // if the key is equal to RefKey, skip the unwrap logic
+	            if (key !== RefKey && isRef(value)) {
+	                return value.value;
+	            }
+	            else {
+	                return value;
+	            }
+	        },
+	        set: function setterHandler(newVal) {
+	            if (getter && !setter)
+	                return;
+	            var value = getter ? getter.call(target) : val;
+	            // If the key is equal to RefKey, skip the unwrap logic
+	            // If and only if "value" is ref and "newVal" is not a ref,
+	            // the assignment should be proxied to "value" ref.
+	            if (key !== RefKey && isRef(value) && !isRef(newVal)) {
+	                value.value = newVal;
+	            }
+	            else if (setter) {
+	                setter.call(target, newVal);
+	            }
+	            else if (isRef(newVal)) {
+	                val = newVal;
+	            }
+	            setupAccessControl(newVal);
+	        },
+	    });
+	}
+	function observe(obj) {
+	    var Vue = getCurrentVue();
+	    var observed;
+	    if (Vue.observable) {
+	        observed = Vue.observable(obj);
+	    }
+	    else {
+	        var vm = createComponentInstance(Vue, {
+	            data: {
+	                $$state: obj,
+	            },
+	        });
+	        observed = vm._data.$$state;
+	    }
+	    return observed;
+	}
+	/**
+	 * Make obj reactivity
+	 */
+	function reactive(obj) {
+	    if (!obj) {
+	        warn('"reactive()" is called without provide an "object".');
+	        // @ts-ignore
+	        return;
+	    }
+	    if (!isPlainObject(obj) || isReactive(obj) || isNonReactive(obj) || !Object.isExtensible(obj)) {
+	        return obj;
+	    }
+	    var observed = observe(obj);
+	    def(observed, ReactiveIdentifierKey, ReactiveIdentifier);
+	    setupAccessControl(observed);
+	    return observed;
+	}
+	/**
+	 * Make sure obj can't be a reactive
+	 */
+	function nonReactive(obj) {
+	    if (!isPlainObject(obj)) {
+	        return obj;
+	    }
+	    // set the vue observable flag at obj
+	    obj.__ob__ = observe({}).__ob__;
+	    // mark as nonReactive
+	    def(obj, NonReactiveIdentifierKey, NonReactiveIdentifier);
+	    return obj;
+	}
+
+	function isUndef(v) {
+	    return v === undefined || v === null;
+	}
+	function isPrimitive(value) {
+	    return (typeof value === 'string' ||
+	        typeof value === 'number' ||
+	        // $flow-disable-line
+	        typeof value === 'symbol' ||
+	        typeof value === 'boolean');
+	}
+	function isValidArrayIndex(val) {
+	    var n = parseFloat(String(val));
+	    return n >= 0 && Math.floor(n) === n && isFinite(val);
+	}
+	/**
+	 * Set a property on an object. Adds the new property, triggers change
+	 * notification and intercept it's subsequent access if the property doesn't
+	 * already exist.
+	 */
+	function set(target, key, val) {
+	    var Vue = getCurrentVue();
+	    var _a = Vue.util, warn = _a.warn, defineReactive = _a.defineReactive;
+	    if (isUndef(target) || isPrimitive(target)) {
+	        warn("Cannot set reactive property on undefined, null, or primitive value: " + target);
+	    }
+	    if (isArray(target) && isValidArrayIndex(key)) {
+	        target.length = Math.max(target.length, key);
+	        target.splice(key, 1, val);
+	        return val;
+	    }
+	    if (key in target && !(key in Object.prototype)) {
+	        target[key] = val;
+	        return val;
+	    }
+	    var ob = target.__ob__;
+	    if (target._isVue || (ob && ob.vmCount)) {
+	        warn('Avoid adding reactive properties to a Vue instance or its root $data ' +
+	                'at runtime - declare it upfront in the data option.');
+	        return val;
+	    }
+	    if (!ob) {
+	        target[key] = val;
+	        return val;
+	    }
+	    defineReactive(ob.value, key, val);
+	    // IMPORTANT: define access control before trigger watcher
+	    defineAccessControl(target, key, val);
+	    ob.dep.notify();
+	    return val;
+	}
+
+	/**
+	 * Helper that recursively merges two data objects together.
+	 */
+	function mergeData(to, from) {
+	    if (!from)
+	        return to;
+	    var key;
+	    var toVal;
+	    var fromVal;
+	    var keys = hasSymbol ? Reflect.ownKeys(from) : Object.keys(from);
+	    for (var i = 0; i < keys.length; i++) {
+	        key = keys[i];
+	        // in case the object is already observed...
+	        if (key === '__ob__')
+	            continue;
+	        toVal = to[key];
+	        fromVal = from[key];
+	        if (!hasOwn(to, key)) {
+	            to[key] = fromVal;
+	        }
+	        else if (toVal !== fromVal &&
+	            (isPlainObject(toVal) && !isRef(toVal)) &&
+	            (isPlainObject(fromVal) && !isRef(toVal))) {
+	            mergeData(toVal, fromVal);
+	        }
+	    }
+	    return to;
+	}
+	function install(Vue, _install) {
+	    if (currentVue && currentVue === Vue) {
+	        {
+	            assert(false, 'already installed. Vue.use(plugin) should be called only once');
+	        }
+	        return;
+	    }
+	    Vue.config.optionMergeStrategies.setup = function (parent, child) {
+	        return function mergedSetupFn(props, context) {
+	            return mergeData(typeof child === 'function' ? child(props, context) || {} : {}, typeof parent === 'function' ? parent(props, context) || {} : {});
+	        };
+	    };
+	    setCurrentVue(Vue);
+	    _install(Vue);
+	}
+
+	/*! *****************************************************************************
+	Copyright (c) Microsoft Corporation. All rights reserved.
+	Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+	this file except in compliance with the License. You may obtain a copy of the
+	License at http://www.apache.org/licenses/LICENSE-2.0
+
+	THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+	KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
+	WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
+	MERCHANTABLITY OR NON-INFRINGEMENT.
+
+	See the Apache Version 2.0 License for specific language governing permissions
+	and limitations under the License.
+	***************************************************************************** */
+
+	var __assign = function() {
+	    __assign = Object.assign || function __assign(t) {
+	        for (var s, i = 1, n = arguments.length; i < n; i++) {
+	            s = arguments[i];
+	            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+	        }
+	        return t;
+	    };
+	    return __assign.apply(this, arguments);
+	};
+
+	function __read(o, n) {
+	    var m = typeof Symbol === "function" && o[Symbol.iterator];
+	    if (!m) return o;
+	    var i = m.call(o), r, ar = [], e;
+	    try {
+	        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+	    }
+	    catch (error) { e = { error: error }; }
+	    finally {
+	        try {
+	            if (r && !r.done && (m = i["return"])) m.call(i);
+	        }
+	        finally { if (e) throw e.error; }
+	    }
+	    return ar;
+	}
+
+	function set$1(vm, key, value) {
+	    var state = (vm.__secret_vfa_state__ = vm.__secret_vfa_state__ || {});
+	    state[key] = value;
+	}
+	function get(vm, key) {
+	    return (vm.__secret_vfa_state__ || {})[key];
+	}
+	var vmStateManager = {
+	    set: set$1,
+	    get: get,
+	};
+
+	function asVmProperty(vm, propName, propValue) {
+	    var props = vm.$options.props;
+	    if (!(propName in vm) && !(props && hasOwn(props, propName))) {
+	        proxy(vm, propName, {
+	            get: function () { return propValue.value; },
+	            set: function (val) {
+	                propValue.value = val;
+	            },
+	        });
+	        {
+	            // expose binding to Vue Devtool as a data property
+	            // delay this until state has been resolved to prevent repeated works
+	            vm.$nextTick(function () {
+	                proxy(vm._data, propName, {
+	                    get: function () { return propValue.value; },
+	                    set: function (val) {
+	                        propValue.value = val;
+	                    },
+	                });
+	            });
+	        }
+	    }
+	    else {
+	        if (props && hasOwn(props, propName)) {
+	            warn("The setup binding property \"" + propName + "\" is already declared as a prop.", vm);
+	        }
+	        else {
+	            warn("The setup binding property \"" + propName + "\" is already declared.", vm);
+	        }
+	    }
+	}
+	function updateTemplateRef(vm) {
+	    var rawBindings = vmStateManager.get(vm, 'rawBindings') || {};
+	    if (!rawBindings || !Object.keys(rawBindings).length)
+	        return;
+	    var refs = vm.$refs;
+	    var oldRefKeys = vmStateManager.get(vm, 'refs') || [];
+	    for (var index = 0; index < oldRefKeys.length; index++) {
+	        var key = oldRefKeys[index];
+	        if (!refs[key]) {
+	            rawBindings[key].value = null;
+	        }
+	    }
+	    var newKeys = Object.keys(refs);
+	    var validNewKeys = [];
+	    for (var index = 0; index < newKeys.length; index++) {
+	        var key = newKeys[index];
+	        var setupValue = rawBindings[key];
+	        if (refs[key] && setupValue && isRef(setupValue)) {
+	            setupValue.value = refs[key];
+	            validNewKeys.push(key);
+	        }
+	    }
+	    vmStateManager.set(vm, 'refs', validNewKeys);
+	}
+	function activateCurrentInstance(vm, fn, onError) {
+	    var preVm = getCurrentVM();
+	    setCurrentVM(vm);
+	    try {
+	        return fn(vm);
+	    }
+	    catch (err) {
+	        if (onError) {
+	            onError(err);
+	        }
+	        else {
+	            throw err;
+	        }
+	    }
+	    finally {
+	        setCurrentVM(preVm);
+	    }
+	}
+	function mixin(Vue) {
+	    Vue.mixin({
+	        beforeCreate: functionApiInit,
+	        mounted: function () {
+	            updateTemplateRef(this);
+	        },
+	        updated: function () {
+	            updateTemplateRef(this);
+	        },
+	    });
+	    /**
+	     * Vuex init hook, injected into each instances init hooks list.
+	     */
+	    function functionApiInit() {
+	        var vm = this;
+	        var $options = vm.$options;
+	        var setup = $options.setup, render = $options.render;
+	        if (render) {
+	            // keep currentInstance accessible for createElement
+	            $options.render = function () {
+	                var _this = this;
+	                var args = [];
+	                for (var _i = 0; _i < arguments.length; _i++) {
+	                    args[_i] = arguments[_i];
+	                }
+	                return activateCurrentInstance(vm, function () { return render.apply(_this, args); });
+	            };
+	        }
+	        if (!setup) {
+	            return;
+	        }
+	        if (typeof setup !== 'function') {
+	            {
+	                warn('The "setup" option should be a function that returns a object in component definitions.', vm);
+	            }
+	            return;
+	        }
+	        var data = $options.data;
+	        // wrapper the data option, so we can invoke setup before data get resolved
+	        $options.data = function wrappedData() {
+	            initSetup(vm, vm.$props);
+	            return typeof data === 'function' ? data.call(vm, vm) : data || {};
+	        };
+	    }
+	    function initSetup(vm, props) {
+	        if (props === void 0) { props = {}; }
+	        var setup = vm.$options.setup;
+	        var ctx = createSetupContext(vm);
+	        var binding;
+	        activateCurrentInstance(vm, function () {
+	            binding = setup(props, ctx);
+	        });
+	        if (!binding)
+	            return;
+	        if (isFunction(binding)) {
+	            // keep typescript happy with the binding type.
+	            var bindingFunc_1 = binding;
+	            // keep currentInstance accessible for createElement
+	            vm.$options.render = function () { return activateCurrentInstance(vm, function (vm_) { return bindingFunc_1(vm_.$props, ctx); }); };
+	            return;
+	        }
+	        if (isPlainObject(binding)) {
+	            var bindingObj_1 = binding;
+	            vmStateManager.set(vm, 'rawBindings', binding);
+	            Object.keys(binding).forEach(function (name) {
+	                var bindingValue = bindingObj_1[name];
+	                // only make primitive value reactive
+	                if (!isRef(bindingValue)) {
+	                    if (isReactive(bindingValue)) {
+	                        bindingValue = ref(bindingValue);
+	                    }
+	                    else {
+	                        // a non-reactive should not don't get reactivity
+	                        bindingValue = ref(nonReactive(bindingValue));
+	                    }
+	                }
+	                asVmProperty(vm, name, bindingValue);
+	            });
+	            return;
+	        }
+	        {
+	            assert(false, "\"setup\" must return a \"Object\" or a \"Function\", got \"" + Object.prototype.toString
+	                .call(binding)
+	                .slice(8, -1) + "\"");
+	        }
+	    }
+	    function createSetupContext(vm) {
+	        var ctx = {};
+	        var props = [
+	            'root',
+	            'parent',
+	            'refs',
+	            ['slots', 'scopedSlots'],
+	            'attrs',
+	        ];
+	        var methodReturnVoid = ['emit'];
+	        props.forEach(function (key) {
+	            var _a;
+	            var targetKey;
+	            var srcKey;
+	            if (Array.isArray(key)) {
+	                _a = __read(key, 2), targetKey = _a[0], srcKey = _a[1];
+	            }
+	            else {
+	                targetKey = srcKey = key;
+	            }
+	            srcKey = "$" + srcKey;
+	            proxy(ctx, targetKey, {
+	                get: function () { return vm[srcKey]; },
+	                set: function () {
+	                    warn("Cannot assign to '" + targetKey + "' because it is a read-only property", vm);
+	                },
+	            });
+	        });
+	        methodReturnVoid.forEach(function (key) {
+	            var srcKey = "$" + key;
+	            proxy(ctx, key, {
+	                get: function () {
+	                    return function () {
+	                        var args = [];
+	                        for (var _i = 0; _i < arguments.length; _i++) {
+	                            args[_i] = arguments[_i];
+	                        }
+	                        var fn = vm[srcKey];
+	                        fn.apply(vm, args);
+	                    };
+	                },
+	            });
+	        });
+	        return ctx;
+	    }
+	}
+
+	var fallbackCreateElement;
+	var createElement = function createElement() {
+	    var args = [];
+	    for (var _i = 0; _i < arguments.length; _i++) {
+	        args[_i] = arguments[_i];
+	    }
+	    if (!currentVM) {
+	        warn('`createElement()` has been called outside of render function.');
+	        if (!fallbackCreateElement) {
+	            fallbackCreateElement = createComponentInstance(getCurrentVue()).$createElement;
+	        }
+	        return fallbackCreateElement.apply(fallbackCreateElement, args);
+	    }
+	    return currentVM.$createElement.apply(currentVM, args);
+	};
+
+	// implementation, close to no-op
+	function createComponent(options) {
+	    return options;
+	}
+
+	var genName = function (name) { return "on" + (name[0].toUpperCase() + name.slice(1)); };
+	function createLifeCycle(lifeCyclehook) {
+	    return function (callback) {
+	        var vm = ensureCurrentVMInFn(genName(lifeCyclehook));
+	        injectHookOption(getCurrentVue(), vm, lifeCyclehook, callback);
+	    };
+	}
+	function createLifeCycles(lifeCyclehooks, name) {
+	    return function (callback) {
+	        var currentVue = getCurrentVue();
+	        var vm = ensureCurrentVMInFn(name);
+	        lifeCyclehooks.forEach(function (lifeCyclehook) {
+	            return injectHookOption(currentVue, vm, lifeCyclehook, callback);
+	        });
+	    };
+	}
+	function injectHookOption(Vue, vm, hook, val) {
+	    var options = vm.$options;
+	    var mergeFn = Vue.config.optionMergeStrategies[hook];
+	    options[hook] = mergeFn(options[hook], val);
+	}
+	// export const onCreated = createLifeCycle('created');
+	var onBeforeMount = createLifeCycle('beforeMount');
+	var onMounted = createLifeCycle('mounted');
+	var onBeforeUpdate = createLifeCycle('beforeUpdate');
+	var onUpdated = createLifeCycle('updated');
+	var onBeforeUnmount = createLifeCycle('beforeDestroy');
+	// only one event will be fired between destroyed and deactivated when an unmount occurs
+	var onUnmounted = createLifeCycles(['destroyed', 'deactivated'], genName('unmounted'));
+	var onErrorCaptured = createLifeCycle('errorCaptured');
+	var onActivated = createLifeCycle('activated');
+	var onDeactivated = createLifeCycle('deactivated');
+
+	var fallbackVM;
+	function flushPreQueue() {
+	    flushQueue(this, WatcherPreFlushQueueKey);
+	}
+	function flushPostQueue() {
+	    flushQueue(this, WatcherPostFlushQueueKey);
+	}
+	function hasWatchEnv(vm) {
+	    return vm[WatcherPreFlushQueueKey] !== undefined;
+	}
+	function installWatchEnv(vm) {
+	    vm[WatcherPreFlushQueueKey] = [];
+	    vm[WatcherPostFlushQueueKey] = [];
+	    vm.$on('hook:beforeUpdate', flushPreQueue);
+	    vm.$on('hook:updated', flushPostQueue);
+	}
+	function flushQueue(vm, key) {
+	    var queue = vm[key];
+	    for (var index = 0; index < queue.length; index++) {
+	        queue[index]();
+	    }
+	    queue.length = 0;
+	}
+	function queueFlushJob(vm, fn, mode) {
+	    // flush all when beforeUpdate and updated are not fired
+	    var fallbackFlush = function () {
+	        vm.$nextTick(function () {
+	            if (vm[WatcherPreFlushQueueKey].length) {
+	                flushQueue(vm, WatcherPreFlushQueueKey);
+	            }
+	            if (vm[WatcherPostFlushQueueKey].length) {
+	                flushQueue(vm, WatcherPostFlushQueueKey);
+	            }
+	        });
+	    };
+	    switch (mode) {
+	        case 'pre':
+	            fallbackFlush();
+	            vm[WatcherPreFlushQueueKey].push(fn);
+	            break;
+	        case 'post':
+	            fallbackFlush();
+	            vm[WatcherPostFlushQueueKey].push(fn);
+	            break;
+	        default:
+	            assert(false, "flush must be one of [\"post\", \"pre\", \"sync\"], but got " + mode);
+	            break;
+	    }
+	}
+	function createWatcher(vm, source, cb, options) {
+	    var flushMode = options.flush;
+	    var cleanup;
+	    var registerCleanup = function (fn) {
+	        cleanup = function () {
+	            try {
+	                fn();
+	            }
+	            catch (error) {
+	                logError(error, vm, 'onCleanup()');
+	            }
+	        };
+	    };
+	    // effect watch
+	    if (cb === null) {
+	        var getter_1 = function () { return source(registerCleanup); };
+	        // cleanup before running getter again
+	        var runBefore_1 = function () {
+	            if (cleanup) {
+	                cleanup();
+	            }
+	        };
+	        if (flushMode === 'sync') {
+	            return vm.$watch(getter_1, noopFn, {
+	                immediate: true,
+	                deep: options.deep,
+	                // @ts-ignore
+	                sync: true,
+	                before: runBefore_1,
+	            });
+	        }
+	        var stopRef_1;
+	        var hasEnded_1 = false;
+	        var doWatch = function () {
+	            if (hasEnded_1)
+	                return;
+	            stopRef_1 = vm.$watch(getter_1, noopFn, {
+	                immediate: false,
+	                deep: options.deep,
+	                // @ts-ignore
+	                before: runBefore_1,
+	            });
+	        };
+	        /* without a current active instance, ignore pre|post mode */
+	        if (vm === fallbackVM) {
+	            vm.$nextTick(doWatch);
+	        }
+	        else {
+	            queueFlushJob(vm, doWatch, flushMode);
+	        }
+	        return function () {
+	            hasEnded_1 = true;
+	            stopRef_1 && stopRef_1();
+	        };
+	    }
+	    var getter;
+	    if (Array.isArray(source)) {
+	        getter = function () { return source.map(function (s) { return (isRef(s) ? s.value : s()); }); };
+	    }
+	    else if (isRef(source)) {
+	        getter = function () { return source.value; };
+	    }
+	    else {
+	        getter = source;
+	    }
+	    var applyCb = function (n, o) {
+	        // cleanup before running cb again
+	        if (cleanup) {
+	            cleanup();
+	        }
+	        cb(n, o, registerCleanup);
+	    };
+	    var callback = flushMode === 'sync' ||
+	        /* without a current active instance, ignore pre|post mode */
+	        vm === fallbackVM
+	        ? applyCb
+	        : function (n, o) {
+	            return queueFlushJob(vm, function () {
+	                applyCb(n, o);
+	            }, flushMode);
+	        };
+	    // `shiftCallback` is used to handle dirty sync effect.
+	    // The subsequent callbacks will redirect to `callback`.
+	    var shiftCallback = function (n, o) {
+	        shiftCallback = callback;
+	        applyCb(n, o);
+	    };
+	    return vm.$watch(getter, options.lazy ? callback : shiftCallback, {
+	        immediate: !options.lazy,
+	        deep: options.deep,
+	        // @ts-ignore
+	        sync: flushMode === 'sync',
+	    });
+	}
+	function watch(source, cb, options) {
+	    var callback = null;
+	    if (typeof cb === 'function') {
+	        // source watch
+	        callback = cb;
+	    }
+	    else {
+	        // effect watch
+	        options = cb;
+	        callback = null;
+	    }
+	    var opts = __assign({
+	        lazy: false,
+	        deep: false,
+	        flush: 'post',
+	    }, options);
+	    var vm = getCurrentVM();
+	    if (!vm) {
+	        if (!fallbackVM) {
+	            fallbackVM = createComponentInstance(getCurrentVue());
+	        }
+	        vm = fallbackVM;
+	    }
+	    else if (!hasWatchEnv(vm)) {
+	        installWatchEnv(vm);
+	    }
+	    return createWatcher(vm, source, callback, opts);
+	}
+
+	// implement
+	function computed(options) {
+	    var vm = getCurrentVM();
+	    var get, set;
+	    if (typeof options === 'function') {
+	        get = options;
+	    }
+	    else {
+	        get = options.get;
+	        set = options.set;
+	    }
+	    var computedHost = createComponentInstance(getCurrentVue(), {
+	        computed: {
+	            $$state: {
+	                get: get,
+	                set: set,
+	            },
+	        },
+	    });
+	    return createRef({
+	        get: function () { return computedHost.$$state; },
+	        set: function (v) {
+	            if (!set) {
+	                warn('Computed property was assigned to but it has no setter.', vm);
+	                return;
+	            }
+	            computedHost.$$state = v;
+	        },
+	    });
+	}
+
+	var NOT_FOUND = {};
+	function resolveInject(provideKey, vm) {
+	    var source = vm;
+	    while (source) {
+	        // @ts-ignore
+	        if (source._provided && hasOwn(source._provided, provideKey)) {
+	            //@ts-ignore
+	            return source._provided[provideKey];
+	        }
+	        source = source.$parent;
+	    }
+	    return NOT_FOUND;
+	}
+	function provide(key, value) {
+	    var vm = ensureCurrentVMInFn('provide');
+	    if (!vm._provided) {
+	        var provideCache_1 = {};
+	        Object.defineProperty(vm, '_provided', {
+	            get: function () { return provideCache_1; },
+	            set: function (v) { return Object.assign(provideCache_1, v); },
+	        });
+	    }
+	    vm._provided[key] = value;
+	}
+	function inject(key, defaultValue) {
+	    if (!key) {
+	        return defaultValue;
+	    }
+	    var vm = ensureCurrentVMInFn('inject');
+	    var val = resolveInject(key, vm);
+	    if (val !== NOT_FOUND) {
+	        return val;
+	    }
+	    else if (defaultValue !== undefined) {
+	        return defaultValue;
+	    }
+	    else {
+	        warn("Injection \"" + String(key) + "\" not found", vm);
+	    }
+	}
+
+	var _install = function (Vue) { return install(Vue, mixin); };
+	var plugin = {
+	    install: _install,
+	};
+	// Auto install if it is not done yet and `window` has `Vue`.
+	// To allow users to avoid auto-installation in some cases,
+	if (currentVue && typeof window !== 'undefined' && window.Vue) {
+	    _install(window.Vue);
+	}
+
+	exports.computed = computed;
+	exports.createComponent = createComponent;
+	exports.createElement = createElement;
+	exports.default = plugin;
+	exports.inject = inject;
+	exports.isRef = isRef;
+	exports.onActivated = onActivated;
+	exports.onBeforeMount = onBeforeMount;
+	exports.onBeforeUnmount = onBeforeUnmount;
+	exports.onBeforeUpdate = onBeforeUpdate;
+	exports.onDeactivated = onDeactivated;
+	exports.onErrorCaptured = onErrorCaptured;
+	exports.onMounted = onMounted;
+	exports.onUnmounted = onUnmounted;
+	exports.onUpdated = onUpdated;
+	exports.provide = provide;
+	exports.reactive = reactive;
+	exports.ref = ref;
+	exports.set = set;
+	exports.toRefs = toRefs;
+	exports.watch = watch;
+	});
+
+	var VueCompositionApi = unwrapExports(vueCompositionApi);
+	var vueCompositionApi_1 = vueCompositionApi.computed;
+	var vueCompositionApi_2 = vueCompositionApi.createComponent;
+	var vueCompositionApi_3 = vueCompositionApi.createElement;
+	var vueCompositionApi_4 = vueCompositionApi.inject;
+	var vueCompositionApi_5 = vueCompositionApi.isRef;
+	var vueCompositionApi_6 = vueCompositionApi.onActivated;
+	var vueCompositionApi_7 = vueCompositionApi.onBeforeMount;
+	var vueCompositionApi_8 = vueCompositionApi.onBeforeUnmount;
+	var vueCompositionApi_9 = vueCompositionApi.onBeforeUpdate;
+	var vueCompositionApi_10 = vueCompositionApi.onDeactivated;
+	var vueCompositionApi_11 = vueCompositionApi.onErrorCaptured;
+	var vueCompositionApi_12 = vueCompositionApi.onMounted;
+	var vueCompositionApi_13 = vueCompositionApi.onUnmounted;
+	var vueCompositionApi_14 = vueCompositionApi.onUpdated;
+	var vueCompositionApi_15 = vueCompositionApi.provide;
+	var vueCompositionApi_16 = vueCompositionApi.reactive;
+	var vueCompositionApi_17 = vueCompositionApi.ref;
+	var vueCompositionApi_18 = vueCompositionApi.set;
+	var vueCompositionApi_19 = vueCompositionApi.toRefs;
+	var vueCompositionApi_20 = vueCompositionApi.watch;
+
+	/**
+	 * @qymh/q-select v0.3.7
+	 * (c) 2019 Qymh
+	 * @license MIT
+	 */
 	/*! *****************************************************************************
 	Copyright (c) Microsoft Corporation. All rights reserved.
 	Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -17993,989 +19001,16 @@
 	    return QSelect;
 	}(Layer));
 
-	var vueFunctionApi = createCommonjsModule(function (module, exports) {
-
-	Object.defineProperty(exports, '__esModule', { value: true });
-
-	function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
-
-	var Vue = _interopDefault(vue_runtime_common);
-
-	var toString = function (x) { return Object.prototype.toString.call(x); };
-	var hasSymbol = typeof Symbol === 'function' && Symbol.for;
-	var noopFn = function (_) { return _; };
-	var sharedPropertyDefinition = {
-	    enumerable: true,
-	    configurable: true,
-	    get: noopFn,
-	    set: noopFn,
-	};
-	function proxy(target, key, _a) {
-	    var get = _a.get, set = _a.set;
-	    sharedPropertyDefinition.get = get || noopFn;
-	    sharedPropertyDefinition.set = set || noopFn;
-	    Object.defineProperty(target, key, sharedPropertyDefinition);
-	}
-	function def(obj, key, val, enumerable) {
-	    Object.defineProperty(obj, key, {
-	        value: val,
-	        enumerable: !!enumerable,
-	        writable: true,
-	        configurable: true,
-	    });
-	}
-	var hasOwnProperty = Object.prototype.hasOwnProperty;
-	function hasOwn(obj, key) {
-	    return hasOwnProperty.call(obj, key);
-	}
-	function assert(condition, msg) {
-	    if (!condition)
-	        throw new Error("[vue-function-api] " + msg);
-	}
-	function isArray(x) {
-	    return Array.isArray(x);
-	}
-	function isObject(val) {
-	    return val !== null && typeof val === 'object';
-	}
-	function isPlainObject(x) {
-	    return toString(x) === '[object Object]';
-	}
-	function isFunction(x) {
-	    return typeof x === 'function';
-	}
-	function warn(msg, vm) {
-	    Vue.util.warn(msg, vm);
-	}
-	function logError(err, vm, info) {
-	    {
-	        warn("Error in " + info + ": \"" + err.toString() + "\"", vm);
-	    }
-	    if (typeof window !== 'undefined' && typeof console !== 'undefined') {
-	        console.error(err);
-	    }
-	    else {
-	        throw err;
-	    }
+	function assert$1(condition, msg) {
+	    return true;
 	}
 
-	var currentVue = null;
-	var currentVM = null;
-	function getCurrentVue() {
-	    {
-	        assert(currentVue, "must call Vue.use(plugin) before using any function.");
-	    }
-	    return currentVue;
-	}
-	function setCurrentVue(vue) {
-	    currentVue = vue;
-	}
-	function getCurrentVM() {
-	    return currentVM;
-	}
-	function setCurrentVM(vm) {
-	    currentVM = vm;
-	}
-
-	var AbstractWrapper = /** @class */ (function () {
-	    function AbstractWrapper() {
-	    }
-	    AbstractWrapper.prototype.setVmProperty = function (vm, propName) {
-	        var _this = this;
-	        def(this, '_vm', vm);
-	        def(this, '_propName', propName);
-	        var props = vm.$options.props;
-	        if (!(propName in vm) && !(props && hasOwn(props, propName))) {
-	            proxy(vm, propName, {
-	                get: function () { return _this.value; },
-	                set: function (val) {
-	                    _this.value = val;
-	                },
-	            });
-	            {
-	                // expose bindings after state has been resolved to prevent repeated works
-	                vm.$nextTick(function () {
-	                    _this.exposeToDevtool();
-	                });
-	            }
-	        }
-	        else {
-	            if (props && hasOwn(props, propName)) {
-	                warn("The setup binding property \"" + propName + "\" is already declared as a prop.", vm);
-	            }
-	            else {
-	                warn("The setup binding property \"" + propName + "\" is already declared.", vm);
-	            }
-	        }
-	    };
-	    return AbstractWrapper;
-	}());
-
-	/*! *****************************************************************************
-	Copyright (c) Microsoft Corporation. All rights reserved.
-	Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-	this file except in compliance with the License. You may obtain a copy of the
-	License at http://www.apache.org/licenses/LICENSE-2.0
-
-	THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-	KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
-	WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
-	MERCHANTABLITY OR NON-INFRINGEMENT.
-
-	See the Apache Version 2.0 License for specific language governing permissions
-	and limitations under the License.
-	***************************************************************************** */
-	/* global Reflect, Promise */
-
-	var extendStatics = function(d, b) {
-	    extendStatics = Object.setPrototypeOf ||
-	        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-	        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-	    return extendStatics(d, b);
-	};
-
-	function __extends(d, b) {
-	    extendStatics(d, b);
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	}
-
-	var __assign = function() {
-	    __assign = Object.assign || function __assign(t) {
-	        for (var s, i = 1, n = arguments.length; i < n; i++) {
-	            s = arguments[i];
-	            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
-	        }
-	        return t;
-	    };
-	    return __assign.apply(this, arguments);
-	};
-
-	function __read(o, n) {
-	    var m = typeof Symbol === "function" && o[Symbol.iterator];
-	    if (!m) return o;
-	    var i = m.call(o), r, ar = [], e;
-	    try {
-	        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-	    }
-	    catch (error) { e = { error: error }; }
-	    finally {
-	        try {
-	            if (r && !r.done && (m = i["return"])) m.call(i);
-	        }
-	        finally { if (e) throw e.error; }
-	    }
-	    return ar;
-	}
-
-	var ValueWrapper = /** @class */ (function (_super) {
-	    __extends(ValueWrapper, _super);
-	    function ValueWrapper(internal) {
-	        var _this = _super.call(this) || this;
-	        def(_this, '_internal', internal);
-	        return _this;
-	    }
-	    Object.defineProperty(ValueWrapper.prototype, "value", {
-	        get: function () {
-	            return this._internal.$$state;
-	        },
-	        set: function (v) {
-	            this._internal.$$state = v;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    ValueWrapper.prototype.exposeToDevtool = function () {
-	        var _this = this;
-	        {
-	            var vm = this._vm;
-	            var name_1 = this._propName;
-	            proxy(vm._data, name_1, {
-	                get: function () { return _this.value; },
-	                set: function (val) {
-	                    _this.value = val;
-	                },
-	            });
-	        }
-	    };
-	    return ValueWrapper;
-	}(AbstractWrapper));
-
-	var ComputedWrapper = /** @class */ (function (_super) {
-	    __extends(ComputedWrapper, _super);
-	    function ComputedWrapper(internal) {
-	        var _this = _super.call(this) || this;
-	        def(_this, '_internal', internal);
-	        return _this;
-	    }
-	    Object.defineProperty(ComputedWrapper.prototype, "value", {
-	        get: function () {
-	            return this._internal.read();
-	        },
-	        set: function (val) {
-	            if (!this._internal.write) {
-	                {
-	                    warn('Computed property' +
-	                        (this._propName ? " \"" + this._propName + "\"" : '') +
-	                        ' was assigned to but it has no setter.', this._vm);
-	                }
-	            }
-	            else {
-	                this._internal.write(val);
-	            }
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    ComputedWrapper.prototype.exposeToDevtool = function () {
-	        var _this = this;
-	        {
-	            var vm = this._vm;
-	            var name_1 = this._propName;
-	            if (!vm.$options.computed) {
-	                vm.$options.computed = {};
-	            }
-	            proxy(vm.$options.computed, name_1, {
-	                get: function () { return ({
-	                    get: function () { return _this.value; },
-	                    set: function (val) {
-	                        _this.value = val;
-	                    },
-	                }); },
-	            });
-	        }
-	    };
-	    return ComputedWrapper;
-	}(AbstractWrapper));
-
-	function isWrapper(obj) {
-	    return obj instanceof AbstractWrapper;
-	}
-
-	/**
-	 * Helper that recursively merges two data objects together.
-	 */
-	function mergeData(to, from) {
-	    if (!from)
-	        return to;
-	    var key;
-	    var toVal;
-	    var fromVal;
-	    var keys = hasSymbol ? Reflect.ownKeys(from) : Object.keys(from);
-	    for (var i = 0; i < keys.length; i++) {
-	        key = keys[i];
-	        // in case the object is already observed...
-	        if (key === '__ob__')
-	            continue;
-	        toVal = to[key];
-	        fromVal = from[key];
-	        if (!hasOwn(to, key)) {
-	            to[key] = fromVal;
-	        }
-	        else if (toVal !== fromVal &&
-	            (isPlainObject(toVal) && !isWrapper(toVal)) &&
-	            (isPlainObject(fromVal) && !isWrapper(toVal))) {
-	            mergeData(toVal, fromVal);
-	        }
-	    }
-	    return to;
-	}
-	function install(Vue, _install) {
-	    if (currentVue && currentVue === Vue) {
-	        {
-	            assert(false, 'already installed. Vue.use(plugin) should be called only once');
-	        }
-	        return;
-	    }
-	    Vue.config.optionMergeStrategies.setup = function (parent, child) {
-	        return function mergedSetupFn(props, context) {
-	            return mergeData(typeof child === 'function' ? child(props, context) || {} : {}, typeof parent === 'function' ? parent(props, context) || {} : {});
-	        };
-	    };
-	    setCurrentVue(Vue);
-	    _install(Vue);
-	}
-
-	function ensureCurrentVMInFn(hook) {
-	    var vm = getCurrentVM();
-	    {
-	        assert(vm, "\"" + hook + "\" get called outside of \"setup()\"");
-	    }
-	    return vm;
-	}
-	function createComponentInstance(Ctor, options) {
-	    if (options === void 0) { options = {}; }
-	    var silent = Ctor.config.silent;
-	    Ctor.config.silent = true;
-	    var vm = new Ctor(options);
-	    Ctor.config.silent = silent;
-	    return vm;
-	}
-	function isComponentInstance(obj) {
-	    return currentVue && obj instanceof currentVue;
-	}
-
-	function createSymbol(name) {
-	    return hasSymbol ? Symbol.for(name) : name;
-	}
-	var WatcherPreFlushQueueKey = createSymbol('vfa.key.preFlushQueue');
-	var WatcherPostFlushQueueKey = createSymbol('vfa.key.postFlushQueue');
-	var AccessControIdentifierlKey = createSymbol('vfa.key.accessControIdentifier');
-	var ObservableIdentifierKey = createSymbol('vfa.key.observableIdentifier');
-
-	var AccessControlIdentifier = {};
-	var ObservableIdentifier = {};
-	/**
-	 * Proxing property access of target.
-	 * We can do unwrapping and other things here.
-	 */
-	function setupAccessControl(target) {
-	    if (!isObject(target) ||
-	        Array.isArray(target) ||
-	        isWrapper(target) ||
-	        isComponentInstance(target)) {
-	        return;
-	    }
-	    if (hasOwn(target, AccessControIdentifierlKey) &&
-	        target[AccessControIdentifierlKey] === AccessControlIdentifier) {
-	        return;
-	    }
-	    if (Object.isExtensible(target)) {
-	        def(target, AccessControIdentifierlKey, AccessControlIdentifier);
-	    }
-	    var keys = Object.keys(target);
-	    for (var i = 0; i < keys.length; i++) {
-	        defineAccessControl(target, keys[i]);
-	    }
-	}
-	function isObservable(obj) {
-	    return (hasOwn(obj, ObservableIdentifierKey) && obj[ObservableIdentifierKey] === ObservableIdentifier);
-	}
-	/**
-	 * Auto unwrapping when acccess property
-	 */
-	function defineAccessControl(target, key, val) {
-	    if (key === '__ob__')
-	        return;
-	    var getter;
-	    var setter;
-	    var property = Object.getOwnPropertyDescriptor(target, key);
-	    if (property) {
-	        if (property.configurable === false) {
-	            return;
-	        }
-	        getter = property.get;
-	        setter = property.set;
-	        if ((!getter || setter) /* not only have getter */ && arguments.length === 2) {
-	            val = target[key];
-	        }
-	    }
-	    setupAccessControl(val);
-	    Object.defineProperty(target, key, {
-	        enumerable: true,
-	        configurable: true,
-	        get: function getterHandler() {
-	            var value = getter ? getter.call(target) : val;
-	            if (isWrapper(value)) {
-	                return value.value;
-	            }
-	            else {
-	                return value;
-	            }
-	        },
-	        set: function setterHandler(newVal) {
-	            if (getter && !setter)
-	                return;
-	            var value = getter ? getter.call(target) : val;
-	            if (isWrapper(value)) {
-	                if (isWrapper(newVal)) {
-	                    val = newVal;
-	                }
-	                else {
-	                    value.value = newVal;
-	                }
-	            }
-	            else if (setter) {
-	                setter.call(target, newVal);
-	            }
-	            else if (isWrapper(newVal)) {
-	                val = newVal;
-	            }
-	            setupAccessControl(newVal);
-	        },
-	    });
-	}
-	/**
-	 * Make obj reactivity
-	 */
-	function observable(obj) {
-	    if (!isObject(obj) || isObservable(obj)) {
-	        return obj;
-	    }
-	    var Vue = getCurrentVue();
-	    var observed;
-	    if (Vue.observable) {
-	        observed = Vue.observable(obj);
-	    }
-	    else {
-	        var vm = createComponentInstance(Vue, {
-	            data: {
-	                $$state: obj,
-	            },
-	        });
-	        observed = vm._data.$$state;
-	    }
-	    if (Object.isExtensible(observed)) {
-	        def(observed, ObservableIdentifierKey, ObservableIdentifier);
-	    }
-	    setupAccessControl(observed);
-	    return observed;
-	}
-
-	function isUndef(v) {
-	    return v === undefined || v === null;
-	}
-	function isPrimitive(value) {
-	    return (typeof value === 'string' ||
-	        typeof value === 'number' ||
-	        // $flow-disable-line
-	        typeof value === 'symbol' ||
-	        typeof value === 'boolean');
-	}
-	function isValidArrayIndex(val) {
-	    var n = parseFloat(String(val));
-	    return n >= 0 && Math.floor(n) === n && isFinite(val);
-	}
-	/**
-	 * Set a property on an object. Adds the new property, triggers change
-	 * notification and intercept it's subsequent access if the property doesn't
-	 * already exist.
-	 */
-	function set(target, key, val) {
-	    var Vue = getCurrentVue();
-	    var _a = Vue.util, warn = _a.warn, defineReactive = _a.defineReactive;
-	    if (isUndef(target) || isPrimitive(target)) {
-	        warn("Cannot set reactive property on undefined, null, or primitive value: " + target);
-	    }
-	    if (isArray(target) && isValidArrayIndex(key)) {
-	        target.length = Math.max(target.length, key);
-	        target.splice(key, 1, val);
-	        return val;
-	    }
-	    if (key in target && !(key in Object.prototype)) {
-	        target[key] = val;
-	        return val;
-	    }
-	    var ob = target.__ob__;
-	    if (target._isVue || (ob && ob.vmCount)) {
-	        warn('Avoid adding reactive properties to a Vue instance or its root $data ' +
-	                'at runtime - declare it upfront in the data option.');
-	        return val;
-	    }
-	    if (!ob) {
-	        target[key] = val;
-	        return val;
-	    }
-	    defineReactive(ob.value, key, val);
-	    // IMPORTANT: define access control before trigger watcher
-	    defineAccessControl(target, key, val);
-	    ob.dep.notify();
-	    return val;
-	}
-
-	function state(value) {
-	    return observable(value);
-	}
-	function value(value) {
-	    return new ValueWrapper(state({ $$state: value }));
-	}
-
-	function mixin(Vue) {
-	    Vue.mixin({
-	        beforeCreate: functionApiInit,
-	    });
-	    /**
-	     * Vuex init hook, injected into each instances init hooks list.
-	     */
-	    function functionApiInit() {
-	        var vm = this;
-	        var $options = vm.$options;
-	        var setup = $options.setup;
-	        if (!setup) {
-	            return;
-	        }
-	        if (typeof setup !== 'function') {
-	            {
-	                warn('The "setup" option should be a function that returns a object in component definitions.', vm);
-	            }
-	            return;
-	        }
-	        var data = $options.data;
-	        // wapper the data option, so we can invoke setup before data get resolved
-	        $options.data = function wrappedData() {
-	            initSetup(vm, vm.$props);
-	            return typeof data === 'function' ? data.call(vm, vm) : data || {};
-	        };
-	    }
-	    function initSetup(vm, props) {
-	        if (props === void 0) { props = {}; }
-	        var setup = vm.$options.setup;
-	        var ctx = createSetupContext(vm);
-	        var binding;
-	        var preVm = getCurrentVM();
-	        setCurrentVM(vm);
-	        try {
-	            binding = setup(props, ctx);
-	        }
-	        catch (err) {
-	            logError(err, vm, 'setup()');
-	        }
-	        finally {
-	            setCurrentVM(preVm);
-	        }
-	        if (!binding)
-	            return;
-	        if (isFunction(binding)) {
-	            vm.$options.render = function () { return binding(vm.$props, ctx); };
-	            return;
-	        }
-	        if (isPlainObject(binding)) {
-	            Object.keys(binding).forEach(function (name) {
-	                var bindingValue = binding[name];
-	                // make plain value reactive
-	                if (!isWrapper(bindingValue)) {
-	                    bindingValue = value(bindingValue);
-	                }
-	                // bind to vm
-	                bindingValue.setVmProperty(vm, name);
-	            });
-	            return;
-	        }
-	        {
-	            assert(false, "\"setup\" must return a \"Object\" or a \"Function\", get \"" + Object.prototype.toString
-	                .call(binding)
-	                .slice(8, -1) + "\"");
-	        }
-	    }
-	    function createSetupContext(vm) {
-	        var ctx = {};
-	        var props = [
-	            'root',
-	            'parent',
-	            'refs',
-	            ['slots', 'scopedSlots'],
-	            'attrs',
-	        ];
-	        var methodReturnVoid = ['emit'];
-	        props.forEach(function (key) {
-	            var _a;
-	            var targetKey;
-	            var srcKey;
-	            if (Array.isArray(key)) {
-	                _a = __read(key, 2), targetKey = _a[0], srcKey = _a[1];
-	            }
-	            else {
-	                targetKey = srcKey = key;
-	            }
-	            srcKey = "$" + srcKey;
-	            proxy(ctx, targetKey, {
-	                get: function () { return vm[srcKey]; },
-	                set: function () {
-	                    warn("Cannot assign to '" + targetKey + "' because it is a read-only property", vm);
-	                },
-	            });
-	        });
-	        methodReturnVoid.forEach(function (key) {
-	            var srcKey = "$" + key;
-	            proxy(ctx, key, {
-	                get: function () {
-	                    return function () {
-	                        var args = [];
-	                        for (var _i = 0; _i < arguments.length; _i++) {
-	                            args[_i] = arguments[_i];
-	                        }
-	                        var fn = vm[srcKey];
-	                        fn.apply(vm, args);
-	                    };
-	                },
-	            });
-	        });
-	        return ctx;
-	    }
-	}
-
-	var fallbackCreateElement;
-	var createElement = function createElement() {
-	    var args = [];
-	    for (var _i = 0; _i < arguments.length; _i++) {
-	        args[_i] = arguments[_i];
-	    }
-	    if (!currentVM) {
-	        if (!fallbackCreateElement) {
-	            fallbackCreateElement = createComponentInstance(getCurrentVue()).$createElement;
-	        }
-	        return fallbackCreateElement.apply(null, args);
-	    }
-	    return currentVM.$createElement.apply(null, args);
-	};
-
-	// implementation, close to no-op
-	function createComponent(options) {
-	    return options;
-	}
-
-	var genName = function (name) { return "on" + (name[0].toUpperCase() + name.slice(1)); };
-	function createLifeCycle(lifeCyclehook) {
-	    return function (callback) {
-	        var vm = ensureCurrentVMInFn(genName(lifeCyclehook));
-	        injectHookOption(getCurrentVue(), vm, lifeCyclehook, callback);
-	    };
-	}
-	function createLifeCycles(lifeCyclehooks, name) {
-	    return function (callback) {
-	        var currentVue = getCurrentVue();
-	        var vm = ensureCurrentVMInFn(name);
-	        lifeCyclehooks.forEach(function (lifeCyclehook) {
-	            return injectHookOption(currentVue, vm, lifeCyclehook, callback);
-	        });
-	    };
-	}
-	function injectHookOption(Vue, vm, hook, val) {
-	    var options = vm.$options;
-	    var mergeFn = Vue.config.optionMergeStrategies[hook];
-	    options[hook] = mergeFn(options[hook], val);
-	}
-	var onCreated = createLifeCycle('created');
-	var onBeforeMount = createLifeCycle('beforeMount');
-	var onMounted = createLifeCycle('mounted');
-	var onBeforeUpdate = createLifeCycle('beforeUpdate');
-	var onUpdated = createLifeCycle('updated');
-	var onActivated = createLifeCycle('activated');
-	var onDeactivated = createLifeCycle('deactivated');
-	var onBeforeDestroy = createLifeCycle('beforeDestroy');
-	var onDestroyed = createLifeCycle('destroyed');
-	var onErrorCaptured = createLifeCycle('errorCaptured');
-	// only one event will be fired between destroyed and deactivated when an unmount occurs
-	var onUnmounted = createLifeCycles(['destroyed', 'deactivated'], genName('unmounted'));
-
-	var INIT_VALUE = {};
-	var fallbackVM;
-	function flushPreQueue() {
-	    flushQueue(this, WatcherPreFlushQueueKey);
-	}
-	function flushPostQueue() {
-	    flushQueue(this, WatcherPostFlushQueueKey);
-	}
-	function hasWatchEnv(vm) {
-	    return vm[WatcherPreFlushQueueKey] !== undefined;
-	}
-	function installWatchEnv(vm) {
-	    vm[WatcherPreFlushQueueKey] = [];
-	    vm[WatcherPostFlushQueueKey] = [];
-	    vm.$on('hook:beforeUpdate', flushPreQueue);
-	    vm.$on('hook:updated', flushPostQueue);
-	}
-	function flushQueue(vm, key) {
-	    var queue = vm[key];
-	    for (var index = 0; index < queue.length; index++) {
-	        queue[index]();
-	    }
-	    queue.length = 0;
-	}
-	function scheduleFlush(vm, fn, mode) {
-	    if (vm === fallbackVM) {
-	        // no render pipeline, ignore flush mode
-	        fn();
-	    }
-	    else {
-	        // flush all when beforeUpdate and updated are not fired
-	        var fallbackFlush = function () {
-	            vm.$nextTick(function () {
-	                if (vm[WatcherPreFlushQueueKey].length) {
-	                    flushQueue(vm, WatcherPreFlushQueueKey);
-	                }
-	                if (vm[WatcherPostFlushQueueKey].length) {
-	                    flushQueue(vm, WatcherPostFlushQueueKey);
-	                }
-	            });
-	        };
-	        switch (mode) {
-	            case 'pre':
-	                fallbackFlush();
-	                vm[WatcherPreFlushQueueKey].push(fn);
-	                break;
-	            case 'post':
-	                fallbackFlush();
-	                vm[WatcherPostFlushQueueKey].push(fn);
-	                break;
-	            default:
-	                assert(false, "flush must be one of [\"post\", \"pre\", \"sync\"], but got " + mode);
-	                break;
-	        }
-	    }
-	}
-	function createSingleSourceWatcher(vm, source, cb, options) {
-	    var getter;
-	    if (isWrapper(source)) {
-	        getter = function () { return source.value; };
-	    }
-	    else {
-	        getter = source;
-	    }
-	    // `callbackRef` is used to handle firty sync callbck.
-	    // The subsequent callbcks will redirect to `flush`.
-	    var callbackRef = function (n, o) {
-	        callbackRef = flush;
-	        if (!options.lazy) {
-	            cb(n, o);
-	        }
-	        else {
-	            flush(n, o);
-	        }
-	    };
-	    var flushMode = options.flush;
-	    var flush = flushMode === 'sync'
-	        ? function (n, o) { return cb(n, o); }
-	        : function (n, o) {
-	            scheduleFlush(vm, function () {
-	                cb(n, o);
-	            }, flushMode);
-	        };
-	    return vm.$watch(getter, function (n, o) {
-	        callbackRef(n, o);
-	    }, {
-	        immediate: !options.lazy,
-	        deep: options.deep,
-	        // @ts-ignore
-	        sync: flushMode === 'sync',
-	    });
-	}
-	function createMuiltSourceWatcher(vm, sources, cb, options) {
-	    var watcherContext = [];
-	    var execCallback = function () {
-	        cb.apply(vm, watcherContext.reduce(function (acc, ctx) {
-	            var newVal = (ctx.value = (ctx.value === INIT_VALUE
-	                ? ctx.getter()
-	                : ctx.value));
-	            var oldVal = (ctx.oldValue === INIT_VALUE ? newVal : ctx.oldValue);
-	            ctx.oldValue = newVal;
-	            acc[0].push(newVal);
-	            acc[1].push(oldVal);
-	            return acc;
-	        }, [[], []]));
-	    };
-	    var stop = function () { return watcherContext.forEach(function (ctx) { return ctx.watcherStopHandle(); }); };
-	    var execCallbackAfterNumRun = options.lazy ? false : sources.length;
-	    // `callbackRef` is used to handle firty sync callbck.
-	    // The subsequent callbcks will redirect to `flush`.
-	    var callbackRef = function () {
-	        if (execCallbackAfterNumRun !== false) {
-	            if (--execCallbackAfterNumRun === 0) {
-	                execCallbackAfterNumRun = false;
-	                callbackRef = flush;
-	                execCallback();
-	            }
-	        }
-	        else {
-	            callbackRef = flush;
-	            flush();
-	        }
-	    };
-	    var pendingCallback = false;
-	    var flushMode = options.flush;
-	    var flush = flushMode === 'sync'
-	        ? execCallback
-	        : function () {
-	            if (!pendingCallback) {
-	                pendingCallback = true;
-	                vm.$nextTick(function () {
-	                    scheduleFlush(vm, function () {
-	                        pendingCallback = false;
-	                        execCallback();
-	                    }, flushMode);
-	                });
-	            }
-	        };
-	    sources.forEach(function (source) {
-	        var getter;
-	        if (isWrapper(source)) {
-	            getter = function () { return source.value; };
-	        }
-	        else {
-	            getter = source;
-	        }
-	        var watcherCtx = {
-	            getter: getter,
-	            value: INIT_VALUE,
-	            oldValue: INIT_VALUE,
-	        };
-	        // must push watcherCtx before create watcherStopHandle
-	        watcherContext.push(watcherCtx);
-	        watcherCtx.watcherStopHandle = vm.$watch(getter, function (n, o) {
-	            watcherCtx.value = n;
-	            // only update oldValue at frist, susquent updates at execCallback
-	            if (watcherCtx.oldValue === INIT_VALUE) {
-	                watcherCtx.oldValue = o;
-	            }
-	            callbackRef();
-	        }, {
-	            immediate: !options.lazy,
-	            deep: options.deep,
-	            // @ts-ignore
-	            // always set to true, so we can fully control the schedule
-	            sync: true,
-	        });
-	    });
-	    return stop;
-	}
-	function watch(source, cb, options) {
-	    if (options === void 0) { options = {}; }
-	    var opts = __assign({
-	        lazy: false,
-	        deep: false,
-	        flush: 'post',
-	    }, options);
-	    var vm = getCurrentVM();
-	    if (!vm) {
-	        if (!fallbackVM) {
-	            fallbackVM = createComponentInstance(getCurrentVue());
-	        }
-	        vm = fallbackVM;
-	    }
-	    else if (!hasWatchEnv(vm)) {
-	        installWatchEnv(vm);
-	    }
-	    if (isArray(source)) {
-	        return createMuiltSourceWatcher(vm, source, cb, opts);
-	    }
-	    return createSingleSourceWatcher(vm, source, cb, opts);
-	}
-
-	function computed(getter, setter) {
-	    var computedHost = createComponentInstance(getCurrentVue(), {
-	        computed: {
-	            $$state: {
-	                get: getter,
-	                set: setter,
-	            },
-	        },
-	    });
-	    return new ComputedWrapper(__assign({ read: function () { return computedHost.$$state; } }, (setter && {
-	        write: function (v) {
-	            computedHost.$$state = v;
-	        },
-	    })));
-	}
-
-	var UNRESOLVED_INJECT = {};
-	function resolveInject(provideKey, vm) {
-	    var source = vm;
-	    while (source) {
-	        // @ts-ignore
-	        if (source._provided && hasOwn(source._provided, provideKey)) {
-	            //@ts-ignore
-	            return source._provided[provideKey];
-	        }
-	        source = source.$parent;
-	    }
-	    return UNRESOLVED_INJECT;
-	}
-	function provide(keyOrData, value) {
-	    var vm = ensureCurrentVMInFn('provide');
-	    if (!vm._provided) {
-	        vm._provided = {};
-	    }
-	    if (isObject(keyOrData)) {
-	        Object.assign(vm._provided, keyOrData);
-	    }
-	    else {
-	        vm._provided[keyOrData] = value;
-	    }
-	}
-	function inject(key) {
-	    if (!key) {
-	        return;
-	    }
-	    var vm = ensureCurrentVMInFn('inject');
-	    var val = resolveInject(key, vm);
-	    if (val !== UNRESOLVED_INJECT) {
-	        if (isWrapper(val)) {
-	            return val;
-	        }
-	        return new ComputedWrapper({
-	            read: function () { return val; },
-	            write: function () {
-	                warn("The injectd value can't be re-assigned", vm);
-	            },
-	        });
-	    }
-	    else {
-	        warn("Injection \"" + String(key) + "\" not found", vm);
-	    }
-	}
-
-	var _install = function (Vue) { return install(Vue, mixin); };
-	var plugin = {
-	    install: _install,
-	};
-	// Auto install if it is not done yet and `window` has `Vue`.
-	// To allow users to avoid auto-installation in some cases,
-	if (currentVue && typeof window !== 'undefined' && window.Vue) {
-	    _install(window.Vue);
-	}
-
-	exports.computed = computed;
-	exports.createComponent = createComponent;
-	exports.createElement = createElement;
-	exports.inject = inject;
-	exports.onActivated = onActivated;
-	exports.onBeforeDestroy = onBeforeDestroy;
-	exports.onBeforeMount = onBeforeMount;
-	exports.onBeforeUpdate = onBeforeUpdate;
-	exports.onCreated = onCreated;
-	exports.onDeactivated = onDeactivated;
-	exports.onDestroyed = onDestroyed;
-	exports.onErrorCaptured = onErrorCaptured;
-	exports.onMounted = onMounted;
-	exports.onUnmounted = onUnmounted;
-	exports.onUpdated = onUpdated;
-	exports.plugin = plugin;
-	exports.provide = provide;
-	exports.set = set;
-	exports.state = state;
-	exports.value = value;
-	exports.watch = watch;
-	});
-
-	unwrapExports(vueFunctionApi);
-	var vueFunctionApi_1 = vueFunctionApi.computed;
-	var vueFunctionApi_2 = vueFunctionApi.createComponent;
-	var vueFunctionApi_3 = vueFunctionApi.createElement;
-	var vueFunctionApi_4 = vueFunctionApi.inject;
-	var vueFunctionApi_5 = vueFunctionApi.onActivated;
-	var vueFunctionApi_6 = vueFunctionApi.onBeforeDestroy;
-	var vueFunctionApi_7 = vueFunctionApi.onBeforeMount;
-	var vueFunctionApi_8 = vueFunctionApi.onBeforeUpdate;
-	var vueFunctionApi_9 = vueFunctionApi.onCreated;
-	var vueFunctionApi_10 = vueFunctionApi.onDeactivated;
-	var vueFunctionApi_11 = vueFunctionApi.onDestroyed;
-	var vueFunctionApi_12 = vueFunctionApi.onErrorCaptured;
-	var vueFunctionApi_13 = vueFunctionApi.onMounted;
-	var vueFunctionApi_14 = vueFunctionApi.onUnmounted;
-	var vueFunctionApi_15 = vueFunctionApi.onUpdated;
-	var vueFunctionApi_16 = vueFunctionApi.plugin;
-	var vueFunctionApi_17 = vueFunctionApi.provide;
-	var vueFunctionApi_18 = vueFunctionApi.set;
-	var vueFunctionApi_19 = vueFunctionApi.state;
-	var vueFunctionApi_20 = vueFunctionApi.value;
-	var vueFunctionApi_21 = vueFunctionApi.watch;
-
-	var script$3 = {
+	var Component = vueCompositionApi_2({
 	    setup: function (props, context) {
-	        var pending = vueFunctionApi_20(true);
-	        var uid = vueFunctionApi_20(0);
+	        var pending = vueCompositionApi_17(true);
+	        var uid = vueCompositionApi_17(0);
 	        var ins;
-	        vueFunctionApi_13(function () {
+	        vueCompositionApi_12(function () {
 	            ins = new QSelect({
 	                data: props.data,
 	                index: props.index,
@@ -18987,8 +19022,10 @@
 	                confirmBtn: props.confirmBtn,
 	                loading: props.loading,
 	                disableDefaultCancel: props.disableDefaultCancel,
+	                bkIndex: props.bkIndex,
+	                selectIndex: props.selectIndex,
 	                ready: function (value, key, data) {
-	                    pending = false;
+	                    pending.value = false;
 	                    context.emit('ready', value, key, data);
 	                },
 	                cancel: function () {
@@ -19004,15 +19041,18 @@
 	                },
 	                show: function () {
 	                    context.emit('show');
+	                },
+	                hide: function () {
+	                    context.emit('hide');
 	                }
 	            });
 	        });
-	        vueFunctionApi_11(function () {
+	        vueCompositionApi_8(function () {
 	            ins && ins.destroy();
 	        });
 	        var warnIns = function () {
 	            if (!ins) {
-	                return assert();
+	                return assert$1();
 	            }
 	            else {
 	                return true;
@@ -19039,21 +19079,25 @@
 	            if (warnIns()) {
 	                return ins.setData(data, index);
 	            }
+	            return '';
 	        };
 	        var setColumnData = function (column, data) {
 	            if (warnIns()) {
 	                return ins.setColumnData(column, data);
 	            }
+	            return '';
 	        };
 	        var scrollTo = function (column, index) {
 	            if (warnIns()) {
 	                return ins.scrollTo(column, index);
 	            }
+	            return '';
 	        };
 	        var setIndex = function (index) {
 	            if (warnIns()) {
 	                return ins.setIndex(index);
 	            }
+	            return '';
 	        };
 	        var setTitle = function (title) {
 	            if (warnIns()) {
@@ -19064,31 +19108,37 @@
 	            if (warnIns()) {
 	                return ins.setValue(value);
 	            }
+	            return '';
 	        };
 	        var setKey = function (key) {
 	            if (warnIns()) {
 	                return ins.setKey(key);
 	            }
+	            return '';
 	        };
 	        var getData = function () {
 	            if (warnIns()) {
-	                return ins.getChangeCallData();
+	                return ins.getData();
 	            }
+	            return [];
 	        };
 	        var getIndex = function () {
 	            if (warnIns()) {
 	                return ins.getIndex();
 	            }
+	            return [];
 	        };
 	        var getValue = function () {
 	            if (warnIns()) {
 	                return ins.getValue();
 	            }
+	            return [];
 	        };
 	        var getKey = function () {
 	            if (warnIns()) {
 	                return ins.getKey();
 	            }
+	            return [];
 	        };
 	        var setLoading = function () {
 	            if (warnIns()) {
@@ -19100,9 +19150,9 @@
 	                return ins.cancelLoading();
 	            }
 	        };
-	        vueFunctionApi_21(function () { return props.defaultKey; }, function (val) {
+	        vueCompositionApi_20(function () { return props.defaultKey; }, function (val) {
 	            if (val && val.length) {
-	                if (pending) {
+	                if (pending.value) {
 	                    vue_runtime_common.nextTick(function () {
 	                        ins.setKey(props.defaultKey);
 	                    });
@@ -19112,9 +19162,9 @@
 	                }
 	            }
 	        });
-	        vueFunctionApi_21(function () { return props.defaultValue; }, function (val) {
+	        vueCompositionApi_20(function () { return props.defaultValue; }, function (val) {
 	            if (val && val.length) {
-	                if (pending) {
+	                if (pending.value) {
 	                    vue_runtime_common.nextTick(function () {
 	                        ins.setValue(props.defaultValue);
 	                    });
@@ -19124,9 +19174,9 @@
 	                }
 	            }
 	        });
-	        vueFunctionApi_21(function () { return props.visible; }, function (val) {
+	        vueCompositionApi_20(function () { return props.visible; }, function (val) {
 	            if (val) {
-	                if (pending) {
+	                if (pending.value) {
 	                    vue_runtime_common.nextTick(function () {
 	                        show();
 	                    });
@@ -19136,26 +19186,26 @@
 	                }
 	            }
 	            else {
-	                if (!pending) {
+	                if (!pending.value) {
 	                    context.emit('hide');
 	                    close();
 	                }
 	            }
 	        });
-	        vueFunctionApi_21(function () { return props.loading; }, function (val) {
+	        vueCompositionApi_20(function () { return props.loading; }, function (val) {
 	            if (val) {
-	                if (pending) ;
+	                if (pending.value) ;
 	                else {
 	                    setLoading();
 	                }
 	            }
 	            else {
-	                if (!pending) {
+	                if (!pending.value) {
 	                    cancelLoading();
 	                }
 	            }
 	        });
-	        vueFunctionApi_21(function () { return props.data; }, function (val) {
+	        vueCompositionApi_20(function () { return props.data; }, function (val) {
 	            setData(val);
 	            if (props.defaultValue && props.defaultValue.length) {
 	                setValue(props.defaultValue);
@@ -19170,19 +19220,18 @@
 	            lazy: true,
 	            deep: props.deep
 	        });
-	        vueFunctionApi_21(function () { return props.index; }, function (val) {
+	        vueCompositionApi_20(function () { return props.index; }, function (val) {
 	            setIndex(val);
 	        }, {
 	            lazy: true
 	        });
-	        vueFunctionApi_21(function () { return props.title; }, function (val) {
+	        vueCompositionApi_20(function () { return props.title; }, function (val) {
 	            setTitle(val);
 	        }, {
 	            lazy: true
 	        });
 	        return {
-	            pending: pending,
-	            ins: ins,
+	            uid: uid,
 	            destroy: destroy,
 	            setIndex: setIndex,
 	            setData: setData,
@@ -19194,8 +19243,7 @@
 	            getData: getData,
 	            getIndex: getIndex,
 	            getValue: getValue,
-	            getKey: getKey,
-	            uid: uid
+	            getKey: getKey
 	        };
 	    },
 	    name: 'QSelect',
@@ -19258,6 +19306,14 @@
 	        defaultValue: {
 	            type: Array,
 	            default: function () { return []; }
+	        },
+	        bkIndex: {
+	            type: Number,
+	            default: 500
+	        },
+	        selectIndex: {
+	            type: Number,
+	            default: 600
 	        }
 	    },
 	    render: function (h) {
@@ -19269,47 +19325,17 @@
 	            return h('');
 	        }
 	    }
-	};
+	});
 
-	/* script */
-	const __vue_script__$3 = script$3;
-
-	/* template */
-
-	  /* style */
-	  const __vue_inject_styles__$3 = undefined;
-	  /* scoped */
-	  const __vue_scope_id__$3 = undefined;
-	  /* module identifier */
-	  const __vue_module_identifier__$3 = undefined;
-	  /* functional template */
-	  const __vue_is_functional_template__$3 = undefined;
-	  /* style inject */
-	  
-	  /* style inject SSR */
-	  
-
-	  
-	  var QSelect$1 = normalizeComponent_1(
-	    {},
-	    __vue_inject_styles__$3,
-	    __vue_script__$3,
-	    __vue_scope_id__$3,
-	    __vue_is_functional_template__$3,
-	    __vue_module_identifier__$3,
-	    undefined,
-	    undefined
-	  );
-
-	var QSelect$2 = {
+	var QSelect$1 = {
 	    install: function (Vue, options) {
 	        if (options === void 0) { options = {}; }
-	        Vue.use(vueFunctionApi_16);
-	        Vue.component(options.name || 'QSelect', QSelect$1);
+	        Vue.use(VueCompositionApi);
+	        Vue.component(options.name || 'QSelect', Component);
 	    }
 	};
 
-	vue_runtime_common.use(QSelect$2);
+	vue_runtime_common.use(QSelect$1);
 	new vue_runtime_common({
 	  el: '#app',
 	  render: h => h(App)
