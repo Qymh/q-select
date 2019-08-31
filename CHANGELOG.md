@@ -1,3 +1,16 @@
+# [](https://github.com/Qymh/q-select/compare/v0.3.8...v) (2019-08-31)
+
+
+
+## [0.3.8](https://github.com/Qymh/q-select/compare/v0.3.7...v0.3.8) (2019-08-31)
+
+
+### Features
+
+* vue3 ts迁移 & ts支持完善 ([2a6d071](https://github.com/Qymh/q-select/commit/2a6d071))
+
+
+
 # [](https://github.com/Qymh/q-select/compare/v0.3.7...v) (2019-08-30)
 
 
