@@ -1,3 +1,16 @@
+# [](https://github.com/Qymh/q-select/compare/v0.4.0...v) (2019-08-31)
+
+
+
+# [0.4.0](https://github.com/Qymh/q-select/compare/v0.3.9...v0.4.0) (2019-08-31)
+
+
+### Features
+
+* 样式调整 ([085c3fe](https://github.com/Qymh/q-select/commit/085c3fe))
+
+
+
 # [](https://github.com/Qymh/q-select/compare/v0.3.9...v) (2019-08-31)
 
 
