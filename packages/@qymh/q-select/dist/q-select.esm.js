@@ -1,5 +1,5 @@
 /**
- * @qymh/q-select v0.3.8
+ * @qymh/q-select v0.3.9
  * (c) 2019 Qymh
  * @license MIT
  */
@@ -52,7 +52,7 @@ var Dom = (function () {
         var id = options.id, loading = options.loading;
         var baseSize = Math.floor(options.count / 2) * options.chunkHeight;
         if (!inline) {
-            this.initialDomString += "\n        <div class=\"q-select-header q-select-header--" + id + "\" style=\"padding: 10px 20px;\">\n          <div class=\"q-select-header-cancel q-select-header-cancel--" + id + "\" style=\"width:100px; font-size:14px;\">\n            <div class=\"q-select-header-cancel__value q-select-header-cancel__value--" + id + "\">" + (options.cancelBtn ||
+            this.initialDomString += "\n        <div class=\"q-select-header q-select-header--" + id + "\" style=\"height:45px;padding-left:20px;padding-right:20px;\">\n          <div class=\"q-select-header-cancel q-select-header-cancel--" + id + "\" style=\"width:100px; font-size:14px;\">\n            <div class=\"q-select-header-cancel__value q-select-header-cancel__value--" + id + "\">" + (options.cancelBtn ||
                 '取消') + "</div>\n          </div>\n          <div class=\"q-select-header-title q-select-header-title--" + id + "\">\n            <div class=\"q-select-header-title__value q-select-header-title__value--" + id + "\">" + (options.title ||
                 '请选择') + "</div>\n          </div>\n          <div class=\"q-select-header-confirm q-select-header-confirm--" + id + "\" style=\"width:100px; font-size:14px;\">\n            <div class=\"q-select-header-confirm__value q-select-header-confirm__value--" + id + "\">" + (options.confirmBtn ||
                 '确定') + "</div>\n          </div>\n        </div>\n      ";
@@ -60,7 +60,7 @@ var Dom = (function () {
         this.initialDomString += "\n      <div style=\"height:" + options.count * options.chunkHeight + "px;display:" + (loading ? 'flex' : 'none') + "\" class=\"q-select-loading q-select-loading--" + id + "\">\n        <svg class=\"q-select-loading-svg\" viewBox=\"25 25 50 50\" style=\"height:30px; width:30px;\">\n          <circle\n            class=\"q-select-loading-svg__circle\"\n            cx=\"50\"\n            cy=\"50\"\n            r=\"20\"\n            fill=\"none\"\n          />\n        </svg>\n      </div>\n      <div style=\"height:" + options.count *
             options.chunkHeight + "px\" class=\"q-select-box q-select-box--" + id + "\">\n    ";
         data.forEach(function (v) {
-            _this.initialDomString += "\n      <div class=\"q-select-box-item q-select-box-item--" + id + "\">\n        <div class=\"q-select-box-item__overlay q-select-box-item__overlay--" + id + "\" style=\"background-size: 100% " + (!loading ? baseSize + 'px' : '100%') + ";\"></div>\n        <div class=\"q-select-box-item__highlight q-select-box-item__highlight--" + id + "\" style=\"top: " + baseSize + "px;height: " + options.chunkHeight + "px\"></div>\n        <div class=\"q-select-box-item-collections q-select-box-item-collections--" + id + "\">\n        " + v
+            _this.initialDomString += "\n      <div class=\"q-select-box-item q-select-box-item--" + id + " q-select-flex\">\n        <div class=\"q-select-box-item__overlay q-select-box-item__overlay--" + id + "\" style=\"background-size: 100% " + (!loading ? baseSize + 'px' : '100%') + ";\"></div>\n        <div class=\"q-select-box-item__highlight q-select-box-item__highlight--" + id + "\" style=\"top: " + baseSize + "px;height: " + options.chunkHeight + "px\"></div>\n        <div class=\"q-select-box-item-collections q-select-box-item-collections--" + id + "\">\n        " + v
                 .map(function (p) {
                 return "<div style=\"line-height: " + options.chunkHeight + "px;\" class=\"q-select-box-item-collections__tick q-select-box-item-collections__tick--" + id + "\">\n              " + p.value + "\n            </div>";
             })
@@ -86,7 +86,11 @@ var Dom = (function () {
                 for (var v = $collections.length; v < dataTransLater.length; v++) {
                     var fragment = document.createDocumentFragment();
                     var $box = Dom.create('div');
-                    Dom.addClass($box, ['q-select-box-item', "q-select-box-item--" + id]);
+                    Dom.addClass($box, [
+                        'q-select-box-item',
+                        'q-select-flex',
+                        "q-select-box-item--" + id
+                    ]);
                     var $overlay = Dom.create('div');
                     Dom.addClass($overlay, [
                         'q-select-box-item__overlay',
@@ -194,6 +198,16 @@ var Dom = (function () {
         return $els[$els.length - 1];
     };
     Dom.addClass = function (el, className) {
+        if (Array.isArray(className)) {
+            className = className.filter(function (v) {
+                return !el.classList.contains(v);
+            });
+        }
+        else {
+            if (el.classList.contains(className)) {
+                return;
+            }
+        }
         var add = Array.isArray(className) ? className.join(' ') : className;
         el.className += " " + add;
     };
@@ -393,13 +407,13 @@ var Touch = (function () {
         this.initTrans();
     };
     Touch.prototype.active = function (index) {
-        Dom.findIndex("q-select-box-item--" + this.pre.id, index).style.display =
-            'flex';
+        Dom.removeClass(Dom.findIndex("q-select-box-item--" + this.pre.id, index), 'q-select-none');
+        Dom.addClass(Dom.findIndex("q-select-box-item--" + this.pre.id, index), 'q-select-flex');
         this.hidden = false;
     };
     Touch.prototype.deactive = function (index) {
-        Dom.findIndex("q-select-box-item--" + this.pre.id, index).style.display =
-            'none';
+        Dom.removeClass(Dom.findIndex("q-select-box-item--" + this.pre.id, index), 'q-select-flex');
+        Dom.addClass(Dom.findIndex("q-select-box-item--" + this.pre.id, index), 'q-select-none');
         this.hidden = true;
     };
     Touch.prototype.reset = function (data, reset) {
