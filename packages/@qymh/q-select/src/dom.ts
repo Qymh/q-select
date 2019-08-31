@@ -25,7 +25,7 @@ class Dom {
     const baseSize = Math.floor(options.count / 2) * options.chunkHeight;
     if (!inline) {
       this.initialDomString += `
-        <div class="q-select-header q-select-header--${id}" style="padding: 10px 20px;">
+        <div class="q-select-header q-select-header--${id}" style="height:45px;padding-left:20px;padding-right:20px;">
           <div class="q-select-header-cancel q-select-header-cancel--${id}" style="width:100px; font-size:14px;">
             <div class="q-select-header-cancel__value q-select-header-cancel__value--${id}">${options.cancelBtn ||
         '取消'}</div>
@@ -60,7 +60,7 @@ class Dom {
     `;
     data.forEach(v => {
       this.initialDomString += `
-      <div class="q-select-box-item q-select-box-item--${id}">
+      <div class="q-select-box-item q-select-box-item--${id} q-select-flex">
         <div class="q-select-box-item__overlay q-select-box-item__overlay--${id}" style="background-size: 100% ${
         !loading ? baseSize + 'px' : '100%'
       };"></div>
@@ -121,7 +121,11 @@ class Dom {
         for (let v = $collections.length; v < dataTransLater.length; v++) {
           const fragment = document.createDocumentFragment();
           const $box = Dom.create('div');
-          Dom.addClass($box, ['q-select-box-item', `q-select-box-item--${id}`]);
+          Dom.addClass($box, [
+            'q-select-box-item',
+            'q-select-flex',
+            `q-select-box-item--${id}`
+          ]);
           const $overlay = Dom.create('div');
           Dom.addClass($overlay, [
             'q-select-box-item__overlay',
@@ -266,6 +270,15 @@ class Dom {
   }
 
   static addClass(el: HTMLElement, className: string | string[]) {
+    if (Array.isArray(className)) {
+      className = className.filter(v => {
+        return !el.classList.contains(v);
+      });
+    } else {
+      if (el.classList.contains(className)) {
+        return;
+      }
+    }
     const add = Array.isArray(className) ? className.join(' ') : className;
     el.className += ` ${add}`;
   }

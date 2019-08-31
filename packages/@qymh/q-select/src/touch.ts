@@ -127,8 +127,14 @@ class Touch {
    * @param index 当前索引
    */
   active(index: number) {
-    Dom.findIndex(`q-select-box-item--${this.pre.id}`, index).style.display =
-      'flex';
+    Dom.removeClass(
+      Dom.findIndex(`q-select-box-item--${this.pre.id}`, index),
+      'q-select-none'
+    );
+    Dom.addClass(
+      Dom.findIndex(`q-select-box-item--${this.pre.id}`, index),
+      'q-select-flex'
+    );
     this.hidden = false;
   }
 
@@ -137,8 +143,14 @@ class Touch {
    * @param index 当前索引
    */
   deactive(index: number) {
-    Dom.findIndex(`q-select-box-item--${this.pre.id}`, index).style.display =
-      'none';
+    Dom.removeClass(
+      Dom.findIndex(`q-select-box-item--${this.pre.id}`, index),
+      'q-select-flex'
+    );
+    Dom.addClass(
+      Dom.findIndex(`q-select-box-item--${this.pre.id}`, index),
+      'q-select-none'
+    );
     this.hidden = true;
   }
 
