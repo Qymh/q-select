@@ -17554,7 +17554,7 @@
 	var vueCompositionApi_20 = vueCompositionApi.watch;
 
 	/**
-	 * @qymh/q-select v0.3.7
+	 * @qymh/q-select v0.3.8
 	 * (c) 2019 Qymh
 	 * @license MIT
 	 */
@@ -19042,9 +19042,7 @@
 	                show: function () {
 	                    context.emit('show');
 	                },
-	                hide: function () {
-	                    context.emit('hide');
-	                }
+	                hide: function () { }
 	            });
 	        });
 	        vueCompositionApi_8(function () {
