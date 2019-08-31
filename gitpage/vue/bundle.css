@@ -79,9 +79,6 @@
   display: flex;
 }
 .q-select-box-item {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
   -webkit-box-flex: 1;
       -ms-flex-positive: 1;
           flex-grow: 1;
@@ -89,6 +86,14 @@
       flex-shrink: 1;
   position: relative;
   overflow: hidden;
+}
+.q-select-flex {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+.q-select-none {
+  display: none;
 }
 .q-select-box-item-collections {
   width: 100%;
@@ -117,10 +122,19 @@
   background-position: top, bottom;
   background-repeat: no-repeat;
   background-image:
-    -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0.95)), to(rgba(255, 255, 255, 0.6))),
+    -webkit-gradient(
+      linear,
+      left top, left bottom,
+      from(rgba(255, 255, 255, 0.95)),
+      to(rgba(255, 255, 255, 0.6))
+    ),
     -webkit-gradient(linear, left bottom, left top, from(rgba(255, 255, 255, 0.95)), to(rgba(255, 255, 255, 0.6)));
   background-image:
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.6)),
+    linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.95),
+      rgba(255, 255, 255, 0.6)
+    ),
     linear-gradient(to top, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.6));
 }
 .q-select-loading {
