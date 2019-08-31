@@ -1261,9 +1261,7 @@ var Component = vueCompositionApi_2({
         show: function show() {
           context.emit('show');
         },
-        hide: function hide() {
-          context.emit('hide');
-        }
+        hide: function hide() {}
       });
     });
     vueCompositionApi_8(function () {

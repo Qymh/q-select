@@ -1,5 +1,5 @@
 /**
- * @qymh/vue-q-select v0.3.7
+ * @qymh/vue-q-select v0.3.8
  * (c) 2019 Qymh
  * @license MIT
  */
@@ -1263,9 +1263,7 @@ var Component = vueCompositionApi_2({
         show: function show() {
           context.emit('show');
         },
-        hide: function hide() {
-          context.emit('hide');
-        }
+        hide: function hide() {}
       });
     });
     vueCompositionApi_8(function () {
