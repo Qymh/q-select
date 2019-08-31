@@ -1,3 +1,16 @@
+# [](https://github.com/Qymh/q-select/compare/v0.3.9...v) (2019-08-31)
+
+
+
+## [0.3.9](https://github.com/Qymh/q-select/compare/v0.3.8...v0.3.9) (2019-08-31)
+
+
+### Bug Fixes
+
+* 删除hide带来的副作用 ([3699563](https://github.com/Qymh/q-select/commit/3699563))
+
+
+
 # [](https://github.com/Qymh/q-select/compare/v0.3.8...v) (2019-08-31)
 
 
