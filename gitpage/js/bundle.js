@@ -8482,7 +8482,7 @@
             });
             break;
           case 1:
-            qSelect1.setData(data1, [10]).then(([data]) => {
+            qSelect1.setData([data1], [10]).then(([data]) => {
               $show1.textContent = `数据:${data.join(',')}`;
             });
             break;
