@@ -152,6 +152,50 @@ var vueCompositionApi = createCommonjsModule(function (module, exports) {
     return currentVue && obj instanceof currentVue;
   }
 
+  function createSlotProxy(vm, slotName) {
+    return function () {
+      var args = [];
+
+      for (var _i = 0; _i < arguments.length; _i++) {
+        args[_i] = arguments[_i];
+      }
+
+      if (!vm.$scopedSlots[slotName]) {
+        return warn("slots." + slotName + "() got called outside of the \"render()\" scope", vm);
+      }
+
+      return vm.$scopedSlots[slotName].apply(vm, args);
+    };
+  }
+
+  function resolveSlots(slots, normalSlots) {
+    var res;
+
+    if (!slots) {
+      res = {};
+    } else if (slots._normalized) {
+      // fast path 1: child component re-render only, parent did not change
+      return slots._normalized;
+    } else {
+      res = {};
+
+      for (var key in slots) {
+        if (slots[key] && key[0] !== '$') {
+          res[key] = true;
+        }
+      }
+    } // expose normal slots on scopedSlots
+
+
+    for (var key in normalSlots) {
+      if (!(key in res)) {
+        res[key] = true;
+      }
+    }
+
+    return res;
+  }
+
   function createSymbol(name) {
     return hasSymbol ? Symbol.for(name) : name;
   }
@@ -624,6 +668,34 @@ var vueCompositionApi = createCommonjsModule(function (module, exports) {
     vmStateManager.set(vm, 'refs', validNewKeys);
   }
 
+  function resolveScopedSlots(vm, slotsProxy) {
+    var parentVode = vm.$options._parentVnode;
+    if (!parentVode) return;
+    var prevSlots = vmStateManager.get(vm, 'slots') || [];
+    var curSlots = resolveSlots(parentVode.data.scopedSlots, vm.$slots); // remove staled slots
+
+    for (var index = 0; index < prevSlots.length; index++) {
+      var key = prevSlots[index];
+
+      if (!curSlots[key]) {
+        delete slotsProxy[key];
+      }
+    } // proxy fresh slots
+
+
+    var slotNames = Object.keys(curSlots);
+
+    for (var index = 0; index < slotNames.length; index++) {
+      var key = slotNames[index];
+
+      if (!slotsProxy[key]) {
+        slotsProxy[key] = createSlotProxy(vm, key);
+      }
+    }
+
+    vmStateManager.set(vm, 'slots', slotNames);
+  }
+
   function activateCurrentInstance(vm, fn, onError) {
     var preVm = getCurrentVM();
     setCurrentVM(vm);
@@ -703,7 +775,9 @@ var vueCompositionApi = createCommonjsModule(function (module, exports) {
       }
 
       var setup = vm.$options.setup;
-      var ctx = createSetupContext(vm);
+      var ctx = createSetupContext(vm); // resolve scopedSlots and slots to functions
+
+      resolveScopedSlots(vm, ctx.slots);
       var binding;
       activateCurrentInstance(vm, function () {
         binding = setup(props, ctx);
@@ -715,8 +789,9 @@ var vueCompositionApi = createCommonjsModule(function (module, exports) {
         var bindingFunc_1 = binding; // keep currentInstance accessible for createElement
 
         vm.$options.render = function () {
-          return activateCurrentInstance(vm, function (vm_) {
-            return bindingFunc_1(vm_.$props, ctx);
+          resolveScopedSlots(vm, ctx.slots);
+          return activateCurrentInstance(vm, function () {
+            return bindingFunc_1();
           });
         };
 
@@ -749,8 +824,10 @@ var vueCompositionApi = createCommonjsModule(function (module, exports) {
     }
 
     function createSetupContext(vm) {
-      var ctx = {};
-      var props = ['root', 'parent', 'refs', ['slots', 'scopedSlots'], 'attrs'];
+      var ctx = {
+        slots: {}
+      };
+      var props = ['root', 'parent', 'refs', 'attrs'];
       var methodReturnVoid = ['emit'];
       props.forEach(function (key) {
         var _a;
