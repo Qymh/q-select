@@ -17615,7 +17615,7 @@
 	var vueCompositionApi_20 = vueCompositionApi.watch;
 
 	/**
-	 * @qymh/q-select v0.4.1
+	 * @qymh/q-select v0.4.2
 	 * (c) 2019 Qymh
 	 * @license MIT
 	 */
@@ -18789,7 +18789,9 @@
 	            dataTrans[index] = [];
 	            for (var _i = 0, child_1 = child; _i < child_1.length; _i++) {
 	                var item = child_1[_i];
-	                dataTrans[index].push(item);
+	                var obj = __assign({}, item);
+	                delete obj.children;
+	                dataTrans[index].push(obj);
 	            }
 	            var curIndex = (preciseIndex || [])[index] || 0;
 	            index++;
