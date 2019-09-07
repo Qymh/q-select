@@ -876,7 +876,9 @@ class Layer {
     function genGangedDataChildren(this: Layer, child: GangedData[]) {
       dataTrans[index] = [];
       for (const item of child) {
-        dataTrans[index].push(item as DataTrans);
+        const obj = { ...item };
+        delete obj.children;
+        dataTrans[index].push(obj as DataTrans);
       }
       const curIndex = (preciseIndex || [])[index] || 0;
       index++;
