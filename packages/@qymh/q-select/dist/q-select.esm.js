@@ -1,5 +1,5 @@
 /**
- * @qymh/q-select v0.4.0
+ * @qymh/q-select v0.4.1
  * (c) 2019 Qymh
  * @license MIT
  */
@@ -613,11 +613,7 @@ var Touch = (function () {
         }
         var curData = this.data[this.curIndex];
         if (!this.fromDiff) {
-            this.endCall({
-                key: curData.key,
-                value: curData.value,
-                index: this.curIndex
-            }, this.aim);
+            this.endCall(__assign({}, curData, { index: this.curIndex }), this.aim);
         }
         this.preIndex = this.curIndex;
     };
@@ -1195,10 +1191,7 @@ var Layer = (function () {
             dataTrans[index] = [];
             for (var _i = 0, child_1 = child; _i < child_1.length; _i++) {
                 var item = child_1[_i];
-                dataTrans[index].push({
-                    key: item.key,
-                    value: item.value
-                });
+                dataTrans[index].push(item);
             }
             var curIndex = (preciseIndex || [])[index] || 0;
             index++;
