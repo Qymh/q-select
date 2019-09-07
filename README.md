@@ -126,6 +126,7 @@ new Qselect({});
   - value(必填) 展示的值
   - key 标志
   - children 子联动数据
+  - 你可以自定义其他值
 
 ```javascript
 new QSelect({
@@ -158,6 +159,7 @@ new QSelect({
 
   - value(必填) 展示的值
   - key 标志
+  - 你可以自定义其他值
 
 ```javascript
 new QSelect({
@@ -340,6 +342,7 @@ new QSelect({
         - value 当前 value
         - key 当前 key
         - index 当前索引
+        - 自定义的其它值
 
 ```javascript
 new QSelect({
@@ -367,6 +370,7 @@ new QSelect({
         - value 当前 value
         - key 当前 key
         - index 当前索引
+        - 自定义的其它值
 
 ```javascript
 new QSelect({
@@ -394,6 +398,7 @@ new QSelect({
         - value 当前 value
         - key 当前 key
         - index 当前索引
+        - 自定义的其它值
 
 ```javascript
 new QSelect({
@@ -421,6 +426,7 @@ new QSelect({
         - value 当前 value
         - key 当前 key
         - index 当前索引
+        - 自定义的其它值
 
 ```javascript
 new QSelect({
@@ -463,6 +469,7 @@ new QSelect({
         - value 当前 value
         - key 当前 key
         - index 当前索引
+        - 自定义的其它值
 
 ```javascript
 new QSelect({
@@ -523,6 +530,7 @@ setTimeout(() => {
         - value 当前 value
         - key 当前 key
         - index 当前索引
+        - 自定义的其它值
 
 ```javascript
 const s1 = new QSelect({
@@ -977,6 +985,7 @@ this.$refs.select.setColumnData(1, [[1, 2, 3]]);
           - value 当前 value
           - key 当前 key
           - index 当前索引
+          - 自定义的其它值
 
 ```javascript
 this.$refs.select.getData();
@@ -1041,6 +1050,7 @@ this.$refs.select.destroy();
           - value 当前 value
           - key 当前 key
           - index 当前索引
+          - 自定义的其它值
 
 ```vue
 <template>
@@ -1075,6 +1085,7 @@ export default {
           - value 当前 value
           - key 当前 key
           - index 当前索引
+          - 自定义的其它值
 
 ```vue
 <template>
@@ -1109,6 +1120,7 @@ export default {
           - value 当前 value
           - key 当前 key
           - index 当前索引
+          - 自定义的其它值
 
 ```vue
 <template>
@@ -1143,6 +1155,7 @@ export default {
           - value 当前 value
           - key 当前 key
           - index 当前索引
+          - 自定义的其它值
 
 ```vue
 <template>
@@ -1199,6 +1212,7 @@ export default {
           - value 当前 value
           - key 当前 key
           - index 当前索引
+          - 自定义的其它值
 
 ```vue
 <template>
