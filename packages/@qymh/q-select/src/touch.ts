@@ -461,8 +461,7 @@ class Touch {
     if (!this.fromDiff) {
       this.endCall(
         {
-          key: curData.key,
-          value: curData.value,
+          ...curData,
           index: this.curIndex
         },
         this.aim
