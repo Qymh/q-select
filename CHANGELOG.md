@@ -1,3 +1,16 @@
+# [](https://github.com/Qymh/q-select/compare/v0.4.3...v) (2019-09-07)
+
+
+
+## [0.4.3](https://github.com/Qymh/q-select/compare/v0.4.2...v0.4.3) (2019-09-07)
+
+
+### Bug Fixes
+
+* 去除多余的children属性 ([3eadfc2](https://github.com/Qymh/q-select/commit/3eadfc2))
+
+
+
 # [](https://github.com/Qymh/q-select/compare/v0.4.2...v) (2019-09-07)
 
 
