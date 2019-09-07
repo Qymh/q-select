@@ -1,3 +1,17 @@
+# [](https://github.com/Qymh/q-select/compare/v0.4.2...v) (2019-09-07)
+
+
+
+## [0.4.2](https://github.com/Qymh/q-select/compare/v0.4.1...v0.4.2) (2019-09-07)
+
+
+### Features
+
+* 新增单独数据格式 ([4df4f40](https://github.com/Qymh/q-select/commit/4df4f40))
+* 新增单独数据格式 ([e1d1b81](https://github.com/Qymh/q-select/commit/e1d1b81))
+
+
+
 # [](https://github.com/Qymh/q-select/compare/v0.4.1...v) (2019-09-07)
 
 
