@@ -1,3 +1,21 @@
+# [](https://github.com/Qymh/q-select/compare/v0.4.1...v) (2019-09-07)
+
+
+
+## [0.4.1](https://github.com/Qymh/q-select/compare/v0.4.0...v0.4.1) (2019-09-07)
+
+
+### Bug Fixes
+
+* demo演示出错 ([567a10c](https://github.com/Qymh/q-select/commit/567a10c))
+
+
+### Features
+
+* upgrade vue ([a4e0c34](https://github.com/Qymh/q-select/commit/a4e0c34))
+
+
+
 # [](https://github.com/Qymh/q-select/compare/v0.4.0...v) (2019-08-31)
 
 
