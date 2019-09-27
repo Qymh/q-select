@@ -1,5 +1,5 @@
 /**
- * @qymh/q-select v0.4.2
+ * @qymh/q-select v0.4.3
  * (c) 2019 Qymh
  * @license MIT
  */
@@ -232,7 +232,9 @@ var Dom = (function () {
         }
     };
     Dom.remove = function (parent, child) {
-        parent.removeChild(child);
+        if (child) {
+            parent.removeChild(child);
+        }
     };
     Dom.findAll = function (className) {
         return document.querySelectorAll("." + className);
