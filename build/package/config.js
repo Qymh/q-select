@@ -46,7 +46,7 @@ const mapsJs = {
     file: this.resolve('packages/@qymh/q-select/dist/q-select.min.js'),
     cssFile: this.resolve('packages/@qymh/q-select/dist/q-select.css'),
     format: 'umd',
-    env: 'production'
+    env: 'development'
   },
   commonjs: {
     input: this.resolve('packages/@qymh/q-select/src/index.ts'),
@@ -66,7 +66,7 @@ const mapsVue = {
     file: this.resolve('packages/@qymh/vue-q-select/dist/q-select.min.js'),
     cssFile: this.resolve('packages/@qymh/vue-q-select/dist/q-select.css'),
     format: 'umd',
-    env: 'production'
+    env: 'development'
   },
   commonjs: {
     input: this.resolve('packages/@qymh/vue-q-select/src/index.ts'),
