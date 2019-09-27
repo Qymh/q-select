@@ -1,3 +1,21 @@
+# [](https://github.com/Qymh/q-select/compare/v0.4.4...v) (2019-09-27)
+
+
+
+## [0.4.4](https://github.com/Qymh/q-select/compare/v0.4.3...v0.4.4) (2019-09-27)
+
+
+### Bug Fixes
+
+* 修复同一个页面两个select时 移除背景报错的Bug ([d6e2a0b](https://github.com/Qymh/q-select/commit/d6e2a0b))
+
+
+### Features
+
+* script引用的js需要开启友好提醒所以默认为开发模式 ([3d73767](https://github.com/Qymh/q-select/commit/3d73767))
+
+
+
 # [](https://github.com/Qymh/q-select/compare/v0.4.3...v) (2019-09-07)
 
 
