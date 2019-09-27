@@ -302,7 +302,9 @@ class Dom {
   }
 
   static remove(parent: HTMLElement, child: HTMLElement) {
-    parent.removeChild(child);
+    if (child) {
+      parent.removeChild(child);
+    }
   }
 
   static findAll(className: string): NodeListOf<HTMLElement> {
