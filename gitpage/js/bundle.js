@@ -232,7 +232,9 @@
             }
         };
         Dom.remove = function (parent, child) {
-            parent.removeChild(child);
+            if (child) {
+                parent.removeChild(child);
+            }
         };
         Dom.findAll = function (className) {
             return document.querySelectorAll("." + className);
