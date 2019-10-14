@@ -1,3 +1,16 @@
+# [](https://github.com/Qymh/q-select/compare/v0.4.5...v) (2019-10-14)
+
+
+
+## [0.4.5](https://github.com/Qymh/q-select/compare/v0.4.4...v0.4.5) (2019-10-14)
+
+
+### Bug Fixes
+
+* 修复多个弹窗仅一个需要摧毁时 背景也被移除的bug ([4840f88](https://github.com/Qymh/q-select/commit/4840f88))
+
+
+
 # [](https://github.com/Qymh/q-select/compare/v0.4.4...v) (2019-09-27)
 
 
