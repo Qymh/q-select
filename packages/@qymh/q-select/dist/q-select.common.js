@@ -1,5 +1,5 @@
 /**
- * @qymh/q-select v0.4.3
+ * @qymh/q-select v0.4.4
  * (c) 2019 Qymh
  * @license MIT
  */
@@ -995,8 +995,10 @@ var Layer = (function () {
     };
     Layer.prototype.destroySelect = function () {
         this.touchs.forEach(function (v) { return v.destroy(); });
-        Dom.remove(document.body, Dom.find("q-select-bk"));
         Dom.remove(document.body, Dom.find("q-select--" + this.id));
+        if (Dom.findAll('q-select').length === 0) {
+            Dom.remove(document.body, Dom.find("q-select-bk"));
+        }
         this.__proto__ = null;
         for (var key in this) {
             this[key] = null;
