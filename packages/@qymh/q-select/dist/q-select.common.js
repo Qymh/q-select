@@ -1,5 +1,5 @@
 /**
- * @qymh/q-select v0.4.4
+ * @qymh/q-select v0.4.5
  * (c) 2019 Qymh
  * @license MIT
  */
@@ -64,7 +64,9 @@ var Dom = (function () {
         data.forEach(function (v) {
             _this.initialDomString += "\n      <div class=\"q-select-box-item q-select-box-item--" + id + " q-select-flex\">\n        <div class=\"q-select-box-item__overlay q-select-box-item__overlay--" + id + "\" style=\"background-size: 100% " + (!loading ? baseSize + 'px' : '100%') + ";\"></div>\n        <div class=\"q-select-box-item__highlight q-select-box-item__highlight--" + id + "\" style=\"top: " + baseSize + "px;height: " + options.chunkHeight + "px\"></div>\n        <div class=\"q-select-box-item-collections q-select-box-item-collections--" + id + "\">\n        " + v
                 .map(function (p) {
-                return "<div style=\"line-height: " + options.chunkHeight + "px;\" class=\"q-select-box-item-collections__tick q-select-box-item-collections__tick--" + id + "\">\n              " + p.value + "\n            </div>";
+                return "<div style=\"line-height: " + options.chunkHeight + "px;\" class=\"" + (p.disabled
+                    ? 'q-select-box-item-collections__tick--disabled'
+                    : '') + " q-select-box-item-collections__tick q-select-box-item-collections__tick--" + id + "\">\n              " + p.value + "\n            </div>";
             })
                 .join('') + "\n        </div>\n      </div>\n      ";
         });
@@ -158,16 +160,26 @@ var Dom = (function () {
         if (diffLen > 0) {
             var fragment = document.createDocumentFragment();
             for (var y = 0; y < dataTransListLen; y++) {
-                var value = dataTransListLater[y].value;
-                collect.children[y].textContent = value;
+                var _a = dataTransListLater[y], value = _a.value, disabled = _a.disabled;
+                var item = collect.children[y];
+                item.textContent = value;
+                if (!disabled) {
+                    Dom.removeClass(item, 'q-select-box-item-collections__tick--disabled');
+                }
+                else {
+                    Dom.addClass(item, 'q-select-box-item-collections__tick--disabled');
+                }
             }
             for (var y = dataTransListLen; y < dataTransListLaterLen; y++) {
                 var div = document.createElement('div');
-                var value = dataTransListLater[y].value;
+                var _b = dataTransListLater[y], value = _b.value, disabled = _b.disabled;
                 Dom.addClass(div, [
                     'q-select-box-item-collections__tick',
                     "q-select-box-item-collections__tick--" + id
                 ]);
+                if (disabled) {
+                    Dom.addClass(div, ['q-select-box-item-collections__tick--disabled']);
+                }
                 Dom.addStyle(div, { lineHeight: chunkHeight + "px" });
                 div.textContent = value;
                 fragment.appendChild(div);
@@ -176,8 +188,15 @@ var Dom = (function () {
         }
         else {
             for (var y = 0; y < dataTransListLaterLen; y++) {
-                var value = dataTransListLater[y].value;
-                collect.children[y].textContent = value;
+                var _c = dataTransListLater[y], value = _c.value, disabled = _c.disabled;
+                var item = collect.children[y];
+                item.textContent = value;
+                if (!disabled) {
+                    Dom.removeClass(item, 'q-select-box-item-collections__tick--disabled');
+                }
+                else {
+                    Dom.addClass(item, 'q-select-box-item-collections__tick--disabled');
+                }
             }
             var children = Array.from(collect.children).slice();
             for (var y = dataTransListLaterLen; y < dataTransListLen; y++) {
@@ -478,7 +497,7 @@ var Touch = (function () {
         }
     };
     Touch.prototype.doTouchStart = function (e) {
-        if (!this.data.length) {
+        if (!this.data.length || this.data.every(function (v) { return v.disabled; })) {
             return;
         }
         this.touchStart = this.getTouchCenter(e.touches);
@@ -487,7 +506,7 @@ var Touch = (function () {
     };
     Touch.prototype.doTouchMove = function (e) {
         e.preventDefault();
-        if (!this.data.length) {
+        if (!this.data.length || this.data.every(function (v) { return v.disabled; })) {
             return;
         }
         var time = e.timeStamp;
@@ -512,7 +531,7 @@ var Touch = (function () {
         this.setTrans(this.touchDiff);
     };
     Touch.prototype.doTouchEnd = function (e) {
-        if (!this.data.length) {
+        if (!this.data.length || this.data.every(function (v) { return v.disabled; })) {
             return;
         }
         var time = e.timeStamp;
@@ -557,6 +576,7 @@ var Touch = (function () {
         }
         this.preIndex = this.curIndex;
         var featureIndex = this.getFeatureIndex(featureScrollTop);
+        featureIndex = this.getDisabledAfterIndex(featureIndex);
         var realFeatureScrollTop = isFrezzed
             ? featureScrollTop
             : this.getFeatureScrollTop(featureIndex);
@@ -573,6 +593,21 @@ var Touch = (function () {
     Touch.prototype.scrollTo = function (index) {
         var featureScrollTop = this.getFeatureScrollTop(index || 0);
         this.shrinkAnimateToEnd(featureScrollTop, true);
+    };
+    Touch.prototype.getDisabledAfterIndex = function (index) {
+        while (this.data[index].disabled) {
+            index++;
+            if (index === this.data.length) {
+                index--;
+                break;
+            }
+        }
+        if (index === this.data.length - 1) {
+            while (this.data[index].disabled) {
+                index--;
+            }
+        }
+        return index;
     };
     Touch.prototype.slideAnimateToEnd = function (realFeatureScrollTop, duration, debounce) {
         var _this = this;
@@ -592,6 +627,7 @@ var Touch = (function () {
     Touch.prototype.shrinkAnimateToEnd = function (featureScrollTop, fast, debounce) {
         var _this = this;
         var index = this.getFeatureIndex(featureScrollTop);
+        index = this.getDisabledAfterIndex(index);
         featureScrollTop = this.getFeatureScrollTop(index);
         this.animateShrink.run(this.touchDiff, debounce || featureScrollTop, function (res) {
             _this.setTrans(res);
@@ -842,6 +878,22 @@ var Layer = (function () {
                     _this.index[i] = len - 1;
                 }
             }
+            var index = _this.index[i];
+            if (_this.dataTrans[i]) {
+                while (_this.dataTrans[i][index].disabled) {
+                    index++;
+                    if (index === _this.dataTrans[i].length) {
+                        index--;
+                        break;
+                    }
+                }
+                if (index === _this.dataTrans[i].length - 1) {
+                    while (_this.dataTrans[i][index].disabled) {
+                        index--;
+                    }
+                }
+            }
+            _this.index[i] = index;
             return v;
         });
         var lenDiff = this.index.length - dataTransLater.length;
