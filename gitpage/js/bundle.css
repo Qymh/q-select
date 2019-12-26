@@ -105,6 +105,9 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.q-select-box-item-collections__tick--disabled {
+  opacity: 0.3;
+}
 .q-select-box-item__highlight {
   width: 100%;
   position: absolute;
