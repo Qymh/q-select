@@ -125,6 +125,7 @@ new Qselect({});
 
   - value(必填) 展示的值
   - key 标志
+  - disabled 是否禁用当前数据 (0.4.6新增)
   - children 子联动数据
   - 你可以自定义其他值
 
@@ -159,6 +160,7 @@ new QSelect({
 
   - value(必填) 展示的值
   - key 标志
+  - disabled 是否禁用当前数据 (0.4.6新增)
   - 你可以自定义其他值
 
 ```javascript

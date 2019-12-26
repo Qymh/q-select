@@ -71,7 +71,11 @@ class Dom {
         ${v
           .map(
             p =>
-              `<div style="line-height: ${options.chunkHeight}px;" class="q-select-box-item-collections__tick q-select-box-item-collections__tick--${id}">
+              `<div style="line-height: ${options.chunkHeight}px;" class="${
+                p.disabled
+                  ? 'q-select-box-item-collections__tick--disabled'
+                  : ''
+              } q-select-box-item-collections__tick q-select-box-item-collections__tick--${id}">
               ${p.value}
             </div>`
           )
@@ -224,16 +228,28 @@ class Dom {
     if (diffLen > 0) {
       const fragment = document.createDocumentFragment();
       for (let y = 0; y < dataTransListLen; y++) {
-        const { value } = dataTransListLater[y];
-        collect.children[y].textContent = value;
+        const { value, disabled } = dataTransListLater[y];
+        const item: HTMLElement = collect.children[y] as HTMLElement;
+        item.textContent = value;
+        if (!disabled) {
+          Dom.removeClass(
+            item,
+            'q-select-box-item-collections__tick--disabled'
+          );
+        } else {
+          Dom.addClass(item, 'q-select-box-item-collections__tick--disabled');
+        }
       }
       for (let y = dataTransListLen; y < dataTransListLaterLen; y++) {
         const div = document.createElement('div');
-        const { value } = dataTransListLater[y];
+        const { value, disabled } = dataTransListLater[y];
         Dom.addClass(div, [
           'q-select-box-item-collections__tick',
           `q-select-box-item-collections__tick--${id}`
         ]);
+        if (disabled) {
+          Dom.addClass(div, ['q-select-box-item-collections__tick--disabled']);
+        }
         Dom.addStyle(div, { lineHeight: `${chunkHeight}px` });
         div.textContent = value;
         fragment.appendChild(div);
@@ -241,8 +257,17 @@ class Dom {
       collect.appendChild(fragment);
     } else {
       for (let y = 0; y < dataTransListLaterLen; y++) {
-        const { value } = dataTransListLater[y];
-        collect.children[y].textContent = value;
+        const { value, disabled } = dataTransListLater[y];
+        const item: HTMLElement = collect.children[y] as HTMLElement;
+        item.textContent = value;
+        if (!disabled) {
+          Dom.removeClass(
+            item,
+            'q-select-box-item-collections__tick--disabled'
+          );
+        } else {
+          Dom.addClass(item, 'q-select-box-item-collections__tick--disabled');
+        }
       }
       const children = [...Array.from(collect.children)];
       for (let y = dataTransListLaterLen; y < dataTransListLen; y++) {
@@ -283,7 +308,7 @@ class Dom {
     el.className += ` ${add}`;
   }
 
-  static removeClass(el: HTMLElement, className: string | string[]) {
+  static removeClass(el: Element, className: string | string[]) {
     if (Array.isArray(className)) {
       el.classList.remove(...className);
     } else {

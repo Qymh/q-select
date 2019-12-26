@@ -10,6 +10,7 @@ declare type NotGangedDataObj = {
 declare type DataTrans = {
   key: any;
   value: any;
+  disabled?: boolean;
 };
 
 declare interface DataCallback extends DataTrans {

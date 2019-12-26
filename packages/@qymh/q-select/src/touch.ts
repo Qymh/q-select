@@ -253,7 +253,7 @@ class Touch {
    * @param e event
    */
   doTouchStart(e: TouchEvent) {
-    if (!this.data.length) {
+    if (!this.data.length || this.data.every(v => v.disabled)) {
       return;
     }
     this.touchStart = this.getTouchCenter(e.touches);
@@ -267,7 +267,7 @@ class Touch {
    */
   doTouchMove(e: TouchEvent) {
     e.preventDefault();
-    if (!this.data.length) {
+    if (!this.data.length || this.data.every(v => v.disabled)) {
       return;
     }
     const { timeStamp: time } = e;
@@ -301,7 +301,7 @@ class Touch {
    * @param e event
    */
   doTouchEnd(e: TouchEvent) {
-    if (!this.data.length) {
+    if (!this.data.length || this.data.every(v => v.disabled)) {
       return;
     }
     const { timeStamp: time } = e;
@@ -351,7 +351,9 @@ class Touch {
     }
     this.preIndex = this.curIndex;
     // 获取滚动修正后的索引
-    const featureIndex = this.getFeatureIndex(featureScrollTop);
+    let featureIndex = this.getFeatureIndex(featureScrollTop);
+    // disabled后的index
+    featureIndex = this.getDisabledAfterIndex(featureIndex);
     // 获取滚动修正后的top值
     const realFeatureScrollTop = isFrezzed
       ? featureScrollTop
@@ -381,6 +383,26 @@ class Touch {
   scrollTo(index: number) {
     const featureScrollTop = this.getFeatureScrollTop(index || 0);
     this.shrinkAnimateToEnd(featureScrollTop, true);
+  }
+
+  /**
+   * 获取disabled后的索引
+   * @param index 索引
+   */
+  getDisabledAfterIndex(index: number) {
+    while (this.data[index].disabled) {
+      index++;
+      if (index === this.data.length) {
+        index--;
+        break;
+      }
+    }
+    if (index === this.data.length - 1) {
+      while (this.data[index].disabled) {
+        index--;
+      }
+    }
+    return index;
   }
 
   /**
@@ -422,7 +444,9 @@ class Touch {
     fast?: boolean,
     debounce?: number
   ) {
-    const index = this.getFeatureIndex(featureScrollTop);
+    let index = this.getFeatureIndex(featureScrollTop);
+    // 增加disabled选项
+    index = this.getDisabledAfterIndex(index);
     featureScrollTop = this.getFeatureScrollTop(index);
     this.animateShrink.run(
       this.touchDiff,

@@ -329,6 +329,22 @@ class Layer {
           this.index[i] = len - 1;
         }
       }
+      let index = this.index[i];
+      if (this.dataTrans[i]) {
+        while (this.dataTrans[i][index].disabled) {
+          index++;
+          if (index === this.dataTrans[i].length) {
+            index--;
+            break;
+          }
+        }
+        if (index === this.dataTrans[i].length - 1) {
+          while (this.dataTrans[i][index].disabled) {
+            index--;
+          }
+        }
+      }
+      this.index[i] = index;
       return v;
     });
     const lenDiff = this.index.length - dataTransLater.length;

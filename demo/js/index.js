@@ -37,12 +37,21 @@ const newData1 = [
 ];
 const $show1 = document.querySelector('.cell__title--1');
 for (let i = 1; i <= 40; i++) {
-  data1.push(i);
+  if (i === 19 || i === 29 || i === 9) {
+    data1.push({
+      value: i,
+      disabled: true
+    });
+  } else {
+    data1.push({
+      value: i
+    });
+  }
 }
 const qSelect1 = new QSelect({
   title: '一层非联动',
   data: [data1],
-  index: [2],
+  index: [2, 0],
   ready(data) {
     $show1.textContent = `数据:${data.join(',')}`;
   },
@@ -76,7 +85,7 @@ $setBtn1.forEach((v, i) => {
         });
         break;
       case 1:
-        qSelect1.setData([data1], [10]).then(([data]) => {
+        qSelect1.setData([data1], [39]).then(([data]) => {
           $show1.textContent = `数据:${data.join(',')}`;
         });
         break;
@@ -158,10 +167,18 @@ $setBtn2.forEach((v, i) => {
 const data4 = [];
 const $show4 = document.querySelector('.cell__title--4');
 for (let i = 1; i <= 40; i++) {
-  data4.push({
-    value: i,
-    key: i + 'k'
-  });
+  if (i === 19 || i === 29 || i === 9) {
+    data4.push({
+      value: i,
+      key: i + 'k',
+      disabled: true
+    });
+  } else {
+    data4.push({
+      value: i,
+      key: i + 'k'
+    });
+  }
 }
 const qSelect4 = new QSelect({
   title: '多级非联动实测',
