@@ -1,5 +1,5 @@
 /**
- * @qymh/q-select v0.4.5
+ * @qymh/q-select v0.4.6
  * (c) 2019 Qymh
  * @license MIT
  */
@@ -863,6 +863,24 @@ var Layer = (function () {
             _this.prepareMount();
         });
     };
+    Layer.prototype.getDisabledAfterIndex = function (data, index) {
+        if (!data || !data[index]) {
+            return index;
+        }
+        while (data[index].disabled) {
+            index++;
+            if (index === this.data.length) {
+                index--;
+                break;
+            }
+        }
+        if (index === this.data.length - 1) {
+            while (data[index].disabled) {
+                index--;
+            }
+        }
+        return index;
+    };
     Layer.prototype.normalizeIndex = function (dataTransLater, forceIndex) {
         var _this = this;
         this.index = forceIndex || this.index;
@@ -878,22 +896,7 @@ var Layer = (function () {
                     _this.index[i] = len - 1;
                 }
             }
-            var index = _this.index[i];
-            if (_this.dataTrans[i]) {
-                while (_this.dataTrans[i][index].disabled) {
-                    index++;
-                    if (index === _this.dataTrans[i].length) {
-                        index--;
-                        break;
-                    }
-                }
-                if (index === _this.dataTrans[i].length - 1) {
-                    while (_this.dataTrans[i][index].disabled) {
-                        index--;
-                    }
-                }
-            }
-            _this.index[i] = index;
+            _this.index[i] = _this.getDisabledAfterIndex(_this.dataTrans[i], _this.index[i]);
             return v;
         });
         var lenDiff = this.index.length - dataTransLater.length;
@@ -1254,6 +1257,7 @@ var Layer = (function () {
                 dataTrans[index].push(obj);
             }
             var curIndex = (preciseIndex || [])[index] || 0;
+            curIndex = this.getDisabledAfterIndex(dataTrans[index], curIndex);
             index++;
             if (child[curIndex]) {
                 if (child[curIndex].children.length) {
