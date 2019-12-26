@@ -1,3 +1,16 @@
+# [](https://github.com/Qymh/q-select/compare/v0.4.6...v) (2019-12-26)
+
+
+
+## [0.4.6](https://github.com/Qymh/q-select/compare/v0.4.5...v0.4.6) (2019-12-26)
+
+
+### Features
+
+* 增加disabled选项 ([421774b](https://github.com/Qymh/q-select/commit/421774b))
+
+
+
 # [](https://github.com/Qymh/q-select/compare/v0.4.5...v) (2019-10-14)
 
 
