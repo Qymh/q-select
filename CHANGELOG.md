@@ -1,3 +1,16 @@
+# [](https://github.com/Qymh/q-select/compare/v0.4.7...v) (2019-12-26)
+
+
+
+## [0.4.7](https://github.com/Qymh/q-select/compare/v0.4.6...v0.4.7) (2019-12-26)
+
+
+### Features
+
+* 完善联动组件下的disabled ([35954aa](https://github.com/Qymh/q-select/commit/35954aa))
+
+
+
 # [](https://github.com/Qymh/q-select/compare/v0.4.6...v) (2019-12-26)
 
 
