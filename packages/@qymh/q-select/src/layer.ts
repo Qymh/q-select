@@ -311,6 +311,30 @@ class Layer {
   }
 
   /**
+   * 获取disabled后的索引
+   * @param data 当前转换值
+   * @param index 索引
+   */
+  getDisabledAfterIndex(data: DataTrans[], index: number) {
+    if (!data || !data[index]) {
+      return index;
+    }
+    while (data[index].disabled) {
+      index++;
+      if (index === this.data.length) {
+        index--;
+        break;
+      }
+    }
+    if (index === this.data.length - 1) {
+      while (data[index].disabled) {
+        index--;
+      }
+    }
+    return index;
+  }
+
+  /**
    * 格式化index
    * @param dataTransLater 之后的数据
    * @param forceIndex 需要覆盖的index
@@ -329,22 +353,10 @@ class Layer {
           this.index[i] = len - 1;
         }
       }
-      let index = this.index[i];
-      if (this.dataTrans[i]) {
-        while (this.dataTrans[i][index].disabled) {
-          index++;
-          if (index === this.dataTrans[i].length) {
-            index--;
-            break;
-          }
-        }
-        if (index === this.dataTrans[i].length - 1) {
-          while (this.dataTrans[i][index].disabled) {
-            index--;
-          }
-        }
-      }
-      this.index[i] = index;
+      this.index[i] = this.getDisabledAfterIndex(
+        this.dataTrans[i],
+        this.index[i]
+      );
       return v;
     });
     const lenDiff = this.index.length - dataTransLater.length;
@@ -898,7 +910,8 @@ class Layer {
         delete obj.children;
         dataTrans[index].push(obj as DataTrans);
       }
-      const curIndex = (preciseIndex || [])[index] || 0;
+      let curIndex = (preciseIndex || [])[index] || 0;
+      curIndex = this.getDisabledAfterIndex(dataTrans[index], curIndex);
       index++;
       if (child[curIndex]) {
         if (child[curIndex].children.length) {

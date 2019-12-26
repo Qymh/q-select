@@ -19,6 +19,7 @@ declare interface DataCallback extends DataTrans {
 
 declare type GangedData = {
   key?: any;
+  disabled?: boolean;
   value: any;
   children: GangedData[];
 };

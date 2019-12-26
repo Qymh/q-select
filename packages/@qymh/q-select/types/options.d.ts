@@ -5,17 +5,20 @@ export type NotGangedData<K, V> =
 export type NotGangedDataObj<K, V> = {
   key?: K;
   value: V;
+  disabled?: boolean;
 };
 
 export type GangedData<K, V> = {
   key?: K;
   value: V;
+  disabled?: boolean;
   children: GangedData<K, V>[] | Array<string | number>;
 };
 
 export type DataCallBack<K, V> = {
   key: K;
   value: V;
+  disabled?: boolean;
   index: number;
 };
 
