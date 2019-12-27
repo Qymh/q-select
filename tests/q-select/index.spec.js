@@ -332,11 +332,24 @@ describe('instance', () => {
         const s = new QSelect({
           data: [[1], [2]]
         });
-        s.setData([[1, 2], [2, 2], [3, 2]]);
+        s.setData([
+          [1, 2],
+          [2, 2],
+          [3, 2]
+        ]);
         expect(s.data).toStrictEqual([
-          [{ key: 1, value: 1 }, { key: 2, value: 2 }],
-          [{ key: 2, value: 2 }, { key: 2, value: 2 }],
-          [{ key: 3, value: 3 }, { key: 2, value: 2 }]
+          [
+            { key: 1, value: 1 },
+            { key: 2, value: 2 }
+          ],
+          [
+            { key: 2, value: 2 },
+            { key: 2, value: 2 }
+          ],
+          [
+            { key: 3, value: 3 },
+            { key: 2, value: 2 }
+          ]
         ]);
         const index = s.getIndex();
         expect(index).toStrictEqual([0, 0, 0]);
@@ -355,11 +368,27 @@ describe('instance', () => {
         const s = new QSelect({
           data: [[1], [2]]
         });
-        s.setData([[1, 2], [2, 2], [3, 2]], [1, 0, 0]);
+        s.setData(
+          [
+            [1, 2],
+            [2, 2],
+            [3, 2]
+          ],
+          [1, 0, 0]
+        );
         expect(s.data).toStrictEqual([
-          [{ key: 1, value: 1 }, { key: 2, value: 2 }],
-          [{ key: 2, value: 2 }, { key: 2, value: 2 }],
-          [{ key: 3, value: 3 }, { key: 2, value: 2 }]
+          [
+            { key: 1, value: 1 },
+            { key: 2, value: 2 }
+          ],
+          [
+            { key: 2, value: 2 },
+            { key: 2, value: 2 }
+          ],
+          [
+            { key: 3, value: 3 },
+            { key: 2, value: 2 }
+          ]
         ]);
         const index = s.getIndex();
         expect(index).toStrictEqual([1, 0, 0]);
@@ -418,7 +447,10 @@ describe('instance', () => {
   describe('setIndex', () => {
     it('notGangedData', () => {
       const s = new QSelect({
-        data: [[1, 2, 3, 4, 5], [1, 2, 3, 4, 5]]
+        data: [
+          [1, 2, 3, 4, 5],
+          [1, 2, 3, 4, 5]
+        ]
       });
       s.setIndex([1, 1]);
       expect(s.getIndex()).toStrictEqual([1, 1]);
@@ -427,13 +459,19 @@ describe('instance', () => {
       expect(s.getData()).toStrictEqual([
         [2, 2],
         [2, 2],
-        [{ key: 2, value: 2, index: 1 }, { key: 2, value: 2, index: 1 }]
+        [
+          { key: 2, value: 2, index: 1 },
+          { key: 2, value: 2, index: 1 }
+        ]
       ]);
     });
 
     it('gangedData', () => {
       const s = new QSelect({
-        data: [{ value: 1, children: [1, 2] }, { value: 2, children: [3, 4] }]
+        data: [
+          { value: 1, children: [1, 2] },
+          { value: 2, children: [3, 4] }
+        ]
       });
       s.setIndex([1, 1]);
       expect(s.getIndex()).toStrictEqual([1, 1]);
@@ -442,20 +480,29 @@ describe('instance', () => {
       expect(s.getData()).toStrictEqual([
         [2, 4],
         [2, 4],
-        [{ key: 2, value: 2, index: 1 }, { key: 4, value: 4, index: 1 }]
+        [
+          { key: 2, value: 2, index: 1 },
+          { key: 4, value: 4, index: 1 }
+        ]
       ]);
     });
 
     it('error', () => {
       const s = new QSelect({
-        data: [[1, 2, 3, 4, 5], [1, 2, 3, 4, 5]]
+        data: [
+          [1, 2, 3, 4, 5],
+          [1, 2, 3, 4, 5]
+        ]
       });
       expect(s.setIndex([null, null])).rejects.toBe(undefined);
     });
 
     it('no param', () => {
       const s = new QSelect({
-        data: [[1, 2, 3, 4, 5], [1, 2, 3, 4, 5]]
+        data: [
+          [1, 2, 3, 4, 5],
+          [1, 2, 3, 4, 5]
+        ]
       });
       expect(s.setIndex()).rejects.toBe(undefined);
     });
@@ -477,7 +524,10 @@ describe('instance', () => {
   describe('setValue', () => {
     it('notGangedData', () => {
       const s = new QSelect({
-        data: [[1, 2, 3, 4, 5], [1, 2, 3, 4, 5]]
+        data: [
+          [1, 2, 3, 4, 5],
+          [1, 2, 3, 4, 5]
+        ]
       });
       s.setValue([5, 3]);
       expect(s.getIndex()).toStrictEqual([4, 2]);
@@ -486,13 +536,19 @@ describe('instance', () => {
       expect(s.getData()).toStrictEqual([
         [5, 3],
         [5, 3],
-        [{ key: 5, value: 5, index: 4 }, { key: 3, value: 3, index: 2 }]
+        [
+          { key: 5, value: 5, index: 4 },
+          { key: 3, value: 3, index: 2 }
+        ]
       ]);
     });
 
     it('gangedData', () => {
       const s = new QSelect({
-        data: [{ value: 1, children: [1, 2] }, { value: 2, children: [3, 4] }]
+        data: [
+          { value: 1, children: [1, 2] },
+          { value: 2, children: [3, 4] }
+        ]
       });
       s.setValue([2, 3]);
       expect(s.getIndex()).toStrictEqual([1, 0]);
@@ -501,13 +557,19 @@ describe('instance', () => {
       expect(s.getData()).toStrictEqual([
         [2, 3],
         [2, 3],
-        [{ key: 2, value: 2, index: 1 }, { key: 3, value: 3, index: 0 }]
+        [
+          { key: 2, value: 2, index: 1 },
+          { key: 3, value: 3, index: 0 }
+        ]
       ]);
     });
 
     it('no params', () => {
       const s = new QSelect({
-        data: [{ value: 1, children: [1, 2] }, { value: 2, children: [3, 4] }]
+        data: [
+          { value: 1, children: [1, 2] },
+          { value: 2, children: [3, 4] }
+        ]
       });
       expect(s.setValue()).rejects.toBe(undefined);
     });
@@ -528,7 +590,10 @@ describe('instance', () => {
       expect(s.getData()).toStrictEqual([
         [5, 3],
         ['5k', '3k'],
-        [{ key: '5k', value: 5, index: 4 }, { key: '3k', value: 3, index: 2 }]
+        [
+          { key: '5k', value: 5, index: 4 },
+          { key: '3k', value: 3, index: 2 }
+        ]
       ]);
     });
 
@@ -550,13 +615,19 @@ describe('instance', () => {
       expect(s.getData()).toStrictEqual([
         [2, 3],
         ['2k', '3k'],
-        [{ key: '2k', value: 2, index: 1 }, { key: '3k', value: 3, index: 0 }]
+        [
+          { key: '2k', value: 2, index: 1 },
+          { key: '3k', value: 3, index: 0 }
+        ]
       ]);
     });
 
     it('no params', () => {
       const s = new QSelect({
-        data: [{ value: 1, children: [1, 2] }, { value: 2, children: [3, 4] }]
+        data: [
+          { value: 1, children: [1, 2] },
+          { value: 2, children: [3, 4] }
+        ]
       });
       expect(s.setKey()).rejects.toBe(undefined);
     });
@@ -610,7 +681,10 @@ describe('instance', () => {
       expect(s.getData()).toStrictEqual([
         [1, 3],
         [1, 3],
-        [{ index: 0, key: 1, value: 1 }, { index: 2, key: 3, value: 3 }]
+        [
+          { index: 0, key: 1, value: 1 },
+          { index: 2, key: 3, value: 3 }
+        ]
       ]);
     });
 
@@ -639,7 +713,10 @@ describe('instance', () => {
       expect(s.getData()).toStrictEqual([
         [1, 4],
         [1, 4],
-        [{ index: 0, key: 1, value: 1 }, { index: 0, key: 4, value: 4 }]
+        [
+          { index: 0, key: 1, value: 1 },
+          { index: 0, key: 4, value: 4 }
+        ]
       ]);
     });
 
@@ -647,7 +724,13 @@ describe('instance', () => {
       const s = new QSelect({
         data: [[1, 2, 3]]
       });
-      s.setColumnData([1, 2], [[4, 5, 6], [7, 8, 9]]);
+      s.setColumnData(
+        [1, 2],
+        [
+          [4, 5, 6],
+          [7, 8, 9]
+        ]
+      );
 
       expect(s.getIndex()).toStrictEqual([0, 0, 0]);
       expect(s.getKey()).toStrictEqual([1, 4, 7]);

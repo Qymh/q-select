@@ -20,8 +20,8 @@
   },
   "dependencies": {
     "@qymh/q-select": "^0.4.7",
-    "@vue/composition-api": "^0.3.0",
-    "vue": "^2.6.10",
+    "@vue/composition-api": "^0.3.4",
+    "vue": "^2.6.11",
     "vue-function-api": "^2.2.0"
   }
 }

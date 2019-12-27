@@ -40,8 +40,15 @@
     "emitDecoratorMetadata": true, // 为装饰器提供元数据的支持
     "resolveJsonModule": true,
     // 使用的JSX工厂函数
-    "jsxFactory": "h",
+    "jsxFactory": "h"
   },
-  "include": ["build/**/*.ts", "packages/**/*.ts","packages/**/*.d.ts", "typings/**/*.d.ts", "tests/**/*.ts"],
+  "include": [
+    "build/**/*.ts",
+    "packages/**/*.ts",
+    "packages/**/*.d.ts",
+    "typings/**/*.d.ts",
+    "tests/**/*.ts",
+    "*.js"
+  ],
   "exclude": ["node_modules"]
 }
