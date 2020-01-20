@@ -1,3 +1,16 @@
+# [](https://github.com/Qymh/q-select/compare/v0.4.9...v) (2020-01-20)
+
+
+
+## [0.4.9](https://github.com/Qymh/q-select/compare/v0.4.8...v0.4.9) (2020-01-20)
+
+
+### Bug Fixes
+
+* 提取@vue/composition-api ([b6f23fb](https://github.com/Qymh/q-select/commit/b6f23fb3596f4357dc1302557f9069328c025fbf))
+
+
+
 # [](https://github.com/Qymh/q-select/compare/v0.4.8...v) (2020-01-20)
 
 
