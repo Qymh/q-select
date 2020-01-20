@@ -17762,7 +17762,7 @@
 	var vueCompositionApi_22 = vueCompositionApi.watch;
 
 	/**
-	 * @qymh/q-select v0.4.7
+	 * @qymh/q-select v0.4.8
 	 * (c) 2020 Qymh
 	 * @license MIT
 	 */
