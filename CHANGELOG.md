@@ -1,3 +1,21 @@
+# [](https://github.com/Qymh/q-select/compare/v0.4.8...v) (2020-01-20)
+
+
+
+## [0.4.8](https://github.com/Qymh/q-select/compare/v0.4.7...v0.4.8) (2020-01-20)
+
+
+### Bug Fixes
+
+* 不同vue版本下兼容错误 ([97777e9](https://github.com/Qymh/q-select/commit/97777e9471a5b851c1ad9cc75235c9acffe94379))
+
+
+### Features
+
+* 升级依赖 ([da29cf5](https://github.com/Qymh/q-select/commit/da29cf56b093a32cd63200cf2375fdde5b7b235b))
+
+
+
 # [](https://github.com/Qymh/q-select/compare/v0.4.7...v) (2019-12-26)
 
 
