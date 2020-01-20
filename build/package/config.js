@@ -115,7 +115,12 @@ function generateOpts(opts, type, category) {
 
   if (type === 'vue') {
     if (category !== 'umdProd') {
-      base.external = ['vue', 'vue-function-api', '@qymh/q-select'];
+      base.external = [
+        'vue',
+        'vue-function-api',
+        '@vue/composition-api',
+        '@qymh/q-select'
+      ];
     }
     base.plugins.push(vue());
   }
