@@ -5,8 +5,8 @@ import {
   watch,
   createComponent
 } from '@vue/composition-api';
-import Vue from 'vue';
 import QSelect from '@qymh/q-select';
+import { VueSlash } from '../index';
 
 import { assert } from '@qymh/q-select/src/uitls';
 
@@ -199,7 +199,7 @@ const Component = createComponent({
       val => {
         if (val && val.length) {
           if (pending.value) {
-            Vue.nextTick(() => {
+            VueSlash.nextTick(() => {
               ins.setKey(props.defaultKey);
             });
           } else {
@@ -214,7 +214,7 @@ const Component = createComponent({
       val => {
         if (val && val.length) {
           if (pending.value) {
-            Vue.nextTick(() => {
+            VueSlash.nextTick(() => {
               ins.setValue(props.defaultValue);
             });
           } else {
@@ -229,7 +229,7 @@ const Component = createComponent({
       val => {
         if (val) {
           if (pending.value) {
-            Vue.nextTick(() => {
+            VueSlash.nextTick(() => {
               show();
             });
           } else {
