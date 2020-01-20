@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports.VueSlash = exports.default = void 0;
 
 var _vue = _interopRequireDefault(require("vue"));
 
@@ -32,7 +32,7 @@ var vueCompositionApi = createCommonjsModule(function (module, exports) {
     return ex && _typeof(ex) === 'object' && 'default' in ex ? ex['default'] : ex;
   }
 
-  var Vue$1 = _interopDefault(_vue.default);
+  var Vue = _interopDefault(_vue.default);
 
   var toString = function toString(x) {
     return Object.prototype.toString.call(x);
@@ -91,7 +91,7 @@ var vueCompositionApi = createCommonjsModule(function (module, exports) {
   }
 
   function warn(msg, vm) {
-    Vue$1.util.warn(msg, vm);
+    Vue.util.warn(msg, vm);
   }
 
   function logError(err, vm, info) {
@@ -360,7 +360,7 @@ var vueCompositionApi = createCommonjsModule(function (module, exports) {
           value.value = newVal;
         } else if (setter) {
           setter.call(target, newVal);
-        } else if (isRef(newVal)) {
+        } else {
           val = newVal;
         }
 
@@ -418,7 +418,7 @@ var vueCompositionApi = createCommonjsModule(function (module, exports) {
     } // set the vue observable flag at obj
 
 
-    obj.__ob__ = observe({}).__ob__; // mark as nonReactive
+    def(obj, '__ob__', observe({}).__ob__); // mark as nonReactive
 
     def(obj, NonReactiveIdentifierKey, NonReactiveIdentifier);
     return obj;
@@ -504,7 +504,7 @@ var vueCompositionApi = createCommonjsModule(function (module, exports) {
 
       if (!hasOwn(to, key)) {
         to[key] = fromVal;
-      } else if (toVal !== fromVal && isPlainObject(toVal) && !isRef(toVal) && isPlainObject(fromVal) && !isRef(toVal)) {
+      } else if (toVal !== fromVal && isPlainObject(toVal) && !isRef(toVal) && isPlainObject(fromVal) && !isRef(fromVal)) {
         mergeData(toVal, fromVal);
       }
     }
@@ -589,6 +589,14 @@ var vueCompositionApi = createCommonjsModule(function (module, exports) {
     return ar;
   }
 
+  function __spread() {
+    for (var ar = [], i = 0; i < arguments.length; i++) {
+      ar = ar.concat(__read(arguments[i]));
+    }
+
+    return ar;
+  }
+
   function set$1(vm, key, value) {
     var state = vm.__secret_vfa_state__ = vm.__secret_vfa_state__ || {};
     state[key] = value;
@@ -646,9 +654,10 @@ var vueCompositionApi = createCommonjsModule(function (module, exports) {
 
     for (var index = 0; index < oldRefKeys.length; index++) {
       var key = oldRefKeys[index];
+      var setupValue = rawBindings[key];
 
-      if (!refs[key]) {
-        rawBindings[key].value = null;
+      if (!refs[key] && setupValue && isRef(setupValue)) {
+        setupValue.value = null;
       }
     }
 
@@ -827,7 +836,7 @@ var vueCompositionApi = createCommonjsModule(function (module, exports) {
       var ctx = {
         slots: {}
       };
-      var props = ['root', 'parent', 'refs', 'attrs'];
+      var props = ['root', 'parent', 'refs', 'attrs', 'listeners', 'isServer', 'ssrContext'];
       var methodReturnVoid = ['emit'];
       props.forEach(function (key) {
         var _a;
@@ -937,6 +946,7 @@ var vueCompositionApi = createCommonjsModule(function (module, exports) {
   var onErrorCaptured = createLifeCycle('errorCaptured');
   var onActivated = createLifeCycle('activated');
   var onDeactivated = createLifeCycle('deactivated');
+  var onServerPrefetch = createLifeCycle('serverPrefetch');
   var fallbackVM;
 
   function flushPreQueue() {
@@ -999,8 +1009,22 @@ var vueCompositionApi = createCommonjsModule(function (module, exports) {
     }
   }
 
+  function createVueWatcher(vm, getter, callback, options) {
+    var index = vm._watchers.length; // @ts-ignore: use undocumented options
+
+    vm.$watch(getter, callback, {
+      immediate: options.immediateInvokeCallback,
+      deep: options.deep,
+      lazy: options.noRun,
+      sync: options.sync,
+      before: options.before
+    });
+    return vm._watchers[index];
+  }
+
   function createWatcher(vm, source, cb, options) {
     var flushMode = options.flush;
+    var isSync = flushMode === 'sync';
     var cleanup;
 
     var registerCleanup = function registerCleanup(fn) {
@@ -1011,55 +1035,62 @@ var vueCompositionApi = createCommonjsModule(function (module, exports) {
           logError(error, vm, 'onCleanup()');
         }
       };
+    }; // cleanup before running getter again
+
+
+    var runCleanup = function runCleanup() {
+      if (cleanup) {
+        cleanup();
+        cleanup = null;
+      }
+    };
+
+    var createScheduler = function createScheduler(fn) {
+      if (isSync ||
+      /* without a current active instance, ignore pre|post mode */
+      vm === fallbackVM) {
+        return fn;
+      }
+
+      return function () {
+        var args = [];
+
+        for (var _i = 0; _i < arguments.length; _i++) {
+          args[_i] = arguments[_i];
+        }
+
+        return queueFlushJob(vm, function () {
+          fn.apply(void 0, __spread(args));
+        }, flushMode);
+      };
     }; // effect watch
 
 
     if (cb === null) {
       var getter_1 = function getter_1() {
         return source(registerCleanup);
-      }; // cleanup before running getter again
-
-
-      var runBefore_1 = function runBefore_1() {
-        if (cleanup) {
-          cleanup();
-        }
       };
 
-      if (flushMode === 'sync') {
-        return vm.$watch(getter_1, noopFn, {
-          immediate: true,
-          deep: options.deep,
-          // @ts-ignore
-          sync: true,
-          before: runBefore_1
-        });
-      }
+      var watcher_1 = createVueWatcher(vm, getter_1, noopFn, {
+        noRun: true,
+        deep: options.deep,
+        sync: isSync,
+        before: runCleanup
+      }); // enable the watcher update
 
-      var stopRef_1;
-      var hasEnded_1 = false;
+      watcher_1.lazy = false;
+      var originGet = watcher_1.get.bind(watcher_1);
 
-      var doWatch = function doWatch() {
-        if (hasEnded_1) return;
-        stopRef_1 = vm.$watch(getter_1, noopFn, {
-          immediate: false,
-          deep: options.deep,
-          // @ts-ignore
-          before: runBefore_1
-        });
-      };
-      /* without a current active instance, ignore pre|post mode */
-
-
-      if (vm === fallbackVM) {
-        vm.$nextTick(doWatch);
+      if (isSync) {
+        watcher_1.get();
       } else {
-        queueFlushJob(vm, doWatch, flushMode);
+        vm.$nextTick(originGet);
       }
 
+      watcher_1.get = createScheduler(originGet);
       return function () {
-        hasEnded_1 = true;
-        stopRef_1 && stopRef_1();
+        watcher_1.teardown();
+        runCleanup();
       };
     }
 
@@ -1081,33 +1112,36 @@ var vueCompositionApi = createCommonjsModule(function (module, exports) {
 
     var applyCb = function applyCb(n, o) {
       // cleanup before running cb again
-      if (cleanup) {
-        cleanup();
-      }
-
+      runCleanup();
       cb(n, o, registerCleanup);
     };
 
-    var callback = flushMode === 'sync' ||
-    /* without a current active instance, ignore pre|post mode */
-    vm === fallbackVM ? applyCb : function (n, o) {
-      return queueFlushJob(vm, function () {
+    var callback = createScheduler(applyCb);
+
+    if (!options.lazy) {
+      var originalCallbck_1 = callback; // `shiftCallback` is used to handle the first sync effect run.
+      // The subsequent callbacks will redirect to `callback`.
+
+      var _shiftCallback_ = function shiftCallback_1(n, o) {
+        _shiftCallback_ = originalCallbck_1;
         applyCb(n, o);
-      }, flushMode);
-    }; // `shiftCallback` is used to handle dirty sync effect.
-    // The subsequent callbacks will redirect to `callback`.
+      };
 
-    var _shiftCallback = function shiftCallback(n, o) {
-      _shiftCallback = callback;
-      applyCb(n, o);
-    };
+      callback = function callback(n, o) {
+        _shiftCallback_(n, o);
+      };
+    } // @ts-ignore: use undocumented option "sync"
 
-    return vm.$watch(getter, options.lazy ? callback : _shiftCallback, {
+
+    var stop = vm.$watch(getter, callback, {
       immediate: !options.lazy,
       deep: options.deep,
-      // @ts-ignore
-      sync: flushMode === 'sync'
+      sync: isSync
     });
+    return function () {
+      stop();
+      runCleanup();
+    };
   }
 
   function watch(source, cb, options) {
@@ -1249,6 +1283,7 @@ var vueCompositionApi = createCommonjsModule(function (module, exports) {
   exports.createComponent = createComponent;
   exports.createElement = createElement;
   exports.default = plugin;
+  exports.getCurrentInstance = getCurrentVM;
   exports.inject = inject;
   exports.isRef = isRef;
   exports.onActivated = onActivated;
@@ -1258,6 +1293,7 @@ var vueCompositionApi = createCommonjsModule(function (module, exports) {
   exports.onDeactivated = onDeactivated;
   exports.onErrorCaptured = onErrorCaptured;
   exports.onMounted = onMounted;
+  exports.onServerPrefetch = onServerPrefetch;
   exports.onUnmounted = onUnmounted;
   exports.onUpdated = onUpdated;
   exports.provide = provide;
@@ -1271,23 +1307,25 @@ var VueCompositionApi = unwrapExports(vueCompositionApi);
 var vueCompositionApi_1 = vueCompositionApi.computed;
 var vueCompositionApi_2 = vueCompositionApi.createComponent;
 var vueCompositionApi_3 = vueCompositionApi.createElement;
-var vueCompositionApi_4 = vueCompositionApi.inject;
-var vueCompositionApi_5 = vueCompositionApi.isRef;
-var vueCompositionApi_6 = vueCompositionApi.onActivated;
-var vueCompositionApi_7 = vueCompositionApi.onBeforeMount;
-var vueCompositionApi_8 = vueCompositionApi.onBeforeUnmount;
-var vueCompositionApi_9 = vueCompositionApi.onBeforeUpdate;
-var vueCompositionApi_10 = vueCompositionApi.onDeactivated;
-var vueCompositionApi_11 = vueCompositionApi.onErrorCaptured;
-var vueCompositionApi_12 = vueCompositionApi.onMounted;
-var vueCompositionApi_13 = vueCompositionApi.onUnmounted;
-var vueCompositionApi_14 = vueCompositionApi.onUpdated;
-var vueCompositionApi_15 = vueCompositionApi.provide;
-var vueCompositionApi_16 = vueCompositionApi.reactive;
-var vueCompositionApi_17 = vueCompositionApi.ref;
-var vueCompositionApi_18 = vueCompositionApi.set;
-var vueCompositionApi_19 = vueCompositionApi.toRefs;
-var vueCompositionApi_20 = vueCompositionApi.watch;
+var vueCompositionApi_4 = vueCompositionApi.getCurrentInstance;
+var vueCompositionApi_5 = vueCompositionApi.inject;
+var vueCompositionApi_6 = vueCompositionApi.isRef;
+var vueCompositionApi_7 = vueCompositionApi.onActivated;
+var vueCompositionApi_8 = vueCompositionApi.onBeforeMount;
+var vueCompositionApi_9 = vueCompositionApi.onBeforeUnmount;
+var vueCompositionApi_10 = vueCompositionApi.onBeforeUpdate;
+var vueCompositionApi_11 = vueCompositionApi.onDeactivated;
+var vueCompositionApi_12 = vueCompositionApi.onErrorCaptured;
+var vueCompositionApi_13 = vueCompositionApi.onMounted;
+var vueCompositionApi_14 = vueCompositionApi.onServerPrefetch;
+var vueCompositionApi_15 = vueCompositionApi.onUnmounted;
+var vueCompositionApi_16 = vueCompositionApi.onUpdated;
+var vueCompositionApi_17 = vueCompositionApi.provide;
+var vueCompositionApi_18 = vueCompositionApi.reactive;
+var vueCompositionApi_19 = vueCompositionApi.ref;
+var vueCompositionApi_20 = vueCompositionApi.set;
+var vueCompositionApi_21 = vueCompositionApi.toRefs;
+var vueCompositionApi_22 = vueCompositionApi.watch;
 
 function assert(condition, msg) {
   if (process.env.NODE_ENV === 'development') {
@@ -1303,10 +1341,10 @@ function assert(condition, msg) {
 
 var Component = vueCompositionApi_2({
   setup: function setup(props, context) {
-    var pending = vueCompositionApi_17(true);
-    var uid = vueCompositionApi_17(0);
+    var pending = vueCompositionApi_19(true);
+    var uid = vueCompositionApi_19(0);
     var ins;
-    vueCompositionApi_12(function () {
+    vueCompositionApi_13(function () {
       ins = new _qSelect.default({
         data: props.data,
         index: props.index,
@@ -1341,7 +1379,7 @@ var Component = vueCompositionApi_2({
         hide: function hide() {}
       });
     });
-    vueCompositionApi_8(function () {
+    vueCompositionApi_9(function () {
       ins && ins.destroy();
     });
 
@@ -1471,12 +1509,12 @@ var Component = vueCompositionApi_2({
       }
     };
 
-    vueCompositionApi_20(function () {
+    vueCompositionApi_22(function () {
       return props.defaultKey;
     }, function (val) {
       if (val && val.length) {
         if (pending.value) {
-          _vue.default.nextTick(function () {
+          VueSlash.nextTick(function () {
             ins.setKey(props.defaultKey);
           });
         } else {
@@ -1484,12 +1522,12 @@ var Component = vueCompositionApi_2({
         }
       }
     });
-    vueCompositionApi_20(function () {
+    vueCompositionApi_22(function () {
       return props.defaultValue;
     }, function (val) {
       if (val && val.length) {
         if (pending.value) {
-          _vue.default.nextTick(function () {
+          VueSlash.nextTick(function () {
             ins.setValue(props.defaultValue);
           });
         } else {
@@ -1497,12 +1535,12 @@ var Component = vueCompositionApi_2({
         }
       }
     });
-    vueCompositionApi_20(function () {
+    vueCompositionApi_22(function () {
       return props.visible;
     }, function (val) {
       if (val) {
         if (pending.value) {
-          _vue.default.nextTick(function () {
+          VueSlash.nextTick(function () {
             show();
           });
         } else {
@@ -1515,7 +1553,7 @@ var Component = vueCompositionApi_2({
         }
       }
     });
-    vueCompositionApi_20(function () {
+    vueCompositionApi_22(function () {
       return props.loading;
     }, function (val) {
       if (val) {
@@ -1528,7 +1566,7 @@ var Component = vueCompositionApi_2({
         }
       }
     });
-    vueCompositionApi_20(function () {
+    vueCompositionApi_22(function () {
       return props.data;
     }, function (val) {
       setData(val);
@@ -1548,14 +1586,14 @@ var Component = vueCompositionApi_2({
       lazy: true,
       deep: props.deep
     });
-    vueCompositionApi_20(function () {
+    vueCompositionApi_22(function () {
       return props.index;
     }, function (val) {
       setIndex(val);
     }, {
       lazy: true
     });
-    vueCompositionApi_20(function () {
+    vueCompositionApi_22(function () {
       return props.title;
     }, function (val) {
       setTitle(val);
@@ -1668,12 +1706,15 @@ var Component = vueCompositionApi_2({
     }
   }
 });
+var VueSlash;
+exports.VueSlash = VueSlash;
 var index = {
   install: function install(Vue, options) {
     if (options === void 0) {
       options = {};
     }
 
+    exports.VueSlash = VueSlash = Vue;
     Vue.use(VueCompositionApi);
     Vue.component(options.name || 'QSelect', Component);
   }

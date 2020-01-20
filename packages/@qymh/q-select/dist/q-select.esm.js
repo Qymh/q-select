@@ -1,6 +1,6 @@
 /**
- * @qymh/q-select v0.4.6
- * (c) 2019 Qymh
+ * @qymh/q-select v0.4.7
+ * (c) 2020 Qymh
  * @license MIT
  */
 /*! *****************************************************************************
@@ -42,6 +42,14 @@ var __assign = function() {
     };
     return __assign.apply(this, arguments);
 };
+
+function __spreadArrays() {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+}
 
 var Dom = (function () {
     function Dom() {
@@ -196,7 +204,7 @@ var Dom = (function () {
                     Dom.addClass(item, 'q-select-box-item-collections__tick--disabled');
                 }
             }
-            var children = Array.from(collect.children).slice();
+            var children = __spreadArrays(Array.from(collect.children));
             for (var y = dataTransListLaterLen; y < dataTransListLen; y++) {
                 collect.removeChild(children[y]);
             }
@@ -651,7 +659,7 @@ var Touch = (function () {
         }
         var curData = this.data[this.curIndex];
         if (!this.fromDiff) {
-            this.endCall(__assign({}, curData, { index: this.curIndex }), this.aim);
+            this.endCall(__assign(__assign({}, curData), { index: this.curIndex }), this.aim);
         }
         this.preIndex = this.curIndex;
     };
@@ -901,9 +909,9 @@ var Layer = (function () {
         this.index =
             lenDiff >= 0
                 ? this.index.slice(0, dataTransLater.length)
-                : this.index.concat(Array.from({ length: Math.abs(lenDiff) }).fill(0));
-        this.dynamicIndex = this.index.slice();
-        this.realIndex = this.index.slice();
+                : __spreadArrays(this.index, Array.from({ length: Math.abs(lenDiff) }).fill(0));
+        this.dynamicIndex = __spreadArrays(this.index);
+        this.realIndex = __spreadArrays(this.index);
     };
     Layer.prototype.normalizeData = function (forceData, index) {
         if (this.isGanged) {
@@ -988,7 +996,7 @@ var Layer = (function () {
         var $confirm = Dom.find("q-select-header-confirm--" + this.id);
         var $cancel = Dom.find("q-select-header-cancel--" + this.id);
         function reset() {
-            this.dynamicIndex = this.realIndex.slice();
+            this.dynamicIndex = __spreadArrays(this.realIndex);
             if (this.isGanged) {
                 var dataTrans = deepClone(this.dataTrans);
                 var dataTransLater = this.genGangedData(this.data, this.realIndex);
@@ -999,7 +1007,7 @@ var Layer = (function () {
         Dom.bind($confirm, 'click', function () {
             var _a;
             if (_this.touchs.filter(function (v) { return !v.hidden; }).every(function (v) { return !v.isAnimating; })) {
-                _this.realIndex = _this.dynamicIndex.slice();
+                _this.realIndex = __spreadArrays(_this.dynamicIndex);
                 _this.realData = deepClone(_this.dynamicData);
             }
             else {
@@ -1107,8 +1115,8 @@ var Layer = (function () {
             if (curIndex < 0) {
                 _this.realIndex[i] = _this.dynamicIndex[i] = curIndex = 0;
             }
-            _this.dynamicData[i] = __assign({}, dataTransLater[i][curIndex], { index: curIndex });
-            _this.realData[i] = __assign({}, dataTransLater[i][curIndex], { index: curIndex });
+            _this.dynamicData[i] = __assign(__assign({}, dataTransLater[i][curIndex]), { index: curIndex });
+            _this.realData[i] = __assign(__assign({}, dataTransLater[i][curIndex]), { index: curIndex });
         });
     };
     Layer.prototype.setBoxWidth = function () {
@@ -1142,7 +1150,7 @@ var Layer = (function () {
                 return acc;
             }, []));
             var changeCallData = this.getChangeCallData();
-            this.$options.change && (_a = this.$options).change.apply(_a, [weight].concat(changeCallData));
+            this.$options.change && (_a = this.$options).change.apply(_a, __spreadArrays([weight], changeCallData));
             this.cachedCall.length = 0;
         }
     };
@@ -1182,7 +1190,7 @@ var Layer = (function () {
         Dom.diff(dataTrans, dataTransLater, weight, this.id, this.chunkHeight, this.touchs, trigger, function ($overlay, $collection, $highlight) {
             var _a;
             if (dataTransLater.length > dataTrans.length) {
-                _this.dynamicData[weight] = __assign({}, dataTransLater[weight][_this.dynamicIndex[weight]], { index: _this.dynamicIndex[weight] });
+                _this.dynamicData[weight] = __assign(__assign({}, dataTransLater[weight][_this.dynamicIndex[weight]]), { index: _this.dynamicIndex[weight] });
                 for (var y = trigger ? weight : weight + 1; y < dataTransLater.length; y++) {
                     if (!_this.touchs[y]) {
                         _this.touchs[y] = new Touch(dataTransLater[y], y, $overlay[y], $collection[y], $highlight[y], _this.dynamicIndex[y], _this, _this.touchCallback.bind(_this));
@@ -1190,7 +1198,7 @@ var Layer = (function () {
                             _this.dynamicIndex[y] = 0;
                         }
                         _this.touchs[y].setSize();
-                        _this.dynamicData[y] = __assign({}, dataTransLater[y][_this.dynamicIndex[y]], { index: _this.dynamicIndex[y] });
+                        _this.dynamicData[y] = __assign(__assign({}, dataTransLater[y][_this.dynamicIndex[y]]), { index: _this.dynamicIndex[y] });
                     }
                     else {
                         _this.touchs[y].reset(dataTransLater[y], resetIndex);
@@ -1198,7 +1206,7 @@ var Layer = (function () {
                         if (!trigger || resetIndex) {
                             _this.dynamicIndex[y] = 0;
                         }
-                        _this.dynamicData[y] = __assign({}, dataTransLater[y][_this.dynamicIndex[y]], { index: _this.dynamicIndex[y] });
+                        _this.dynamicData[y] = __assign(__assign({}, dataTransLater[y][_this.dynamicIndex[y]]), { index: _this.dynamicIndex[y] });
                     }
                     _this.setBoxWidth();
                 }
@@ -1225,7 +1233,7 @@ var Layer = (function () {
             }
             if (!ignoreChange) {
                 var changeCallData = _this.getChangeCallData();
-                _this.$options.change && (_a = _this.$options).change.apply(_a, [weight].concat(changeCallData));
+                _this.$options.change && (_a = _this.$options).change.apply(_a, __spreadArrays([weight], changeCallData));
             }
             _this.dataTrans = dataTransLater;
             _this.cachedCall.length = 0;
@@ -1233,13 +1241,13 @@ var Layer = (function () {
     };
     Layer.prototype.resetExistTouch = function (weight, dataTransLater, trigger, resetIndex) {
         if (dataTransLater[weight]) {
-            this.dynamicData[weight] = __assign({}, dataTransLater[weight][this.dynamicIndex[weight]], { index: this.dynamicIndex[weight] });
+            this.dynamicData[weight] = __assign(__assign({}, dataTransLater[weight][this.dynamicIndex[weight]]), { index: this.dynamicIndex[weight] });
         }
         for (var y = trigger ? weight : weight + 1; y < this.touchs.filter(function (v) { return !v.hidden; }).length; y++) {
             if (!trigger || resetIndex) {
                 this.dynamicIndex[y] = 0;
             }
-            this.dynamicData[y] = __assign({}, dataTransLater[y][this.dynamicIndex[y]], { index: this.dynamicIndex[y] });
+            this.dynamicData[y] = __assign(__assign({}, dataTransLater[y][this.dynamicIndex[y]]), { index: this.dynamicIndex[y] });
             this.touchs[y].reset(dataTransLater[y], resetIndex);
         }
     };
@@ -1319,7 +1327,7 @@ var QSelect = (function (_super) {
                     reject('[SelectQ]: Please wait for animating stops');
                     return;
                 }
-                var preTrans = _this.dataTrans.slice();
+                var preTrans = __spreadArrays(_this.dataTrans);
                 var realData = [];
                 if (Array.isArray(column)) {
                     var i = 0;
@@ -1341,7 +1349,7 @@ var QSelect = (function (_super) {
                     _this.normalizeData(realData, column);
                     _this.dataTrans = _this.dataTrans.slice(0, max).filter(function (v) { return v.length; });
                     _this.normalizeIndex(_this.dataTrans, _this.dynamicIndex);
-                    _this.realIndex = _this.dynamicIndex.slice();
+                    _this.realIndex = __spreadArrays(_this.dynamicIndex);
                     _this.diff(preTrans, _this.dataTrans, min, true, true, true);
                     _this.realData = deepClone(_this.dynamicData);
                     resolve(_this.getChangeCallData());
@@ -1359,7 +1367,7 @@ var QSelect = (function (_super) {
         if (argumentsAssert([column, index], ['column', 'index'], 'scrollTo')) {
             return;
         }
-        var later = this.dynamicIndex.slice();
+        var later = __spreadArrays(this.dynamicIndex);
         later[column] = index;
         return this.setIndex(later);
     };
@@ -1387,9 +1395,9 @@ var QSelect = (function (_super) {
             reject('[SelectQ]: Please wait for animating stops');
             return;
         }
-        var preIndex = this.dynamicIndex.slice();
-        this.dynamicIndex = index.slice();
-        this.realIndex = index.slice();
+        var preIndex = __spreadArrays(this.dynamicIndex);
+        this.dynamicIndex = __spreadArrays(index);
+        this.realIndex = __spreadArrays(index);
         if (!sameIndex(preIndex, index) || diff) {
             if (!this.isGanged) {
                 this.normalizeIndex(this.dataTrans, index);
@@ -1405,7 +1413,7 @@ var QSelect = (function (_super) {
             else {
                 var dataTransLater = this.genGangedData(this.data, this.dynamicIndex);
                 this.diff(preDataTrans || this.dataTrans, dataTransLater, 0, true, false, true);
-                this.realIndex = this.dynamicIndex.slice();
+                this.realIndex = __spreadArrays(this.dynamicIndex);
                 this.realData = deepClone(this.dynamicData);
                 this.callReady();
             }
