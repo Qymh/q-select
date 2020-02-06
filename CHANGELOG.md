@@ -1,3 +1,16 @@
+# [](https://github.com/Qymh/q-select/compare/v0.4.10...v) (2020-02-06)
+
+
+
+## [0.4.10](https://github.com/Qymh/q-select/compare/v0.4.9...v0.4.10) (2020-02-06)
+
+
+### Bug Fixes
+
+* 联动下错误的索引 ([2564311](https://github.com/Qymh/q-select/commit/256431119acaa7400f3efee22b3c0e33606c3e6c))
+
+
+
 # [](https://github.com/Qymh/q-select/compare/v0.4.9...v) (2020-01-20)
 
 
