@@ -886,6 +886,10 @@ class Layer {
       if (!trigger || resetIndex) {
         this.dynamicIndex[y] = 0;
       }
+      this.dynamicIndex[y] = this.getDisabledAfterIndex(
+        dataTransLater[y],
+        this.dynamicIndex[y]
+      );
       this.dynamicData[y] = {
         ...dataTransLater[y][this.dynamicIndex[y]],
         index: this.dynamicIndex[y]
