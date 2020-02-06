@@ -17762,7 +17762,7 @@
 	var vueCompositionApi_22 = vueCompositionApi.watch;
 
 	/**
-	 * @qymh/q-select v0.4.8
+	 * @qymh/q-select v0.4.9
 	 * (c) 2020 Qymh
 	 * @license MIT
 	 */
@@ -18992,6 +18992,7 @@
 	            if (!trigger || resetIndex) {
 	                this.dynamicIndex[y] = 0;
 	            }
+	            this.dynamicIndex[y] = this.getDisabledAfterIndex(dataTransLater[y], this.dynamicIndex[y]);
 	            this.dynamicData[y] = __assign(__assign({}, dataTransLater[y][this.dynamicIndex[y]]), { index: this.dynamicIndex[y] });
 	            this.touchs[y].reset(dataTransLater[y], resetIndex);
 	        }
