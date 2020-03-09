@@ -16,8 +16,6 @@ npm run lint
 
 log "build"
 npm run build
-log "fix const"
-npm run babel:fix
 
 git add .
 git commit -m "chore: $version build packages"
