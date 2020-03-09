@@ -16668,7 +16668,11 @@
 	var Vue = _interopDefault(vue_runtime_common);
 
 	var toString = function (x) { return Object.prototype.toString.call(x); };
-	var hasSymbol = typeof Symbol === 'function' && Symbol.for;
+	function isNative(Ctor) {
+	    return typeof Ctor === 'function' && /native code/.test(Ctor.toString());
+	}
+	var hasSymbol = typeof Symbol !== 'undefined' && isNative(Symbol) &&
+	    typeof Reflect !== 'undefined' && isNative(Reflect.ownKeys);
 	var noopFn = function (_) { return _; };
 	var sharedPropertyDefinition = {
 	    enumerable: true,
@@ -16747,7 +16751,7 @@
 	    }
 	    return vm;
 	}
-	function createComponentInstance(Ctor, options) {
+	function defineComponentInstance(Ctor, options) {
 	    if (options === void 0) { options = {}; }
 	    var silent = Ctor.config.silent;
 	    Ctor.config.silent = true;
@@ -16950,7 +16954,7 @@
 	        observed = Vue.observable(obj);
 	    }
 	    else {
-	        var vm = createComponentInstance(Vue, {
+	        var vm = defineComponentInstance(Vue, {
 	            data: {
 	                $$state: obj,
 	            },
@@ -17396,7 +17400,7 @@
 	    if (!currentVM) {
 	        warn('`createElement()` has been called outside of render function.');
 	        if (!fallbackCreateElement) {
-	            fallbackCreateElement = createComponentInstance(getCurrentVue()).$createElement;
+	            fallbackCreateElement = defineComponentInstance(getCurrentVue()).$createElement;
 	        }
 	        return fallbackCreateElement.apply(fallbackCreateElement, args);
 	    }
@@ -17404,8 +17408,15 @@
 	};
 
 	// implementation, close to no-op
-	function createComponent(options) {
+	function defineComponent(options) {
 	    return options;
+	}
+	// implementation, deferring to defineComponent, but logging a warning in dev mode
+	function createComponent(options) {
+	    {
+	        Vue.util.warn('`createComponent` has been renamed to `defineComponent`.');
+	    }
+	    return defineComponent(options);
 	}
 
 	var genName = function (name) { return "on" + (name[0].toUpperCase() + name.slice(1)); };
@@ -17413,15 +17424,6 @@
 	    return function (callback) {
 	        var vm = ensureCurrentVMInFn(genName(lifeCyclehook));
 	        injectHookOption(getCurrentVue(), vm, lifeCyclehook, callback);
-	    };
-	}
-	function createLifeCycles(lifeCyclehooks, name) {
-	    return function (callback) {
-	        var currentVue = getCurrentVue();
-	        var vm = ensureCurrentVMInFn(name);
-	        lifeCyclehooks.forEach(function (lifeCyclehook) {
-	            return injectHookOption(currentVue, vm, lifeCyclehook, callback);
-	        });
 	    };
 	}
 	function injectHookOption(Vue, vm, hook, val) {
@@ -17435,8 +17437,7 @@
 	var onBeforeUpdate = createLifeCycle('beforeUpdate');
 	var onUpdated = createLifeCycle('updated');
 	var onBeforeUnmount = createLifeCycle('beforeDestroy');
-	// only one event will be fired between destroyed and deactivated when an unmount occurs
-	var onUnmounted = createLifeCycles(['destroyed', 'deactivated'], genName('unmounted'));
+	var onUnmounted = createLifeCycle('destroyed');
 	var onErrorCaptured = createLifeCycle('errorCaptured');
 	var onActivated = createLifeCycle('activated');
 	var onDeactivated = createLifeCycle('deactivated');
@@ -17620,7 +17621,7 @@
 	    var vm = getCurrentVM();
 	    if (!vm) {
 	        if (!fallbackVM) {
-	            fallbackVM = createComponentInstance(getCurrentVue());
+	            fallbackVM = defineComponentInstance(getCurrentVue());
 	        }
 	        vm = fallbackVM;
 	    }
@@ -17641,7 +17642,7 @@
 	        get = options.get;
 	        set = options.set;
 	    }
-	    var computedHost = createComponentInstance(getCurrentVue(), {
+	    var computedHost = defineComponentInstance(getCurrentVue(), {
 	        computed: {
 	            $$state: {
 	                get: get,
@@ -17716,6 +17717,7 @@
 	exports.createComponent = createComponent;
 	exports.createElement = createElement;
 	exports.default = plugin;
+	exports.defineComponent = defineComponent;
 	exports.getCurrentInstance = getCurrentVM;
 	exports.inject = inject;
 	exports.isRef = isRef;
@@ -17741,28 +17743,29 @@
 	var vueCompositionApi_1 = vueCompositionApi.computed;
 	var vueCompositionApi_2 = vueCompositionApi.createComponent;
 	var vueCompositionApi_3 = vueCompositionApi.createElement;
-	var vueCompositionApi_4 = vueCompositionApi.getCurrentInstance;
-	var vueCompositionApi_5 = vueCompositionApi.inject;
-	var vueCompositionApi_6 = vueCompositionApi.isRef;
-	var vueCompositionApi_7 = vueCompositionApi.onActivated;
-	var vueCompositionApi_8 = vueCompositionApi.onBeforeMount;
-	var vueCompositionApi_9 = vueCompositionApi.onBeforeUnmount;
-	var vueCompositionApi_10 = vueCompositionApi.onBeforeUpdate;
-	var vueCompositionApi_11 = vueCompositionApi.onDeactivated;
-	var vueCompositionApi_12 = vueCompositionApi.onErrorCaptured;
-	var vueCompositionApi_13 = vueCompositionApi.onMounted;
-	var vueCompositionApi_14 = vueCompositionApi.onServerPrefetch;
-	var vueCompositionApi_15 = vueCompositionApi.onUnmounted;
-	var vueCompositionApi_16 = vueCompositionApi.onUpdated;
-	var vueCompositionApi_17 = vueCompositionApi.provide;
-	var vueCompositionApi_18 = vueCompositionApi.reactive;
-	var vueCompositionApi_19 = vueCompositionApi.ref;
-	var vueCompositionApi_20 = vueCompositionApi.set;
-	var vueCompositionApi_21 = vueCompositionApi.toRefs;
-	var vueCompositionApi_22 = vueCompositionApi.watch;
+	var vueCompositionApi_4 = vueCompositionApi.defineComponent;
+	var vueCompositionApi_5 = vueCompositionApi.getCurrentInstance;
+	var vueCompositionApi_6 = vueCompositionApi.inject;
+	var vueCompositionApi_7 = vueCompositionApi.isRef;
+	var vueCompositionApi_8 = vueCompositionApi.onActivated;
+	var vueCompositionApi_9 = vueCompositionApi.onBeforeMount;
+	var vueCompositionApi_10 = vueCompositionApi.onBeforeUnmount;
+	var vueCompositionApi_11 = vueCompositionApi.onBeforeUpdate;
+	var vueCompositionApi_12 = vueCompositionApi.onDeactivated;
+	var vueCompositionApi_13 = vueCompositionApi.onErrorCaptured;
+	var vueCompositionApi_14 = vueCompositionApi.onMounted;
+	var vueCompositionApi_15 = vueCompositionApi.onServerPrefetch;
+	var vueCompositionApi_16 = vueCompositionApi.onUnmounted;
+	var vueCompositionApi_17 = vueCompositionApi.onUpdated;
+	var vueCompositionApi_18 = vueCompositionApi.provide;
+	var vueCompositionApi_19 = vueCompositionApi.reactive;
+	var vueCompositionApi_20 = vueCompositionApi.ref;
+	var vueCompositionApi_21 = vueCompositionApi.set;
+	var vueCompositionApi_22 = vueCompositionApi.toRefs;
+	var vueCompositionApi_23 = vueCompositionApi.watch;
 
 	/**
-	 * @qymh/q-select v0.4.9
+	 * @qymh/q-select v0.4.10
 	 * (c) 2020 Qymh
 	 * @license MIT
 	 */
@@ -19293,10 +19296,10 @@
 
 	var Component = vueCompositionApi_2({
 	    setup: function (props, context) {
-	        var pending = vueCompositionApi_19(true);
-	        var uid = vueCompositionApi_19(0);
+	        var pending = vueCompositionApi_20(true);
+	        var uid = vueCompositionApi_20(0);
 	        var ins;
-	        vueCompositionApi_13(function () {
+	        vueCompositionApi_14(function () {
 	            ins = new QSelect({
 	                data: props.data,
 	                index: props.index,
@@ -19331,7 +19334,7 @@
 	                hide: function () { }
 	            });
 	        });
-	        vueCompositionApi_9(function () {
+	        vueCompositionApi_10(function () {
 	            ins && ins.destroy();
 	        });
 	        var warnIns = function () {
@@ -19434,7 +19437,7 @@
 	                return ins.cancelLoading();
 	            }
 	        };
-	        vueCompositionApi_22(function () { return props.defaultKey; }, function (val) {
+	        vueCompositionApi_23(function () { return props.defaultKey; }, function (val) {
 	            if (val && val.length) {
 	                if (pending.value) {
 	                    VueSlash.nextTick(function () {
@@ -19446,7 +19449,7 @@
 	                }
 	            }
 	        });
-	        vueCompositionApi_22(function () { return props.defaultValue; }, function (val) {
+	        vueCompositionApi_23(function () { return props.defaultValue; }, function (val) {
 	            if (val && val.length) {
 	                if (pending.value) {
 	                    VueSlash.nextTick(function () {
@@ -19458,7 +19461,7 @@
 	                }
 	            }
 	        });
-	        vueCompositionApi_22(function () { return props.visible; }, function (val) {
+	        vueCompositionApi_23(function () { return props.visible; }, function (val) {
 	            if (val) {
 	                if (pending.value) {
 	                    VueSlash.nextTick(function () {
@@ -19476,7 +19479,7 @@
 	                }
 	            }
 	        });
-	        vueCompositionApi_22(function () { return props.loading; }, function (val) {
+	        vueCompositionApi_23(function () { return props.loading; }, function (val) {
 	            if (val) {
 	                if (pending.value) ;
 	                else {
@@ -19489,7 +19492,7 @@
 	                }
 	            }
 	        });
-	        vueCompositionApi_22(function () { return props.data; }, function (val) {
+	        vueCompositionApi_23(function () { return props.data; }, function (val) {
 	            setData(val);
 	            if (props.defaultValue && props.defaultValue.length) {
 	                setValue(props.defaultValue);
@@ -19504,12 +19507,12 @@
 	            lazy: true,
 	            deep: props.deep
 	        });
-	        vueCompositionApi_22(function () { return props.index; }, function (val) {
+	        vueCompositionApi_23(function () { return props.index; }, function (val) {
 	            setIndex(val);
 	        }, {
 	            lazy: true
 	        });
-	        vueCompositionApi_22(function () { return props.title; }, function (val) {
+	        vueCompositionApi_23(function () { return props.title; }, function (val) {
 	            setTitle(val);
 	        }, {
 	            lazy: true
