@@ -1,3 +1,17 @@
+# [](https://github.com/Qymh/q-select/compare/v0.4.11...v) (2020-03-09)
+
+
+
+## [0.4.11](https://github.com/Qymh/q-select/compare/v0.4.10...v0.4.11) (2020-03-09)
+
+
+### Bug Fixes
+
+* 错误的打包 ([f096db4](https://github.com/Qymh/q-select/commit/f096db47c62de932636a961cf42efa4f098f99e3))
+* 去掉babel二次打包 ([130e89b](https://github.com/Qymh/q-select/commit/130e89b7ed9f98dd97a1077b438a8408f741f803))
+
+
+
 # [](https://github.com/Qymh/q-select/compare/v0.4.10...v) (2020-02-06)
 
 
