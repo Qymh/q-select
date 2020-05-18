@@ -1,5 +1,5 @@
 /**
- * @qymh/vue-q-select v0.4.10
+ * @qymh/vue-q-select v0.4.11
  * (c) 2020 Qymh
  * @license MIT
  */
@@ -12,18 +12,8 @@ function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'defau
 var VueCompositionApi = require('@vue/composition-api');
 var VueCompositionApi__default = _interopDefault(VueCompositionApi);
 var QSelect = _interopDefault(require('@qymh/q-select'));
-
-function assert(condition, msg) {
-    if (process.env.NODE_ENV === 'development') {
-        if (!condition) {
-            return Boolean(console.error("[SelectQ]: " + msg));
-        }
-        else {
-            return true;
-        }
-    }
-    return true;
-}
+var uitls = require('@qymh/q-select/src/uitls');
+require('@qymh/q-select/dist/q-select.css');
 
 var Component = VueCompositionApi.createComponent({
     setup: function (props, context) {
@@ -70,7 +60,7 @@ var Component = VueCompositionApi.createComponent({
         });
         var warnIns = function () {
             if (!ins) {
-                return assert(false, 'You should new QSelect before you use it');
+                return uitls.assert(false, 'You should new QSelect before you use it');
             }
             else {
                 return true;
