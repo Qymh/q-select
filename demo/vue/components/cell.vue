@@ -38,11 +38,22 @@ export default {
 .cell {
   padding: 10px 10px;
   display: flex;
-  border-bottom: 1px solid #e1e1e1;
   width: 100%;
   box-sizing: border-box;
   overflow: hidden;
   font-size: 14px;
+  position: relative;
+}
+.cell::after {
+  content: ' ';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  transform-origin: bottom right;
+  transform: scaleY(0.5);
+  border-bottom: 1px solid #ebebeb;
 }
 .cell--force {
   background-color: deepskyblue;
