@@ -1,12 +1,22 @@
 /**
- * @qymh/vue-q-select v0.4.11
+ * @qymh/vue-q-select v0.4.12
  * (c) 2020 Qymh
  * @license MIT
  */
 import VueCompositionApi, { createComponent, ref, onMounted, onBeforeUnmount, watch } from '@vue/composition-api';
 import QSelect from '@qymh/q-select';
-import { assert } from '@qymh/q-select/src/uitls';
-import '@qymh/q-select/dist/q-select.css';
+
+function assert(condition, msg) {
+    if (process.env.NODE_ENV === 'development') {
+        if (!condition) {
+            return Boolean(console.error("[SelectQ]: " + msg));
+        }
+        else {
+            return true;
+        }
+    }
+    return true;
+}
 
 var Component = createComponent({
     setup: function (props, context) {
