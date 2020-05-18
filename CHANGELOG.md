@@ -1,3 +1,16 @@
+# [](https://github.com/Qymh/q-select/compare/v0.4.13...v) (2020-05-18)
+
+
+
+## [0.4.13](https://github.com/Qymh/q-select/compare/v0.4.12...v0.4.13) (2020-05-18)
+
+
+### Bug Fixes
+
+* **lerna:** need bootstrap ([86932d5](https://github.com/Qymh/q-select/commit/86932d5045f8d545df6ddb1da024ef1a38cff841))
+
+
+
 # [](https://github.com/Qymh/q-select/compare/v0.4.12...v) (2020-05-18)
 
 
