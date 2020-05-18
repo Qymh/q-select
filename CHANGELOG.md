@@ -1,3 +1,21 @@
+# [](https://github.com/Qymh/q-select/compare/v0.4.12...v) (2020-05-18)
+
+
+
+## [0.4.12](https://github.com/Qymh/q-select/compare/v0.4.11...v0.4.12) (2020-05-18)
+
+
+### Bug Fixes
+
+* **node_modules:** miss babel-jest ([63f3d3b](https://github.com/Qymh/q-select/commit/63f3d3b41dea5128814a40f62db8e6e6a8c0e6cb))
+
+
+### Features
+
+* mobile 1px support ([#5](https://github.com/Qymh/q-select/issues/5)) ([bafa66e](https://github.com/Qymh/q-select/commit/bafa66eb60dbb0a271f57d72cedaa8aa3baec521))
+
+
+
 # [](https://github.com/Qymh/q-select/compare/v0.4.11...v) (2020-03-09)
 
 
